@@ -1,0 +1,14 @@
+# Local Related
+.idea/
+.git/
+Dockerfile*
+docker-compose*
+.gitignore
+README.md
+LICENSE
+.vscode
+
+# .NET Related
+bin/
+obj/
+appsettings.dev.json

@@ -1,0 +1,107 @@
+trigger:
+  - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+  dockerfilePath: "dockerfile"
+  major: 0
+  minor: 0
+
+stages:
+  - stage: buildStage
+    displayName: Build
+    condition: always()
+    jobs:
+      - job: buildJob
+        displayName: Build job
+        steps:
+          - task: UseDotNet@2
+            displayName: .Net Core 3.1.x SDK
+            inputs:
+              version: 3.1.x
+            name: useDotNet31x
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore
+            inputs:
+              command: "restore"
+              projects: "**/*.csproj"
+              name: restore
+
+          - task: DotNetCoreCLI@2
+            displayName: Build
+            inputs:
+              command: build
+              projects: "**/*.csproj"
+              arguments: "--configuration $(buildConfiguration)"
+              name: build
+
+  - stage: testStage
+    displayName: Test
+    condition: always()
+    dependsOn: buildStage
+    jobs:
+      - job: testJob
+        displayName: Test job
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: "test"
+              arguments: "--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/"
+              publishTestResults: true
+              projects: "tests/**/*.csproj"
+              name: test
+
+  - stage: masterVersionStage
+    displayName: Master Version
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    dependsOn: testStage
+    jobs:
+      - job: masterVersionJob
+        displayName: Master Version job
+        variables:
+          patch: $[counter(variables['minor'], 0)]
+        steps:
+          - bash: |
+              echo "##vso[build.updatebuildnumber]$(major).$(minor).$(patch)"
+              patchNo=$(major).$(minor).$(patch)
+              echo "##vso[task.setvariable variable=patchNo]$patchNo"
+            name: setMasterBuildName
+
+  - stage: branchVersionStage
+    displayName: Branch Version
+    condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    dependsOn: testStage
+    jobs:
+      - job: branchVersionJob
+        displayName: Branch Version job
+        variables:
+          prpatch: $[counter(variables['system.pullrequest.pullrequestid'], 0)]
+          brpatch: $[counter(variables['build.sourcebranchname'], 0)]
+        steps:
+          - bash: |
+              echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest.$(prpatch)"
+            condition: eq(variables['Build.Reason'], 'PullRequest')
+            name: SetPRBuildName
+
+  - stage: dockerStage
+    displayName: Dockerize
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    dependsOn: masterVersionStage
+    jobs:
+      - job:
+        displayName: Dockerize job
+        steps:
+          - task: Docker@2
+            displayName: Dockerize and Push
+            inputs:
+              containerRegistry: docker-hub
+              repository: rhipster/discord-client
+              Dockerfile: $(dockerfilePath)
+              command: buildAndPush
+              tags: $(Build.BuildNumber)
+              name: dockerize
