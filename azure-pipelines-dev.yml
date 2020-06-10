@@ -1,0 +1,51 @@
+trigger:
+  - develop
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+
+stages:
+  - stage: buildStage
+    displayName: Build
+    condition: always()
+    jobs:
+      - job: buildJob
+        displayName: Build job
+        steps:
+          - task: UseDotNet@2
+            displayName: .Net Core 3.1.x SDK
+            inputs:
+              version: 3.1.x
+            name: useDotNet31x
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore
+            inputs:
+              command: "restore"
+              projects: "**/*.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Build
+            inputs:
+              command: build
+              projects: "**/*.csproj"
+              arguments: "--configuration $(buildConfiguration)"
+
+  - stage: testStage
+    displayName: Test
+    condition: always()
+    dependsOn: buildStage
+    jobs:
+      - job: testJob
+        displayName: Test job
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Test
+            inputs:
+              command: "test"
+              arguments: "--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/"
+              publishTestResults: true
+              projects: "tests/**/*.csproj"
