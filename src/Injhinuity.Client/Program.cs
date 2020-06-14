@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Injhinuity.Client.Configuration;
 using Injhinuity.Client.Core;
+using Injhinuity.Client.Core.Configuration;
+using Injhinuity.Client.Core.Configuration.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,8 @@ namespace Injhinuity.Client
 {
     class Program
     {
+        private static readonly IClientConfigMapper _configMapper = new ClientConfigMapper();
+
         public static async Task Main()
         {
             var services = new ServiceCollection();
@@ -17,34 +20,40 @@ namespace Injhinuity.Client
             ConfigureLogging(services);
             Register(services);
 
-            var logger = services.BuildServiceProvider().GetService<ILogger<InjhinuityClient>>();
-            var config = services.BuildServiceProvider().GetService<IClientConfig>();
+            using var provider = services.BuildServiceProvider();
 
-            await new InjhinuityClient(services, logger, config).RunAsync();
+            await provider.GetRequiredService<IInjhinuityClient>().RunAsync();
         }
 
         private static void ConfigureConfiguration(IServiceCollection services)
         {
-            var config = new ConfigurationBuilder()
+            var options = new ConfigurationBuilder()
                .AddJsonFile("appsettings.json", false, true)
                .AddJsonFile($"appsettings.dev.json", true)
+               .AddEnvironmentVariables()
                .Build()
-               .GetSection("Client")
-               .Get<ClientConfig>();
+               .GetSection(IClientOptions.SectionName)
+               .Get<ClientOptions>();
 
-            services.AddSingleton<IClientConfig>(config);
+            services.AddSingleton(_configMapper.MapFromNullableOptions(options));
         }
 
         private static void ConfigureLogging(IServiceCollection services)
         {
+            var provider = services.BuildServiceProvider();
+
             services.AddLogging(opt => opt.AddConsole())
-                .Configure<LoggerFilterOptions>(opt => opt.MinLevel = LogLevel.Information);
+                .Configure<LoggerFilterOptions>(opt => {
+                    opt.MinLevel = provider.GetRequiredService<IClientConfig>().Logging.LogLevel;
+                });
         }
 
         private static void Register(IServiceCollection services)
         {
             new CoreRegistry().Register(services);
             new ClientRegistry().Register(services);
+
+            services.AddSingleton(services);
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Injhinuity.Client.Core
     {
         public void Register(IServiceCollection services)
         {
+            services.AddSingleton<IAssemblyProvider, AssemblyProvider>();
         }
     }
 }

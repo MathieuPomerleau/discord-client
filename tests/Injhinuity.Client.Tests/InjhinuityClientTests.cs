@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoFixture;
-using Injhinuity.Client.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Discord;
+using Injhinuity.Client.Core.Configuration;
+using Injhinuity.Client.Discord;
+using Injhinuity.Client.Discord.Activity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -11,43 +14,78 @@ namespace Injhinuity.Client.Tests
     public class InjhinuityClientTests
     {
         private static readonly IFixture _fixture = new Fixture();
+        
+        private readonly LogMessage _logMessage = new LogMessage(LogSeverity.Info, _fixture.Create<string>(), _fixture.Create<string>());
+        private readonly Core.Configuration.DiscordConfig _discordConfig = new Core.Configuration.DiscordConfig("token", '!');
+        private readonly Game _activity = new Game(_fixture.Create<string>());
+        private readonly string _versionNo = _fixture.Create<string>();
 
         private readonly IInjhinuityClient _subject;
 
-        private readonly IServiceCollection _services;
         private readonly ILogger<InjhinuityClient> _consoleLogger;
         private readonly IClientConfig _clientConfig;
+        private readonly IDiscordSocketClient _discordClient;
+        private readonly ICommandService _commandService;
+        private readonly ICommandHandlerService _commandHandlerService;
+        private readonly IActivityFactory _activityFactory;
 
         public InjhinuityClientTests()
         {
-            _services = Substitute.For<IServiceCollection>();
             _consoleLogger = Substitute.For<ILogger<InjhinuityClient>>();
-            _clientConfig = CreateClientConfig();
+            _clientConfig = Substitute.For<IClientConfig>();
+            _discordClient = Substitute.For<IDiscordSocketClient>();
+            _commandService = Substitute.For<ICommandService>();
+            _commandHandlerService = Substitute.For<ICommandHandlerService>();
+            _activityFactory = Substitute.For<IActivityFactory>();
 
-            _subject = new InjhinuityClient(_services, _consoleLogger, _clientConfig);
+            
+            _activityFactory.CreatePlayingStatus(Arg.Any<string>()).Returns(_activity);
+            _clientConfig.Version.Returns(new VersionConfig(_versionNo));
+            _clientConfig.Discord.Returns(_discordConfig);
+
+            _subject = new InjhinuityClient(_consoleLogger, _clientConfig, _discordClient,
+                _commandService, _commandHandlerService, _activityFactory);
         }
 
         [Fact]
-        public async Task RunAndBlockAsync_WhenCalled_ThenClientRegistersItself()
+        public async Task RunAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
         {
-            await _subject.RunAsync();
+            await _subject.RunAsync(false);
 
-            _services.ReceivedWithAnyArgs().AddSingleton(_subject);
+            _consoleLogger.Received().LogInformation($"Launching Injhinuity version {_versionNo}.");
+
+            _commandService.Received().Log += Arg.Any<Func<LogMessage, Task>>();
+            _discordClient.Received().Log += Arg.Any<Func<LogMessage, Task>>();
+            _discordClient.Received().LoggedIn += Arg.Any<Func<Task>>();
+            _discordClient.Received().Ready += Arg.Any<Func<Task>>();
+
+            await _discordClient.Received().LoginAsync(TokenType.Bot, _discordConfig.Token);
+            await _discordClient.Received().StartAsync();
         }
 
         [Fact]
-        public async Task RunAndBlockAsync_WhenCalled_ThenLogStartupMessageWithVersionNo()
+        public async Task OnReadyAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
         {
-            await _subject.RunAsync();
+            await _subject.OnReadyAsync();
 
-            _consoleLogger.Received().LogInformation($"Launching Injhinuity version {_clientConfig.Version.VersionNo}");
+            await _commandHandlerService.Received().InitializeAsync();
+            await _discordClient.Received().SetActivityAsync(_activity);
         }
 
-        private IClientConfig CreateClientConfig() =>
-            new ClientConfig
-            {
-                Version = new VersionConfig { VersionNo = _fixture.Create<string>() },
-                Logging = new LoggingConfig { }
-            };
+        [Fact]
+        public async Task LogAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
+        {
+            await _subject.LogAsync(_logMessage);
+
+            _consoleLogger.Received().LogInformation($"[Discord] {_logMessage.ToString()}.");
+        }
+
+        [Fact]
+        public async Task LoggedInAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
+        {
+            await _subject.LoggedInAsync();
+
+            _consoleLogger.Received().LogInformation($"[Discord] Logged in.");
+        }
     }
 }
