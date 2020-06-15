@@ -25,6 +25,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenReturnsTrue()
         {
             _subject.Token = null;
+            _subject.Prefix = null;
 
             var result = _subject.ContainsNull();
 

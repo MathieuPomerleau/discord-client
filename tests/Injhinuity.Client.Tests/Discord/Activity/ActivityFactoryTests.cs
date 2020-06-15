@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Discord;
 using FluentAssertions;
-using Injhinuity.Client.Discord.Activity;
+using Injhinuity.Client.Discord.Activities;
 using Xunit;
 
 namespace Injhinuity.Client.Tests.Discord.Activity
@@ -20,10 +20,12 @@ namespace Injhinuity.Client.Tests.Discord.Activity
         [Fact]
         public void CreatePlayingStatus_WhenCalled_ReturnsTheRightTypeOfIActivity()
         {
-            var str = _fixture.Create<string>();
-            var result = _subject.CreatePlayingStatus(str);
+            var name = _fixture.Create<string>();
+
+            var result = _subject.CreatePlayingStatus(name);
 
             result.Should().BeOfType<Game>();
+            result.Name.Should().Be(name);
         }
     }
 }

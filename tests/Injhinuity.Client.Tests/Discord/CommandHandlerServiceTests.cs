@@ -9,7 +9,7 @@ using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Channels;
 using NSubstitute;
 using Xunit;
 

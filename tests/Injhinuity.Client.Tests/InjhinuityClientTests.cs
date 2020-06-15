@@ -4,7 +4,7 @@ using AutoFixture;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Activity;
+using Injhinuity.Client.Discord.Activities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;

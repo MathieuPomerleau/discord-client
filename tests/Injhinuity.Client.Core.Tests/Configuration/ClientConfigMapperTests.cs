@@ -25,6 +25,13 @@ namespace Injhinuity.Client.Core.Tests.Configuration
             var result = _subject.MapFromNullableOptions(options);
 
             result.Should().BeOfType<ClientConfig>();
+            result.Discord.Should().NotBeNull();
+            result.Discord.Token.Should().NotBeNull();
+            result.Discord.Prefix.Should().NotBeNull();
+            result.Version.Should().NotBeNull();
+            result.Version.VersionNo.Should().NotBeNull();
+            result.Logging.Should().NotBeNull();
+            result.Logging.LogLevel.Should().NotBeNull();
         }
 
         [Fact]
@@ -32,6 +39,8 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         {
             var options = CreateValidOptions();
             options.Discord = null;
+            options.Version = null;
+            options.Logging = null;
 
             Action action = () => _subject.MapFromNullableOptions(options);
 

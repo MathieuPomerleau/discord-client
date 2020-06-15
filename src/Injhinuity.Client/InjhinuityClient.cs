@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Activity;
+using Injhinuity.Client.Discord.Activities;
 using Microsoft.Extensions.Logging;
 
 namespace Injhinuity.Client

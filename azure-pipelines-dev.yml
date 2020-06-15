@@ -1,11 +1,8 @@
-trigger:
-  - develop
-
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: ubuntu-latest
 
 variables:
-  buildConfiguration: "Release"
+  buildConfiguration: Release
 
 stages:
   - stage: buildStage
@@ -16,16 +13,18 @@ stages:
         displayName: Build job
         steps:
           - task: UseDotNet@2
-            displayName: .Net Core 3.1.x SDK
+            displayName: .Net 5.0.x SDK
             inputs:
-              version: 3.1.x
-            name: useDotNet31x
+              version: 5.0.x
+              includePreviewVersions: true
+            name: useDotNet50x
 
           - task: DotNetCoreCLI@2
             displayName: Restore
             inputs:
-              command: "restore"
+              command: restore
               projects: "**/*.csproj"
+              name: restore
 
           - task: DotNetCoreCLI@2
             displayName: Build
@@ -33,6 +32,7 @@ stages:
               command: build
               projects: "**/*.csproj"
               arguments: "--configuration $(buildConfiguration)"
+              name: build
 
   - stage: testStage
     displayName: Test
@@ -42,10 +42,25 @@ stages:
       - job: testJob
         displayName: Test job
         steps:
+          - task: UseDotNet@2
+            displayName: .Net 5.0.x SDK
+            inputs:
+              version: 5.0.x
+              includePreviewVersions: true
+            name: useDotNet50x
+
           - task: DotNetCoreCLI@2
             displayName: Test
             inputs:
-              command: "test"
+              command: test
               arguments: "--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/"
               publishTestResults: true
               projects: "tests/**/*.csproj"
+              name: test
+
+          - task: PublishCodeCoverageResults@1
+            displayName: Coverage
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: "$(Build.SourcesDirectory)/**/coverage.cobertura.xml"
+            name: coverage

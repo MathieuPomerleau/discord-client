@@ -6,7 +6,8 @@ using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Channels;
+using Injhinuity.Client.Discord.Results;
 
 namespace Injhinuity.Client.Discord
 {
@@ -61,10 +62,20 @@ namespace Injhinuity.Client.Discord
 
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (!command.IsSpecified || result.IsSuccess)
+            if (!(result is InjhinuityCommandResult injhinuityResult))
                 return;
+            
+            if (injhinuityResult.Embed is not null)
+            {
+                await _channelManager.SendEmbedMessageAsync(context, injhinuityResult.Embed);
+                return;
+            }
 
-            await _channelManager.SendMessageAsync(context, $"error: {result}");
+            if (injhinuityResult.Message is not null)
+            {
+                await _channelManager.SendMessageAsync(context, injhinuityResult.Message);
+                return;
+            }
         }
     }
 }

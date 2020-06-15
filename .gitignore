@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Dev files
 *.dev.json
+coverage.json
