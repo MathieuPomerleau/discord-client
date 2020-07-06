@@ -35,16 +35,26 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         }
 
         [Fact]
-        public void MapFromNullableOptions_WhenCalledWithInvalidOptions_ThenThrowAnInjhinuityException()
+        public void MapFromNullableOptions_WhenCalledWithNullClientOptions_ThenThrowAnInjhinuityException()
         {
-            var options = CreateValidOptions();
-            options.Discord = null;
-            options.Version = null;
-            options.Logging = null;
+            IClientOptions options = null;
 
             Action action = () => _subject.MapFromNullableOptions(options);
 
-            action.Should().Throw<InjhinuityException>().WithMessage("Config validation failed, missing value found");
+            action.Should().Throw<InjhinuityException>().WithMessage("Configuration couldn't be built, options are null");
+        }
+
+        [Fact]
+        public void MapFromNullableOptions_WhenCalledWithInvalidOptions_ThenThrowAnInjhinuityException()
+        {
+            var options = CreateValidOptions();
+            options.Version = new VersionOptions();
+            options.Logging = new LoggingOptions { LogLevel = LogLevel.Information };
+            options.Discord = null;
+
+            Action action = () => _subject.MapFromNullableOptions(options);
+
+            action.Should().Throw<InjhinuityException>().WithMessage("The following values are missing from the configuration:\n Version - VersionNo\n Client - Discord");
         }
 
         private IClientOptions CreateValidOptions() =>

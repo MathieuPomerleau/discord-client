@@ -8,20 +8,20 @@ using FluentAssertions;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Channels;
+using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Services;
 using NSubstitute;
 using Xunit;
 
-namespace Injhinuity.Client.Tests.Discord
+namespace Injhinuity.Client.Tests.Discord.Services
 {
     public class CommandHandlerServiceTests
     {
         private readonly ICommandHandlerService _subject;
 
         private readonly IServiceProvider _provider;
-        private readonly IDiscordSocketClient _discordClient;
-        private readonly ICommandService _commandService;
+        private readonly IInjhinuityDiscordClient _discordClient;
+        private readonly IInjhinuityCommandService _commandService;
         private readonly IClientConfig _clientConfig;
         private readonly IAssemblyProvider _assemblyProvider;
         private readonly IChannelManager _channelManager;
@@ -29,8 +29,8 @@ namespace Injhinuity.Client.Tests.Discord
         public CommandHandlerServiceTests()
         {
             _provider = Substitute.For<IServiceProvider>();
-            _discordClient = Substitute.For<IDiscordSocketClient>();
-            _commandService = Substitute.For<ICommandService>();
+            _discordClient = Substitute.For<IInjhinuityDiscordClient>();
+            _commandService = Substitute.For<IInjhinuityCommandService>();
             _clientConfig = Substitute.For<IClientConfig>();
             _assemblyProvider = Substitute.For<IAssemblyProvider>();
             _channelManager = Substitute.For<IChannelManager>();

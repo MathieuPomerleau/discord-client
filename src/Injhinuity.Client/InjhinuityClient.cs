@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Activities;
+using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Injhinuity.Client
@@ -20,13 +20,13 @@ namespace Injhinuity.Client
     {
         private readonly ILogger _logger;
         private readonly IClientConfig _clientConfig;
-        private readonly IDiscordSocketClient _discordClient;
-        private readonly ICommandService _commandService;
+        private readonly IInjhinuityDiscordClient _discordClient;
+        private readonly IInjhinuityCommandService _commandService;
         private readonly ICommandHandlerService _commandHandlerService;
         private readonly IActivityFactory _activityFactory;
 
-        public InjhinuityClient(ILogger<InjhinuityClient> logger, IClientConfig clientConfig, IDiscordSocketClient discordClient, 
-            ICommandService commandService, ICommandHandlerService commandHandlerService, IActivityFactory activityFactory)
+        public InjhinuityClient(ILogger<InjhinuityClient> logger, IClientConfig clientConfig, IInjhinuityDiscordClient discordClient, 
+            IInjhinuityCommandService commandService, ICommandHandlerService commandHandlerService, IActivityFactory activityFactory)
         {
             _logger = logger;
             _clientConfig = clientConfig;

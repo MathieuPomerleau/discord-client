@@ -15,21 +15,25 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithNonNullOptions_ThenReturnsFalse()
+        public void ContainsNull_WhenCalledWithNonNullOptions_ThenResultIsValid()
         {
-            var result = _subject.ContainsNull();
+            var result = new NullableOptionsResult();
 
-            result.Should().BeFalse();
+            _subject.ContainsNull(result);
+
+            result.IsValid.Should().BeTrue();
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenReturnsTrue()
+        public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenResultIsNotValid()
         {
+            var result = new NullableOptionsResult();
             _subject.LogLevel = null;
 
-            var result = _subject.ContainsNull();
+            _subject.ContainsNull(result);
 
-            result.Should().BeTrue();
+            result.IsValid.Should().BeFalse();
+            result.NullValues.Should().Contain(("Logging", "LogLevel"));
         }
     }
 }

@@ -5,7 +5,7 @@ using Discord;
 using Discord.Commands;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Injhinuity.Client.Discord.Results;
+using Injhinuity.Client.Discord.Builder;
 using Xunit;
 
 namespace Injhinuity.Client.Tests.Discord.Results

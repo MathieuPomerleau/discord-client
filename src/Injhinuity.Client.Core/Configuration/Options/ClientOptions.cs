@@ -11,15 +11,28 @@
 
     public class ClientOptions : IClientOptions
     {
-        public static string SectionName => "Client";
+        private const string OptionName = "Client";
 
         public VersionOptions? Version { get; set; }
         public LoggingOptions? Logging { get; set; }
         public DiscordOptions? Discord { get; set; }
 
-        public bool ContainsNull() =>
-            (Version?.ContainsNull() ?? true) ||
-            (Logging?.ContainsNull() ?? true) ||
-            (Discord?.ContainsNull() ?? true);
+        public void ContainsNull(NullableOptionsResult result)
+        {
+            if (Version is null)
+                result.AddValueToResult(OptionName, "Version");
+            else
+                Version.ContainsNull(result);
+
+            if (Logging is null)
+                result.AddValueToResult(OptionName, "Logging:");
+            else
+                Logging.ContainsNull(result);
+
+            if (Discord is null)
+                result.AddValueToResult(OptionName, "Discord");
+            else
+                Discord.ContainsNull(result);
+        }
     }
 }

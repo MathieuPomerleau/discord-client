@@ -1,9 +1,8 @@
 ﻿using Injhinuity.Client.Core.Interfaces;
-using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Activities;
-using Injhinuity.Client.Discord.Channels;
-using Injhinuity.Client.Discord.Embeds;
-using Injhinuity.Client.Discord.Results;
+using Injhinuity.Client.Discord.Builder;
+using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Injhinuity.Client
@@ -14,13 +13,13 @@ namespace Injhinuity.Client
         {
             services
                 .AddSingleton<IInjhinuityClient, InjhinuityClient>()
-                .AddSingleton<IDiscordSocketClient, InjhinuityDiscordSocketClient>()
-                .AddSingleton<ICommandService, InjhinuityCommandService>()
+                .AddSingleton<IInjhinuityDiscordClient, InjhinuityDiscordClient>()
+                .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<IChannelManager, ChannelManager>()
                 .AddSingleton<IActivityFactory, ActivityFactory>()
                 .AddTransient<ICommandResultBuilder, CommandResultBuilder>()
-                .AddTransient<IEmbedBuilder, InjhinuityEmbedBuilder>();
+                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>();
         }
     }
 }

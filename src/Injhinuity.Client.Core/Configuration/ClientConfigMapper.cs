@@ -13,8 +13,14 @@ namespace Injhinuity.Client.Core.Configuration
     {
         public IClientConfig MapFromNullableOptions(IClientOptions clientOptions)
         {
-            if (!(clientOptions is ClientOptions options) || options.ContainsNull())
-                throw new InjhinuityException("Config validation failed, missing value found");
+            if (!(clientOptions is ClientOptions options))
+                throw new InjhinuityException("Configuration couldn't be built, options are null");
+
+            var result = new NullableOptionsResult();
+            options.ContainsNull(result);
+
+            if (!result.IsValid)
+                throw new InjhinuityException($"The following values are missing from the configuration:\n{result}");
 
             var version = new VersionConfig(options.Version.VersionNo);
             var logging = new LoggingConfig(options.Logging.LogLevel.Value);

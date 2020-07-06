@@ -2,10 +2,10 @@
 using Discord;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Injhinuity.Client.Discord.Embeds;
+using Injhinuity.Client.Discord.Builder;
 using Xunit;
 
-namespace Injhinuity.Client.Tests.Discord.Embeds
+namespace Injhinuity.Client.Tests.Discord.Builder
 {
     public class InjhinuityEmbedBuilderTests
     {
@@ -13,7 +13,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds
         private readonly string _url = "https://i.imgur.com/wSTFkRM.png";
         private readonly Color _color = Color.Red;
 
-        private readonly IEmbedBuilder _subject;
+        private readonly IInjhinuityEmbedBuilder _subject;
 
         public InjhinuityEmbedBuilderTests()
         {
@@ -73,7 +73,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds
             result.Fields[0].Inline.Should().Be(true);
         }
 
-            private (string, string, string, string, string, Color) CreateEmbedValues() =>
+        private (string, string, string, string, string, Color) CreateEmbedValues() =>
             (_fixture.Create<string>(), _fixture.Create<string>(), _fixture.Create<string>(),
              _fixture.Create<string>(), _url, _color);
     }

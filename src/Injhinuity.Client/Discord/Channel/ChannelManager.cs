@@ -2,7 +2,7 @@
 using Discord;
 using Discord.Commands;
 
-namespace Injhinuity.Client.Discord.Channels
+namespace Injhinuity.Client.Discord.Channel
 {
     public interface IChannelManager
     {

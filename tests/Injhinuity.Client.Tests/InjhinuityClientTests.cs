@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord;
-using Injhinuity.Client.Discord.Activities;
+using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -24,8 +24,8 @@ namespace Injhinuity.Client.Tests
 
         private readonly ILogger<InjhinuityClient> _consoleLogger;
         private readonly IClientConfig _clientConfig;
-        private readonly IDiscordSocketClient _discordClient;
-        private readonly ICommandService _commandService;
+        private readonly IInjhinuityDiscordClient _discordClient;
+        private readonly IInjhinuityCommandService _commandService;
         private readonly ICommandHandlerService _commandHandlerService;
         private readonly IActivityFactory _activityFactory;
 
@@ -33,8 +33,8 @@ namespace Injhinuity.Client.Tests
         {
             _consoleLogger = Substitute.For<ILogger<InjhinuityClient>>();
             _clientConfig = Substitute.For<IClientConfig>();
-            _discordClient = Substitute.For<IDiscordSocketClient>();
-            _commandService = Substitute.For<ICommandService>();
+            _discordClient = Substitute.For<IInjhinuityDiscordClient>();
+            _commandService = Substitute.For<IInjhinuityCommandService>();
             _commandHandlerService = Substitute.For<ICommandHandlerService>();
             _activityFactory = Substitute.For<IActivityFactory>();
 

@@ -14,21 +14,25 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithNonNullProperties_ThenReturnsFalse()
+        public void ContainsNull_WhenCalledWithNonNullProperties_ThenResultIsValid()
         {
-            var result = _subject.ContainsNull();
+            var result = new NullableOptionsResult();
+            
+            _subject.ContainsNull(result);
 
-            result.Should().BeFalse();
+            result.IsValid.Should().BeTrue();
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenReturnsTrue()
+        public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenResultIsNotValid()
         {
+            var result = new NullableOptionsResult();
             _subject.VersionNo = null;
 
-            var result = _subject.ContainsNull();
+            _subject.ContainsNull(result);
 
-            result.Should().BeTrue();
+            result.IsValid.Should().BeFalse();
+            result.NullValues.Should().Contain(("Version", "VersionNo"));
         }
     }
 }

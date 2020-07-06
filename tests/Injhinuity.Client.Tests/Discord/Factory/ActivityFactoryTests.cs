@@ -1,10 +1,10 @@
 ﻿using AutoFixture;
 using Discord;
 using FluentAssertions;
-using Injhinuity.Client.Discord.Activities;
+using Injhinuity.Client.Discord.Factory;
 using Xunit;
 
-namespace Injhinuity.Client.Tests.Discord.Activity
+namespace Injhinuity.Client.Tests.Discord.Factory
 {
     public class ActivityFactoryTests
     {

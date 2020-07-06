@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using Discord;
 
-namespace Injhinuity.Client.Discord.Embeds
+namespace Injhinuity.Client.Discord.Builder
 {
-    public interface IEmbedBuilder
+    public interface IInjhinuityEmbedBuilder
     {
-        IEmbedBuilder WithTitle(string title);
-        IEmbedBuilder WithDescription(string description);
-        IEmbedBuilder WithThumbnailUrl(string url);
-        IEmbedBuilder WithColor(Color color);
-        IEmbedBuilder WithTimestamp();
-        IEmbedBuilder AddField(string name, object value, bool inline = false);
+        IInjhinuityEmbedBuilder WithTitle(string title);
+        IInjhinuityEmbedBuilder WithDescription(string description);
+        IInjhinuityEmbedBuilder WithThumbnailUrl(string url);
+        IInjhinuityEmbedBuilder WithColor(Color color);
+        IInjhinuityEmbedBuilder WithTimestamp();
+        IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false);
         Embed Build();
     }
 
-    public class InjhinuityEmbedBuilder : IEmbedBuilder
+    public class InjhinuityEmbedBuilder : IInjhinuityEmbedBuilder
     {
         private EmbedBuilder? _embedBuilder;
 
@@ -25,37 +25,37 @@ namespace Injhinuity.Client.Discord.Embeds
         private bool _hasTimestamp = false;
         private IList<FieldData> _fields = new List<FieldData>();
 
-        public IEmbedBuilder WithTitle(string title)
+        public IInjhinuityEmbedBuilder WithTitle(string title)
         {
             _title = title;
             return this;
         }
 
-        public IEmbedBuilder WithDescription(string description)
+        public IInjhinuityEmbedBuilder WithDescription(string description)
         {
             _description = description;
             return this;
         }
 
-        public IEmbedBuilder WithColor(Color color)
+        public IInjhinuityEmbedBuilder WithColor(Color color)
         {
             _color = color;
             return this;
         }
 
-        public IEmbedBuilder WithThumbnailUrl(string url)
+        public IInjhinuityEmbedBuilder WithThumbnailUrl(string url)
         {
             _thumbnailUrl = url;
             return this;
         }
 
-        public IEmbedBuilder WithTimestamp()
+        public IInjhinuityEmbedBuilder WithTimestamp()
         {
             _hasTimestamp = true;
             return this;
         }
 
-        public IEmbedBuilder AddField(string name, object value, bool inline = false)
+        public IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false)
         {
             _fields.Add(new FieldData { Name = name, Value = value, Inline = inline });
             return this;
@@ -65,16 +65,16 @@ namespace Injhinuity.Client.Discord.Embeds
         {
             _embedBuilder = new EmbedBuilder();
 
-            if (_title is not null)
+            if (!(_title is null))
                 _embedBuilder.WithTitle(_title);
 
-            if (_description is not null)
+            if (!(_description is null))
                 _embedBuilder.WithDescription(_description);
 
-            if (_color is not null)
+            if (!(_color is null))
                 _embedBuilder.WithColor(_color.Value);
 
-            if (_thumbnailUrl is not null)
+            if (!(_thumbnailUrl is null))
                 _embedBuilder.WithThumbnailUrl(_thumbnailUrl);
 
             if (_hasTimestamp)

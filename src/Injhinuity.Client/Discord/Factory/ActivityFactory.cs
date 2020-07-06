@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace Injhinuity.Client.Discord.Activities
+namespace Injhinuity.Client.Discord.Factory
 {
     public interface IActivityFactory
     {

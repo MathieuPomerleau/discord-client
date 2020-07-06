@@ -1,7 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
+using Injhinuity.Client.Discord.Entities;
 
-namespace Injhinuity.Client.Discord.Results
+namespace Injhinuity.Client.Discord.Builder
 {
     public interface ICommandResultBuilder
     {

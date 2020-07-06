@@ -2,18 +2,17 @@
 using Discord;
 using Discord.Commands;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord.Embeds;
-using Injhinuity.Client.Discord.Results;
+using Injhinuity.Client.Discord.Builder;
 
 namespace Injhinuity.Client.Modules
 {
     public class InformationModule : ModuleBase<SocketCommandContext>
     {
         private readonly ICommandResultBuilder _resultBuilder;
-        private readonly IEmbedBuilder _embedBuilder;
+        private readonly IInjhinuityEmbedBuilder _embedBuilder;
         private readonly IClientConfig _clientConfig;
 
-        public InformationModule(ICommandResultBuilder resultBuilder, IEmbedBuilder embedBuilder, IClientConfig clientConfig)
+        public InformationModule(ICommandResultBuilder resultBuilder, IInjhinuityEmbedBuilder embedBuilder, IClientConfig clientConfig)
         {
             _resultBuilder = resultBuilder;
             _embedBuilder = embedBuilder;

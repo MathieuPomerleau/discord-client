@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
-namespace Injhinuity.Client.Discord
+namespace Injhinuity.Client.Discord.Services
 {
-    public interface IDiscordSocketClient
+    public interface IInjhinuityDiscordClient
     {
         Task LoginAsync(TokenType tokenType, string token, bool validateToken = true);
         Task StartAsync();
@@ -16,5 +16,5 @@ namespace Injhinuity.Client.Discord
         event Func<SocketMessage, Task> MessageReceived;
     }
 
-    public class InjhinuityDiscordSocketClient : DiscordSocketClient, IDiscordSocketClient { }
+    public class InjhinuityDiscordClient : DiscordSocketClient, IInjhinuityDiscordClient { }
 }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 
-namespace Injhinuity.Client.Discord
+namespace Injhinuity.Client.Discord.Services
 {
-    public interface ICommandService
+    public interface IInjhinuityCommandService
     {
         Task<IEnumerable<ModuleInfo>> AddModulesAsync(Assembly assembly, IServiceProvider provider);
         Task<IResult> ExecuteAsync(ICommandContext context, int argPos, IServiceProvider services, MultiMatchHandling multiMatchHandling = MultiMatchHandling.Exception);
@@ -15,5 +15,5 @@ namespace Injhinuity.Client.Discord
         event Func<Optional<CommandInfo>, ICommandContext, IResult, Task> CommandExecuted;
     }
 
-    public class InjhinuityCommandService : CommandService, ICommandService { }
+    public class InjhinuityCommandService : CommandService, IInjhinuityCommandService { }
 }

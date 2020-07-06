@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 
-namespace Injhinuity.Client.Discord.Results
+namespace Injhinuity.Client.Discord.Entities
 {
     public class InjhinuityCommandResult : RuntimeResult
     {

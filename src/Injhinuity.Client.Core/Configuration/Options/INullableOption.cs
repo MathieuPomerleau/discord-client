@@ -2,6 +2,6 @@
 {
     public interface INullableOption
     {
-        bool ContainsNull();
+        void ContainsNull(NullableOptionsResult result);
     }
 }

@@ -6,10 +6,10 @@ using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord.Channels;
-using Injhinuity.Client.Discord.Results;
+using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Entities;
 
-namespace Injhinuity.Client.Discord
+namespace Injhinuity.Client.Discord.Services
 {
     public interface ICommandHandlerService
     {
@@ -21,13 +21,13 @@ namespace Injhinuity.Client.Discord
     public class CommandHandlerService : ICommandHandlerService
     {
         private readonly IServiceProvider _provider;
-        private readonly IDiscordSocketClient _discordClient;
-        private readonly ICommandService _commandService;
+        private readonly IInjhinuityDiscordClient _discordClient;
+        private readonly IInjhinuityCommandService _commandService;
         private readonly IClientConfig _clientConfig;
         private readonly IAssemblyProvider _assemblyProvider;
         private readonly IChannelManager _channelManager;
 
-        public CommandHandlerService(IServiceProvider provider, IDiscordSocketClient discordClient, ICommandService commandService,
+        public CommandHandlerService(IServiceProvider provider, IInjhinuityDiscordClient discordClient, IInjhinuityCommandService commandService,
             IClientConfig clientConfig, IAssemblyProvider assemblyProvider, IChannelManager channelManager)
         {
             _provider = provider;
@@ -65,13 +65,13 @@ namespace Injhinuity.Client.Discord
             if (!(result is InjhinuityCommandResult injhinuityResult))
                 return;
             
-            if (injhinuityResult.Embed is not null)
+            if (!(injhinuityResult.Embed is null))
             {
                 await _channelManager.SendEmbedMessageAsync(context, injhinuityResult.Embed);
                 return;
             }
 
-            if (injhinuityResult.Message is not null)
+            if (!(injhinuityResult.Message is null))
             {
                 await _channelManager.SendMessageAsync(context, injhinuityResult.Message);
                 return;

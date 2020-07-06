@@ -2,11 +2,18 @@
 {
     public class DiscordOptions : INullableOption
     {
+        private const string OptionName = "Discord";
+
         public string? Token { get; set; }
         public char? Prefix { get; set; }
 
-        public bool ContainsNull() =>
-            Token is null ||
-            Prefix is null;
+        public void ContainsNull(NullableOptionsResult result)
+        {
+            if (Token is null)
+                result.AddValueToResult(OptionName, "Token");
+
+            if (Prefix is null)
+                result.AddValueToResult(OptionName, "Prefix");
+        }
     }
 }

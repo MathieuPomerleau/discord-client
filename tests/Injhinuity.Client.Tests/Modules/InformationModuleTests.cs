@@ -3,8 +3,8 @@ using Discord;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord.Embeds;
-using Injhinuity.Client.Discord.Results;
+using Injhinuity.Client.Discord.Builder;
+using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Modules;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -20,13 +20,13 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly Embed _embed = new EmbedBuilder().Build();
 
         private readonly ICommandResultBuilder _resultBuilder;
-        private readonly IEmbedBuilder _embedBuilder;
+        private readonly IInjhinuityEmbedBuilder _embedBuilder;
         private readonly IClientConfig _clientConfig;
 
         public InformationModuleTests()
         {
             _resultBuilder = Substitute.For<ICommandResultBuilder>();
-            _embedBuilder = Substitute.For<IEmbedBuilder>();
+            _embedBuilder = Substitute.For<IInjhinuityEmbedBuilder>();
             _clientConfig = Substitute.For<IClientConfig>();
 
             _clientConfig.Version.Returns(_version);
