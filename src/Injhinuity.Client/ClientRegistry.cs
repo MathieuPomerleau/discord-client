@@ -1,9 +1,13 @@
 ﻿using Injhinuity.Client.Core.Interfaces;
-using Injhinuity.Client.Discord.Builder;
-using Injhinuity.Client.Discord.Channel;
-using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Builders;
+using Injhinuity.Client.Discord.Managers;
+using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Injhinuity.Client.Services.Requesters;
+using Injhinuity.Client.Services.Api;
+using Injhinuity.Client.Services.Factories;
+using Injhinuity.Client.Services.EmbedFactories;
 
 namespace Injhinuity.Client
 {
@@ -15,11 +19,19 @@ namespace Injhinuity.Client
                 .AddSingleton<IInjhinuityClient, InjhinuityClient>()
                 .AddSingleton<IInjhinuityDiscordClient, InjhinuityDiscordClient>()
                 .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
+                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
+                .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
                 .AddSingleton<IChannelManager, ChannelManager>()
                 .AddSingleton<IActivityFactory, ActivityFactory>()
                 .AddTransient<ICommandResultBuilder, CommandResultBuilder>()
-                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>();
+                .AddTransient<IApiGateway, ApiGateway>()
+                .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
+                .AddTransient<IApiUrlProvider, ApiUrlProvider>()
+                .AddTransient<ICommandRequester, CommandRequester>()
+                .AddTransient<ICommandPackageFactory, CommandPackageFactory>()
+                .AddTransient<ICommandEmbedFactory, CommandEmbedFactory>()
+                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>();
         }
     }
 }

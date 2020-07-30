@@ -5,11 +5,13 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY src/Injhinuity.Client/*.csproj Injhinuity.Client/
 COPY src/Injhinuity.Client.Core/*.csproj Injhinuity.Client.Core/
+COPY src/Injhinuity.Client.Model/*.csproj Injhinuity.Client.Model/
 RUN dotnet restore Injhinuity.Client/Injhinuity.Client.csproj
 
 # copy and build app and libraries
 COPY src/Injhinuity.Client/ Injhinuity.Client/
 COPY src/Injhinuity.Client.Core/ Injhinuity.Client.Core/
+COPY src/Injhinuity.Client.Model/ Injhinuity.Client.Model/
 WORKDIR /source/Injhinuity.Client
 RUN dotnet build -c release
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Configuration.Options;
 using Injhinuity.Client.Core.Exceptions;
@@ -18,28 +19,9 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         }
 
         [Fact]
-        public void MapFromNullableOptions_WhenCalledWithValidOptions_ThenMapsToAConfigObject()
-        {
-            var options = CreateValidOptions();
-
-            var result = _subject.MapFromNullableOptions(options);
-
-            result.Should().BeOfType<ClientConfig>();
-            result.Discord.Should().NotBeNull();
-            result.Discord.Token.Should().NotBeNull();
-            result.Discord.Prefix.Should().NotBeNull();
-            result.Version.Should().NotBeNull();
-            result.Version.VersionNo.Should().NotBeNull();
-            result.Logging.Should().NotBeNull();
-            result.Logging.LogLevel.Should().NotBeNull();
-        }
-
-        [Fact]
         public void MapFromNullableOptions_WhenCalledWithNullClientOptions_ThenThrowAnInjhinuityException()
         {
-            IClientOptions options = null;
-
-            Action action = () => _subject.MapFromNullableOptions(options);
+            Action action = () => _subject.MapFromNullableOptions(null);
 
             action.Should().Throw<InjhinuityException>().WithMessage("Configuration couldn't be built, options are null");
         }
@@ -49,7 +31,6 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         {
             var options = CreateValidOptions();
             options.Version = new VersionOptions();
-            options.Logging = new LoggingOptions { LogLevel = LogLevel.Information };
             options.Discord = null;
 
             Action action = () => _subject.MapFromNullableOptions(options);
@@ -57,12 +38,34 @@ namespace Injhinuity.Client.Core.Tests.Configuration
             action.Should().Throw<InjhinuityException>().WithMessage("The following values are missing from the configuration:\n Version - VersionNo\n Client - Discord");
         }
 
+        [Fact]
+        public void MapFromNullableOptions_WhenCalledWithValidOptions_ThenMapsToAConfigObject()
+        {
+            var options = CreateValidOptions();
+
+            var result = _subject.MapFromNullableOptions(options);
+
+            using var scope = new AssertionScope();
+
+            result.Should().BeOfType<ClientConfig>();
+            result.Discord.Should().NotBeNull();
+            result.Discord.Token.Should().NotBeNull();
+            result.Discord.Prefix.Should().NotBeNull();
+            result.Version.Should().NotBeNull();
+            result.Version.VersionNo.Should().NotBeNull();
+            result.Logging.Should().NotBeNull();
+            result.Logging.LogLevel.Should().NotBeNull();
+            result.Api.Should().NotBeNull();
+            result.Api.BaseUrl.Should().NotBeNull();
+        }
+
         private IClientOptions CreateValidOptions() =>
             new ClientOptions
             {
                 Discord = new DiscordOptions { Token = "token", Prefix = '!' },
                 Logging = new LoggingOptions { LogLevel = LogLevel.Information },
-                Version = new VersionOptions { VersionNo = "0" }
+                Version = new VersionOptions { VersionNo = "0" },
+                Api = new ApiOptions { BaseUrl = "url" }
             };
     }
 }

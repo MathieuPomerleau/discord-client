@@ -7,6 +7,7 @@
         VersionOptions? Version { get; set; }
         LoggingOptions? Logging { get; set; }
         DiscordOptions? Discord { get; set; }
+        ApiOptions? Api { get; set; }
     }
 
     public class ClientOptions : IClientOptions
@@ -16,6 +17,7 @@
         public VersionOptions? Version { get; set; }
         public LoggingOptions? Logging { get; set; }
         public DiscordOptions? Discord { get; set; }
+        public ApiOptions? Api { get; set; }
 
         public void ContainsNull(NullableOptionsResult result)
         {
@@ -33,6 +35,11 @@
                 result.AddValueToResult(OptionName, "Discord");
             else
                 Discord.ContainsNull(result);
+
+            if (Api is null)
+                result.AddValueToResult(OptionName, "Api");
+            else
+                Api.ContainsNull(result);
         }
     }
 }

@@ -6,7 +6,7 @@ using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Managers;
 using Injhinuity.Client.Discord.Entities;
 
 namespace Injhinuity.Client.Discord.Services
@@ -26,9 +26,10 @@ namespace Injhinuity.Client.Discord.Services
         private readonly IClientConfig _clientConfig;
         private readonly IAssemblyProvider _assemblyProvider;
         private readonly IChannelManager _channelManager;
+        private readonly ICustomCommandHandlerService _customCommandHandler;
 
         public CommandHandlerService(IServiceProvider provider, IInjhinuityDiscordClient discordClient, IInjhinuityCommandService commandService,
-            IClientConfig clientConfig, IAssemblyProvider assemblyProvider, IChannelManager channelManager)
+            IClientConfig clientConfig, IAssemblyProvider assemblyProvider, IChannelManager channelManager, ICustomCommandHandlerService customCommandHandler)
         {
             _provider = provider;
             _discordClient = discordClient;
@@ -36,6 +37,7 @@ namespace Injhinuity.Client.Discord.Services
             _clientConfig = clientConfig;
             _assemblyProvider = assemblyProvider;
             _channelManager = channelManager;
+            _customCommandHandler = customCommandHandler;
         }
 
         public async Task InitializeAsync()
@@ -57,6 +59,10 @@ namespace Injhinuity.Client.Discord.Services
                 return;
 
             var context = new SocketCommandContext((DiscordSocketClient)_discordClient, message);
+
+            if (await _customCommandHandler.TryHandlingCustomCommand(context, message.Content[1..]))
+                return;
+
             await _commandService.ExecuteAsync(context, argPos, _provider);
         }
 

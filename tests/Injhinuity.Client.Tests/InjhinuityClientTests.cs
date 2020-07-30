@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -14,13 +14,12 @@ namespace Injhinuity.Client.Tests
     public class InjhinuityClientTests
     {
         private static readonly IFixture _fixture = new Fixture();
-        
+        private readonly IInjhinuityClient _subject;
+
         private readonly LogMessage _logMessage = new LogMessage(LogSeverity.Info, _fixture.Create<string>(), _fixture.Create<string>());
         private readonly Core.Configuration.DiscordConfig _discordConfig = new Core.Configuration.DiscordConfig("token", '!');
         private readonly Game _activity = new Game(_fixture.Create<string>());
         private readonly string _versionNo = _fixture.Create<string>();
-
-        private readonly IInjhinuityClient _subject;
 
         private readonly ILogger<InjhinuityClient> _consoleLogger;
         private readonly IClientConfig _clientConfig;

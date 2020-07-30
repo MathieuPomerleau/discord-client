@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Injhinuity.Client.Core.Configuration;
-using Injhinuity.Client.Discord.Factory;
+using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.Logging;
 

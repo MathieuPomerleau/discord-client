@@ -5,6 +5,7 @@ pool:
 
 variables:
   buildConfiguration: Release
+  dockerfilePath: dockerfile
 
 stages:
   - stage: buildStage
@@ -38,7 +39,7 @@ stages:
 
   - stage: testStage
     displayName: Test
-    condition: always()
+    condition: succeeded()
     dependsOn: buildStage
     jobs:
       - job: testJob
@@ -66,3 +67,19 @@ stages:
               codeCoverageTool: Cobertura
               summaryFileLocation: "$(Build.SourcesDirectory)/**/coverage.cobertura.xml"
             name: coverage
+
+  - stage: dockerStage
+    displayName: Dockerize
+    condition: succeeded()
+    dependsOn: testStage
+    jobs:
+      - job:
+        displayName: Dockerize job
+        steps:
+          - task: Docker@2
+            displayName: Dockerize
+            inputs:
+              Dockerfile: $(dockerfilePath)
+              command: build
+              tags: $(Build.BuildNumber)
+              name: dockerize

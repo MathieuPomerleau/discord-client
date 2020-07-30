@@ -25,8 +25,9 @@ namespace Injhinuity.Client.Core.Configuration
             var version = new VersionConfig(options.Version.VersionNo);
             var logging = new LoggingConfig(options.Logging.LogLevel.Value);
             var discord = new DiscordConfig(options.Discord.Token, options.Discord.Prefix.Value);
+            var api = new ApiConfig(options.Api.BaseUrl);
 
-            return new ClientConfig(version, logging, discord);
+            return new ClientConfig(version, logging, discord, api);
         }
     }
 }

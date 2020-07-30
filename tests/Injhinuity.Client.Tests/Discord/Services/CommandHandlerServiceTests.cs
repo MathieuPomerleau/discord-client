@@ -8,7 +8,7 @@ using FluentAssertions;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord.Channel;
+using Injhinuity.Client.Discord.Managers;
 using Injhinuity.Client.Discord.Services;
 using NSubstitute;
 using Xunit;
@@ -25,6 +25,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         private readonly IClientConfig _clientConfig;
         private readonly IAssemblyProvider _assemblyProvider;
         private readonly IChannelManager _channelManager;
+        private readonly ICustomCommandHandlerService _customCommandHandler;
 
         public CommandHandlerServiceTests()
         {
@@ -34,8 +35,9 @@ namespace Injhinuity.Client.Tests.Discord.Services
             _clientConfig = Substitute.For<IClientConfig>();
             _assemblyProvider = Substitute.For<IAssemblyProvider>();
             _channelManager = Substitute.For<IChannelManager>();
+            _customCommandHandler = Substitute.For<ICustomCommandHandlerService>();
 
-            _subject = new CommandHandlerService(_provider, _discordClient, _commandService, _clientConfig, _assemblyProvider, _channelManager);
+            _subject = new CommandHandlerService(_provider, _discordClient, _commandService, _clientConfig, _assemblyProvider, _channelManager, _customCommandHandler);
         }
 
         [Fact]

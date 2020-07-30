@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Configuration.Options;
@@ -18,6 +19,7 @@ namespace Injhinuity.Client
 
             ConfigureConfiguration(services);
             ConfigureLogging(services);
+            ConfigureHttpClient(services);
             Register(services);
 
             using var provider = services.BuildServiceProvider();
@@ -46,6 +48,16 @@ namespace Injhinuity.Client
                 .Configure<LoggerFilterOptions>(opt => {
                     opt.MinLevel = provider.GetRequiredService<IClientConfig>().Logging.LogLevel;
                 });
+        }
+
+        private static void ConfigureHttpClient(IServiceCollection services)
+        {
+            var provider = services.BuildServiceProvider();
+
+            services.AddHttpClient("injhinuity", http =>
+            {
+                http.BaseAddress = new Uri(provider.GetRequiredService<IClientConfig>().Api.BaseUrl);
+            });
         }
 
         private static void Register(IServiceCollection services)
