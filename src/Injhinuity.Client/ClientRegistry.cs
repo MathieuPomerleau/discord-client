@@ -8,6 +8,7 @@ using Injhinuity.Client.Services.Requesters;
 using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
 using Injhinuity.Client.Services.EmbedFactories;
+using Injhinuity.Client.Services.Mappers;
 
 namespace Injhinuity.Client
 {
@@ -19,6 +20,7 @@ namespace Injhinuity.Client
                 .AddSingleton<IInjhinuityClient, InjhinuityClient>()
                 .AddSingleton<IInjhinuityDiscordClient, InjhinuityDiscordClient>()
                 .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
+                .AddSingleton<IInjhinuityMapper, InjhinuityMapper>()
                 .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
