@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Discord.Managers;
@@ -25,20 +24,22 @@ namespace Injhinuity.Client.Discord.Services
         private readonly ICommandEmbedFactory _embedFactory;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly IChannelManager _channelManager;
+        private readonly ICommandExclusionService _commandExclusionService;
 
         public CustomCommandHandlerService(ICommandRequester requester, ICommandPackageFactory packageFactory, ICommandEmbedFactory embedFactory,
-            IApiReponseDeserializer deserializer, IChannelManager channelManager)
+            IApiReponseDeserializer deserializer, IChannelManager channelManager, ICommandExclusionService commandExclusionService)
         {
             _requester = requester;
             _packageFactory = packageFactory;
             _embedFactory = embedFactory;
             _deserializer = deserializer;
             _channelManager = channelManager;
+            _commandExclusionService = commandExclusionService;
         }
 
         public async Task<bool> TryHandlingCustomCommand(ICommandContext context, string message)
         {
-            if (message.Split(' ').Length > 1)
+            if (message.Split(' ').Length > 1 || _commandExclusionService.IsExcluded(message))
                 return false;
 
             var package = _packageFactory.Create(context.Guild.Id.ToString(), message);
@@ -52,9 +53,6 @@ namespace Injhinuity.Client.Discord.Services
             else
             {
                 var wrapper = await _deserializer.DeserializeAsync<ExceptionWrapper>(apiResult);
-                if (wrapper.StatusCode != HttpStatusCode.NotFound)
-                    return false;
-
                 var embed = _embedFactory.CreateCustomFailureEmbed(wrapper);
                 await _channelManager.SendEmbedMessageAsync(context, embed);
             }

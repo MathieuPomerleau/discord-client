@@ -30,7 +30,6 @@ namespace Injhinuity.Client.Tests.Discord.Services
         private readonly CommandRequestBundle _requestPackage = _fixture.Create<CommandRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-        private readonly HttpResponseMessage _badRequestMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
         private ExceptionWrapper _wrapper;
 
         private readonly ICommandRequester _requester;
@@ -39,6 +38,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         private readonly IApiReponseDeserializer _deserializer;
         private readonly IChannelManager _channelManager;
         private readonly ICommandContext _commandContext;
+        private readonly ICommandExclusionService _commandExclusionService;
 
         public CustomCommandHandlerServiceTests()
         {
@@ -48,18 +48,31 @@ namespace Injhinuity.Client.Tests.Discord.Services
             _deserializer = Substitute.For<IApiReponseDeserializer>();
             _channelManager = Substitute.For<IChannelManager>();
             _commandContext = Substitute.For<ICommandContext>();
+            _commandExclusionService = Substitute.For<ICommandExclusionService>();
 
             _packageFactory.Create(default).ReturnsForAnyArgs(_requestPackage);
             _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
             _embedFactory.CreateCustomFailureEmbed(default).ReturnsForAnyArgs(_embed);
+            _commandExclusionService.IsExcluded(default).ReturnsForAnyArgs(false);
 
-            _subject = new CustomCommandHandlerService(_requester, _packageFactory, _embedFactory, _deserializer, _channelManager);
+            _subject = new CustomCommandHandlerService(_requester, _packageFactory, _embedFactory, _deserializer, _channelManager, _commandExclusionService);
         }
 
         [Fact]
         public async Task TryHandlingCustomCommand_WhenCalledWithAMessageWithSpaces_ThenReturnsFalse()
         {
             var message = "aaa aaa";
+
+            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
+
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task TryHandlingCustomCommand_WhenCalledWithAnExcludedCommand_ThenReturnsFalse()
+        {
+            var message = "aaaa";
+            _commandExclusionService.IsExcluded(message).Returns(true);
 
             var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
 
@@ -79,7 +92,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsNotFound_ThenCallsTheChannelManagerAndReturnsTrue()
+        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndHttpStatusCodeIsntSuccess_ThenCallsTheChannelManagerAndReturnsTrue()
         {
             _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
             _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
@@ -90,19 +103,6 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
             await _channelManager.Received().SendEmbedMessageAsync(_commandContext, _embed);
             result.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndOtherErrorOccurs_ThenReturnsFalse()
-        {
-            _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.BadRequest };
-            _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
-            _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_badRequestMessage);
-            var message = "aaa";
-
-            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
-
-            result.Should().BeFalse();
         }
     }
 }

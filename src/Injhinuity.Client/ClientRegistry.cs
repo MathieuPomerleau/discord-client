@@ -21,11 +21,11 @@ namespace Injhinuity.Client
                 .AddSingleton<IInjhinuityDiscordClient, InjhinuityDiscordClient>()
                 .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
                 .AddSingleton<IInjhinuityMapper, InjhinuityMapper>()
-                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
                 .AddSingleton<IChannelManager, ChannelManager>()
                 .AddSingleton<IActivityFactory, ActivityFactory>()
+                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
                 .AddTransient<ICommandResultBuilder, CommandResultBuilder>()
                 .AddTransient<IApiGateway, ApiGateway>()
                 .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
@@ -33,7 +33,8 @@ namespace Injhinuity.Client
                 .AddTransient<ICommandRequester, CommandRequester>()
                 .AddTransient<ICommandPackageFactory, CommandPackageFactory>()
                 .AddTransient<ICommandEmbedFactory, CommandEmbedFactory>()
-                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>();
+                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>()
+                .AddTransient<ICommandExclusionService, CommandExclusionService>();
         }
     }
 }
