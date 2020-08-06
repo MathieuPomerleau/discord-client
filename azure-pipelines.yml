@@ -87,22 +87,6 @@ stages:
               echo "##vso[task.setvariable variable=patchNo]$patchNo"
             name: setMasterBuildName
 
-  - stage: branchVersionStage
-    displayName: Branch Version
-    condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
-    dependsOn: testStage
-    jobs:
-      - job: branchVersionJob
-        displayName: Branch Version job
-        variables:
-          prpatch: $[counter(variables['system.pullrequest.pullrequestid'], 0)]
-          brpatch: $[counter(variables['build.sourcebranchname'], 0)]
-        steps:
-          - bash: |
-              echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest.$(prpatch)"
-            condition: eq(variables['Build.Reason'], 'PullRequest')
-            name: SetPRBuildName
-
   - stage: dockerStage
     displayName: Dockerize
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
