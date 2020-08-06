@@ -1,13 +1,11 @@
 ﻿using Injhinuity.Client.Core.Interfaces;
 using Injhinuity.Client.Discord.Builders;
-using Injhinuity.Client.Discord.Managers;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Injhinuity.Client.Services.Requesters;
 using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
-using Injhinuity.Client.Services.EmbedFactories;
 using Injhinuity.Client.Services.Mappers;
 
 namespace Injhinuity.Client
@@ -23,7 +21,6 @@ namespace Injhinuity.Client
                 .AddSingleton<IInjhinuityMapper, InjhinuityMapper>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
-                .AddSingleton<IChannelManager, ChannelManager>()
                 .AddSingleton<IActivityFactory, ActivityFactory>()
                 .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
                 .AddTransient<ICommandResultBuilder, CommandResultBuilder>()
@@ -31,10 +28,13 @@ namespace Injhinuity.Client
                 .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
                 .AddTransient<IApiUrlProvider, ApiUrlProvider>()
                 .AddTransient<ICommandRequester, CommandRequester>()
-                .AddTransient<ICommandPackageFactory, CommandPackageFactory>()
+                .AddTransient<ICommandBundleFactory, CommandBundleFactory>()
                 .AddTransient<ICommandEmbedFactory, CommandEmbedFactory>()
                 .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>()
-                .AddTransient<ICommandExclusionService, CommandExclusionService>();
+                .AddTransient<ICommandExclusionService, CommandExclusionService>()
+                .AddTransient<IReactionEmbedBuilder, ReactionEmbedBuilder>()
+                .AddTransient<IReactionEmbedFactory, ReactionEmbedFactory>()
+                .AddTransient<IInjhinuityCommandContextFactory, InjhinuityCommandContextFactory>();
         }
     }
 }

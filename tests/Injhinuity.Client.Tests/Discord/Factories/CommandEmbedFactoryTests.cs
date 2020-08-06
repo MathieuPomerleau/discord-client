@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using Discord;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
 using Injhinuity.Client.Discord.Builders;
+using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Model.Domain;
-using Injhinuity.Client.Services.EmbedFactories;
 using NSubstitute;
 using NSubstitute.Extensions;
 using Xunit;
 
-namespace Injhinuity.Client.Tests.Services.EmbedFactories
+namespace Injhinuity.Client.Tests.Discord.Factories
 {
     public class CommandEmbedFactoryTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly ICommandEmbedFactory _subject;
 
-        private readonly string _name = _fixture.Create<string>();
-        private readonly string _body = _fixture.Create<string>();
-        private readonly ExceptionWrapper _wrapper = _fixture.Create<ExceptionWrapper>();
-        private readonly IEnumerable<Command> _commands = _fixture.CreateMany<Command>();
+        private readonly string _name = Fixture.Create<string>();
+        private readonly string _body = Fixture.Create<string>();
+        private readonly ExceptionWrapper _wrapper = Fixture.Create<ExceptionWrapper>();
+        private readonly IEnumerable<Command> _commands = Fixture.CreateMany<Command>();
 
         private readonly IInjhinuityEmbedBuilder _embedBuilder;
 
@@ -34,85 +33,71 @@ namespace Injhinuity.Client.Tests.Services.EmbedFactories
         }
 
         [Fact]
-        public void CreateCreateSuccessEmbed_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateCreateSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateCreateSuccessEmbed(_name, _body);
+            _subject.CreateCreateSuccessEmbedBuilder(_name, _body);
 
-            AssertSuccessEmbed();
+            AssertSuccessEmbedBuilder();
             _embedBuilder.Received().AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommandResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommandResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateDeleteSuccessEmbed_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateDeleteSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateDeleteSuccessEmbed(_name);
+            _subject.CreateDeleteSuccessEmbedBuilder(_name);
 
-            AssertSuccessEmbed();
+            AssertSuccessEmbedBuilder();
             _embedBuilder.Received().AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeDelete, true);
             _embedBuilder.Received().AddField(CommandResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateUpdateSuccessEmbed_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateUpdateSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateCreateSuccessEmbed(_name, _body);
+            _subject.CreateCreateSuccessEmbedBuilder(_name, _body);
 
-            AssertSuccessEmbed();
+            AssertSuccessEmbedBuilder();
             _embedBuilder.Received().AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommandResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommandResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateGetAllSuccessEmbed_WhenCalledWithCommands_ThenReturnsABuiltEmbed()
+        public void CreateGetAllSuccessEmbedBuilder_WhenCalledWithCommands_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateGetAllSuccessEmbed(_commands);
+            _subject.CreateGetAllSuccessEmbedBuilder();
 
             _embedBuilder.Received().Create();
             _embedBuilder.Received().WithTitle(CommandResources.TitlePlural);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.List);
             _embedBuilder.Received().WithColor(Color.Orange);
             _embedBuilder.Received().WithTimestamp();
-            _embedBuilder.Received(_commands.Count()).AddField(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>());
         }
 
         [Fact]
-        public void CreateGetAllSuccessEmbed_WhenCalledEmptyCommandList_ThenReturnsABuiltEmbed()
+        public void CreateFailureEmbedBuilder_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateGetAllSuccessEmbed(null);
+            _subject.CreateFailureEmbedBuilder(_wrapper);
 
-            _embedBuilder.Received().Create();
-            _embedBuilder.Received().WithTitle(CommandResources.TitlePlural);
-            _embedBuilder.Received().WithThumbnailUrl(IconResources.List);
-            _embedBuilder.Received().WithColor(Color.Orange);
-            _embedBuilder.Received().WithTimestamp();
-            _embedBuilder.Received().AddField(CommandResources.FieldTitleNoCommandsFound, CommandResources.FieldValueNoCommandsFound);
-        }
-
-        [Fact]
-        public void CreateFailureEmbed_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
-        {
-            _subject.CreateFailureEmbed(_wrapper);
-
-            AssertFailureEmbed();
+            AssertFailureEmbedBuilder();
             _embedBuilder.AddField(CommandResources.FieldTitleApiErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.AddField(CommandResources.FieldTitleReason, _wrapper.Reason);
         }
 
         [Fact]
-        public void CreateCustomFailureEmbed_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateCustomFailureEmbedBuilder_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateCustomFailureEmbed(_wrapper);
+            _subject.CreateCustomFailureEmbedBuilder(_wrapper);
 
-            AssertFailureEmbed();
+            AssertFailureEmbedBuilder();
             _embedBuilder.WithTitle(CommandResources.TitleCustom);
             _embedBuilder.AddField(CommandResources.FieldTitleApiErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.AddField(CommandResources.FieldTitleReason, _wrapper.Reason ?? CommandResources.FieldValueReasonDefault);
         }
 
-        private void AssertSuccessEmbed()
+        private void AssertSuccessEmbedBuilder()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommandResources.FieldTitleResult, CommandResources.FieldValueResultSuccess, true);
@@ -122,7 +107,7 @@ namespace Injhinuity.Client.Tests.Services.EmbedFactories
             _embedBuilder.Received().WithTimestamp();
         }
 
-        private void AssertFailureEmbed()
+        private void AssertFailureEmbedBuilder()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommandResources.FieldTitleResult, CommandResources.FieldValueResultFailure, true);

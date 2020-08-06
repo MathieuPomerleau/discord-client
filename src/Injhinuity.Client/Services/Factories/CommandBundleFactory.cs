@@ -3,14 +3,14 @@ using Injhinuity.Client.Model.Domain.Requests.Bundles;
 
 namespace Injhinuity.Client.Services.Factories
 {
-    public interface ICommandPackageFactory
+    public interface ICommandBundleFactory
     {
         CommandRequestBundle Create(string guildId);
         CommandRequestBundle Create(string guildId, string name);
         CommandRequestBundle Create(string guildId, string name, string body);
     }
 
-    public class CommandPackageFactory : ICommandPackageFactory
+    public class CommandBundleFactory : ICommandBundleFactory
     {
         public CommandRequestBundle Create(string guildId) =>
             new CommandRequestBundle(guildId);

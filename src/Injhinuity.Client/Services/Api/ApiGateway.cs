@@ -15,8 +15,8 @@ namespace Injhinuity.Client.Services.Api
 
     public class ApiGateway : IApiGateway
     {
-        private static readonly string HttpClientName = "injhinuity";
-        private static readonly string MediaType = "application/json";
+        private const string HttpClientName = "injhinuity";
+        private const string MediaType = "application/json";
         private static readonly Encoding Encoding = Encoding.UTF8;
 
         private readonly IHttpClientFactory _httpClientFactory;
@@ -26,9 +26,8 @@ namespace Injhinuity.Client.Services.Api
             _httpClientFactory = httpClientFactory;
         }
 
-        public Task<HttpResponseMessage> CallAsync(ApiAction action, IApiPayload payload)
-        {
-            return action switch
+        public Task<HttpResponseMessage> CallAsync(ApiAction action, IApiPayload payload) =>
+            action switch
             {
                 ApiAction.Delete => DeleteAsync(payload),
                 ApiAction.Get    => GetAsync(payload),
@@ -37,31 +36,18 @@ namespace Injhinuity.Client.Services.Api
                 ApiAction.Put    => PutAsync(payload),
                 _                => throw new NotImplementedException()
             };
-        }
 
-        private Task<HttpResponseMessage> DeleteAsync(IApiPayload payload)
-        {
-            var client = GetClient();
-            return client.DeleteAsync(payload.Url);
-        }
+        private Task<HttpResponseMessage> DeleteAsync(IApiPayload payload) => 
+            GetClient().DeleteAsync(payload.Url);
 
-        private Task<HttpResponseMessage> GetAsync(IApiPayload payload)
-        {
-            var client = GetClient();
-            return client.GetAsync(payload.Url);
-        }
+        private Task<HttpResponseMessage> GetAsync(IApiPayload payload) => 
+            GetClient().GetAsync(payload.Url);
 
-        private Task<HttpResponseMessage> PostAsync(IApiPayload payload)
-        {
-            var client = GetClient();
-            return client.PostAsync(payload.Url, GetHttpContent(payload));
-        }
+        private Task<HttpResponseMessage> PostAsync(IApiPayload payload) => 
+            GetClient().PostAsync(payload.Url, GetHttpContent(payload));
 
-        private Task<HttpResponseMessage> PutAsync(IApiPayload payload)
-        {
-            var client = GetClient();
-            return client.PutAsync(payload.Url, GetHttpContent(payload));
-        }
+        private Task<HttpResponseMessage> PutAsync(IApiPayload payload) =>
+            GetClient().PutAsync(payload.Url, GetHttpContent(payload));
 
         private HttpClient GetClient() =>
             _httpClientFactory.CreateClient(HttpClientName);

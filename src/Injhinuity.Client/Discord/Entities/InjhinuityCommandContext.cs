@@ -1,0 +1,39 @@
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Injhinuity.Client.Discord.Services;
+
+namespace Injhinuity.Client.Discord.Entities
+{
+    public interface IInjhinuityCommandContext
+    {
+        IGuild Guild { get; }
+        IMessageChannel Channel { get; }
+        IUserMessage Message { get; }
+        ICommandContext GetContext();
+        SocketCommandContext GetSocketContext();
+    }
+
+    public class InjhinuityCommandContext : IInjhinuityCommandContext
+    {
+        private readonly ICommandContext _context;
+
+        public IGuild Guild => GetContext().Guild;
+        public IMessageChannel Channel => GetContext().Channel;
+        public IUserMessage Message => GetContext().Message;
+
+        public InjhinuityCommandContext(ICommandContext context)
+        {
+            _context = context;
+        }
+
+        public InjhinuityCommandContext(IInjhinuityDiscordClient client, IInjhinuityUserMessage message)
+        {
+            _context = new SocketCommandContext((DiscordSocketClient)client, message.GetSocketMessage());
+        }
+
+        public ICommandContext GetContext() => _context;
+
+        public SocketCommandContext GetSocketContext() => (SocketCommandContext)_context;
+    }
+}

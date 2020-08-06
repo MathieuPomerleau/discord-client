@@ -12,10 +12,10 @@ namespace Injhinuity.Client.Tests.Services.Requesters
 {
     public class CommandRequesterTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly ICommandRequester _subject;
 
-        private readonly CommandRequestBundle _requestPackage = _fixture.Create<CommandRequestBundle>();
+        private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
 
         private readonly IApiGateway _apiGateway;
         private readonly IApiUrlProvider _apiUrlProvider;
@@ -31,9 +31,9 @@ namespace Injhinuity.Client.Tests.Services.Requesters
         [Fact]
         public async Task ExecuteAsync_WhenCalled_ThenCallsApiGatewayWithPayload()
         {
-            await _subject.ExecuteAsync(ApiAction.Get, _requestPackage);
+            await _subject.ExecuteAsync(ApiAction.Get, _requestBundle);
 
-            _apiUrlProvider.Received().GetFormattedUrl(ApiAction.Get, _requestPackage);
+            _apiUrlProvider.Received().GetFormattedUrl(ApiAction.Get, _requestBundle);
             await _apiGateway.Received().CallAsync(ApiAction.Get, Arg.Any<IApiPayload>());
         }
     }

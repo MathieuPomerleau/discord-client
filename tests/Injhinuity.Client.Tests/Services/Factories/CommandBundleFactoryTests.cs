@@ -5,18 +5,18 @@ using Xunit;
 
 namespace Injhinuity.Client.Tests.Services.Factories
 {
-    public class CommandPackageFactoryTests
+    public class CommandBundleFactoryTests
     {
-        private static readonly IFixture _fixture = new Fixture();
-        private readonly ICommandPackageFactory _subject;
+        private static readonly IFixture Fixture = new Fixture();
+        private readonly ICommandBundleFactory _subject;
 
-        private readonly string _guildId = _fixture.Create<string>();
-        private readonly string _name = _fixture.Create<string>();
-        private readonly string _body = _fixture.Create<string>();
+        private readonly string _guildId = Fixture.Create<string>();
+        private readonly string _name = Fixture.Create<string>();
+        private readonly string _body = Fixture.Create<string>();
 
-        public CommandPackageFactoryTests()
+        public CommandBundleFactoryTests()
         {
-            _subject = new CommandPackageFactory();
+            _subject = new CommandBundleFactory();
         }
 
         [Fact]

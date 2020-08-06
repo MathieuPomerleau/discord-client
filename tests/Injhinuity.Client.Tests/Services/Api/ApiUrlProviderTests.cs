@@ -12,10 +12,10 @@ namespace Injhinuity.Client.Tests.Services.Api
 {
     public class ApiUrlProviderTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly IApiUrlProvider _subject;
 
-        private readonly CommandRequestBundle _commandPackage = _fixture.Create<CommandRequestBundle>();
+        private readonly CommandRequestBundle _commandBundle = Fixture.Create<CommandRequestBundle>();
 
         public ApiUrlProviderTests()
         {
@@ -24,17 +24,17 @@ namespace Injhinuity.Client.Tests.Services.Api
 
         [Theory]
         [ClassData(typeof(TestData))]
-        public void GetFormattedUrl_WhenCalledWithAnActionAndCommandPackage_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
+        public void GetFormattedUrl_WhenCalledWithAnActionAndCommandBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
         {
-            var result = _subject.GetFormattedUrl(apiAction, _commandPackage);
+            var result = _subject.GetFormattedUrl(apiAction, _commandBundle);
 
             result.Contains(pathPart).Should().BeTrue();
         }
 
         [Fact]
-        public void GetFormattedUrl_WhenCalledWithAnInvalidActionAndCommandPackage_ThenThrowsAnException()
+        public void GetFormattedUrl_WhenCalledWithAnInvalidActionAndCommandBundle_ThenThrowsAnException()
         {
-            Func<string> act = () => _subject.GetFormattedUrl((ApiAction) 999, _commandPackage);
+            Func<string> act = () => _subject.GetFormattedUrl((ApiAction) 999, _commandBundle);
 
             act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("Specified argument was out of the range of valid values. (Parameter '999')");
         }

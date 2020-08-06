@@ -22,8 +22,5 @@
         public const string FieldValueReasonDefault = "No reason given";
 
         public const string FieldTitleApiErrorCode = "Api error code";
-
-        public const string FieldTitleNoCommandsFound = "No commands were found";
-        public const string FieldValueNoCommandsFound = "Start creating commands to find them here.";
     }
 }

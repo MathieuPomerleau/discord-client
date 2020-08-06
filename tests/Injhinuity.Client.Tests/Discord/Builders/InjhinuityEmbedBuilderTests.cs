@@ -11,15 +11,15 @@ namespace Injhinuity.Client.Tests.Discord.builders
 {
     public class InjhinuityEmbedBuilderTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly IInjhinuityEmbedBuilder _subject;
 
-        private static readonly string _title = _fixture.Create<string>();
-        private static readonly string _desc = _fixture.Create<string>();
-        private static readonly string _name = _fixture.Create<string>();
-        private static readonly string _value = _fixture.Create<string>();
+        private static readonly string _title = Fixture.Create<string>();
+        private static readonly string _desc = Fixture.Create<string>();
+        private static readonly string _name = Fixture.Create<string>();
+        private static readonly string _value = Fixture.Create<string>();
         private static readonly string _url = "https://i.imgur.com/wSTFkRM.png";
-        private static readonly Color _color = _fixture.Create<Color>();
+        private static readonly Color _color = Fixture.Create<Color>();
 
         public InjhinuityEmbedBuilderTests()
         {
@@ -30,7 +30,8 @@ namespace Injhinuity.Client.Tests.Discord.builders
         [ClassData(typeof(TestData))]
         public void Build_WhenCalledWithValues_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
         {
-            var result = _subject.WithTitle(title)
+            var result = _subject.Create()
+                .WithTitle(title)
                 .WithDescription(desc)
                 .WithThumbnailUrl(url)
                 .WithColor(color)
@@ -42,21 +43,22 @@ namespace Injhinuity.Client.Tests.Discord.builders
 
             result.Title.Should().Be(title);
             result.Description.Should().Be(desc);
-            result.Thumbnail.Value.Url.Should().Be(url);
+            result.ThumbnailUrl.Should().Be(url);
             result.Timestamp.Should().NotBeNull();
             result.Color.Should().Be(color);
 
             result.Fields.Should().NotBeEmpty();
             result.Fields[0].Name.Should().Be(name);
             result.Fields[0].Value.Should().Be(value);
-            result.Fields[0].Inline.Should().Be(true);
+            result.Fields[0].IsInline.Should().Be(true);
         }
 
         [Theory]
         [ClassData(typeof(TestData))]
         public void Build_WhenCalledWithoutTimestamp_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
         {
-            var result = _subject.WithTitle(title)
+            var result = _subject.Create()
+                .WithTitle(title)
                 .WithDescription(desc)
                 .WithThumbnailUrl(url)
                 .WithColor(color)
@@ -67,14 +69,14 @@ namespace Injhinuity.Client.Tests.Discord.builders
 
             result.Title.Should().Be(title);
             result.Description.Should().Be(desc);
-            result.Thumbnail.Value.Url.Should().Be(url);
+            result.ThumbnailUrl.Should().Be(url);
             result.Timestamp.Should().BeNull();
             result.Color.Should().Be(color);
 
             result.Fields.Should().NotBeEmpty();
             result.Fields[0].Name.Should().Be(name);
             result.Fields[0].Value.Should().Be(value);
-            result.Fields[0].Inline.Should().Be(true);
+            result.Fields[0].IsInline.Should().Be(true);
         }
 
         private class TestData : IEnumerable<object[]>

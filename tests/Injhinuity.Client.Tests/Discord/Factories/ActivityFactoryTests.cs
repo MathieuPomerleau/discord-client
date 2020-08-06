@@ -8,7 +8,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
 {
     public class ActivityFactoryTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly IActivityFactory _subject;
 
         public ActivityFactoryTests()
@@ -19,7 +19,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         [Fact]
         public void CreatePlayingStatus_WhenCalled_ReturnsTheRightTypeOfIActivity()
         {
-            var name = _fixture.Create<string>();
+            var name = Fixture.Create<string>();
 
             var result = _subject.CreatePlayingStatus(name);
 

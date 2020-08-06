@@ -15,13 +15,13 @@ namespace Injhinuity.Client.Tests.Services.Api
 {
     public class ApiResponseDeserializerTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly IApiReponseDeserializer _subject;
 
         private readonly HttpResponseMessage _httpResponseMessage = new HttpResponseMessage();
 
-        private readonly Command _command = _fixture.Create<Command>();
-        private readonly IEnumerable<Command> _commands = _fixture.CreateMany<Command>();
+        private readonly Command _command = Fixture.Create<Command>();
+        private readonly IEnumerable<Command> _commands = Fixture.CreateMany<Command>();
 
         private readonly IInjhinuityMapper _mapper;
 

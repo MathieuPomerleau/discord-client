@@ -2,11 +2,11 @@
 using Injhinuity.Client.Core.Resources;
 using Injhinuity.Client.Discord.Builders;
 
-namespace Injhinuity.Client.Services.EmbedFactories
+namespace Injhinuity.Client.Discord.Factories
 {
     public interface IInformationEmbedFactory
     {
-        Embed CreateInfoEmbed(string versionNo);
+        EmbedBuilder CreateInfoEmbedBuilder(string versionNo);
     }
 
     public class InformationEmbedFactory : IInformationEmbedFactory
@@ -18,7 +18,7 @@ namespace Injhinuity.Client.Services.EmbedFactories
             _embedBuilder = embedBuilder;
         }
 
-        public Embed CreateInfoEmbed(string versionNo) =>
+        public EmbedBuilder CreateInfoEmbedBuilder(string versionNo) =>
             _embedBuilder
                 .WithTitle(InformationResources.Title)
                 .AddField(InformationResources.FieldTitleVersion, versionNo, true)

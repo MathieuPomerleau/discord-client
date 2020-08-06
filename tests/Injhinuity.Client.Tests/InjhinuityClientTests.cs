@@ -13,13 +13,13 @@ namespace Injhinuity.Client.Tests
 {
     public class InjhinuityClientTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly IInjhinuityClient _subject;
 
-        private readonly LogMessage _logMessage = new LogMessage(LogSeverity.Info, _fixture.Create<string>(), _fixture.Create<string>());
+        private readonly LogMessage _logMessage = new LogMessage(LogSeverity.Info, Fixture.Create<string>(), Fixture.Create<string>());
         private readonly Core.Configuration.DiscordConfig _discordConfig = new Core.Configuration.DiscordConfig("token", '!');
-        private readonly Game _activity = new Game(_fixture.Create<string>());
-        private readonly string _versionNo = _fixture.Create<string>();
+        private readonly Game _activity = new Game(Fixture.Create<string>());
+        private readonly string _versionNo = Fixture.Create<string>();
 
         private readonly ILogger<InjhinuityClient> _consoleLogger;
         private readonly IClientConfig _clientConfig;
@@ -36,7 +36,6 @@ namespace Injhinuity.Client.Tests
             _commandService = Substitute.For<IInjhinuityCommandService>();
             _commandHandlerService = Substitute.For<ICommandHandlerService>();
             _activityFactory = Substitute.For<IActivityFactory>();
-
             
             _activityFactory.CreatePlayingStatus(Arg.Any<string>()).Returns(_activity);
             _clientConfig.Version.Returns(new VersionConfig(_versionNo));
@@ -55,36 +54,36 @@ namespace Injhinuity.Client.Tests
 
             _commandService.Received().Log += Arg.Any<Func<LogMessage, Task>>();
             _discordClient.Received().Log += Arg.Any<Func<LogMessage, Task>>();
-            _discordClient.Received().LoggedIn += Arg.Any<Func<Task>>();
             _discordClient.Received().Ready += Arg.Any<Func<Task>>();
+            _discordClient.Received().Disconnected += Arg.Any<Func<Exception, Task>>();
 
             await _discordClient.Received().LoginAsync(TokenType.Bot, _discordConfig.Token);
             await _discordClient.Received().StartAsync();
+            await _discordClient.Received().SetActivityAsync(_activity);
         }
 
         [Fact]
-        public async Task OnReadyAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
+        public async Task OnReadyAsync_WhenCalled_ThenCallsCommandHandlerOnReady()
         {
             await _subject.OnReadyAsync();
 
-            await _commandHandlerService.Received().InitializeAsync();
-            await _discordClient.Received().SetActivityAsync(_activity);
+            _commandHandlerService.Received().OnReady();
+        }
+
+        [Fact]
+        public async Task OnDisconnectedAsync_WhenCalled_ThenCallsCommandHandlerOnDisconnected()
+        {
+            await _subject.OnDisconnectedAsync();
+
+            _commandHandlerService.Received().OnDisconnected();
         }
 
         [Fact]
         public async Task LogAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
         {
-            await _subject.LogAsync(_logMessage);
+            await _subject.LogAsync(_logMessage, "[Discord]");
 
             _consoleLogger.Received().LogInformation($"[Discord] {_logMessage.ToString()}.");
-        }
-
-        [Fact]
-        public async Task LoggedInAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
-        {
-            await _subject.LoggedInAsync();
-
-            _consoleLogger.Received().LogInformation($"[Discord] Logged in.");
         }
     }
 }

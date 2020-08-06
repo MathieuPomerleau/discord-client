@@ -3,16 +3,16 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using Discord;
-using Discord.Commands;
 using FluentAssertions;
 using Injhinuity.Client.Core.Exceptions;
-using Injhinuity.Client.Discord.Managers;
+using Injhinuity.Client.Core.Resources;
+using Injhinuity.Client.Discord.Entities;
+using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Injhinuity.Client.Model.Domain;
 using Injhinuity.Client.Model.Domain.Requests.Bundles;
 using Injhinuity.Client.Model.Domain.Responses;
 using Injhinuity.Client.Services.Api;
-using Injhinuity.Client.Services.EmbedFactories;
 using Injhinuity.Client.Services.Factories;
 using Injhinuity.Client.Services.Requesters;
 using NSubstitute;
@@ -22,40 +22,42 @@ namespace Injhinuity.Client.Tests.Discord.Services
 {
     public class CustomCommandHandlerServiceTests
     {
-        private static readonly IFixture _fixture = new Fixture();
+        private static readonly IFixture Fixture = new Fixture();
         private readonly ICustomCommandHandlerService _subject;
 
-        private readonly Embed _embed = new EmbedBuilder().Build();
-        private readonly Command _command = _fixture.Create<Command>();
-        private readonly CommandRequestBundle _requestPackage = _fixture.Create<CommandRequestBundle>();
+        private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
+        private readonly Command _command = Fixture.Create<Command>();
+        private readonly Command _noBodyCommand = new Command { Name = "aaaa" };
+        private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-        private ExceptionWrapper _wrapper;
+        private readonly ExceptionWrapper _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
 
         private readonly ICommandRequester _requester;
-        private readonly ICommandPackageFactory _packageFactory;
+        private readonly ICommandBundleFactory _bundleFactory;
         private readonly ICommandEmbedFactory _embedFactory;
         private readonly IApiReponseDeserializer _deserializer;
-        private readonly IChannelManager _channelManager;
-        private readonly ICommandContext _commandContext;
         private readonly ICommandExclusionService _commandExclusionService;
+        private readonly IInjhinuityCommandContext _injhinuityContext;
+        private readonly IMessageChannel _channel;
 
         public CustomCommandHandlerServiceTests()
         {
             _requester = Substitute.For<ICommandRequester>();
-            _packageFactory = Substitute.For<ICommandPackageFactory>();
+            _bundleFactory = Substitute.For<ICommandBundleFactory>();
             _embedFactory = Substitute.For<ICommandEmbedFactory>();
             _deserializer = Substitute.For<IApiReponseDeserializer>();
-            _channelManager = Substitute.For<IChannelManager>();
-            _commandContext = Substitute.For<ICommandContext>();
             _commandExclusionService = Substitute.For<ICommandExclusionService>();
+            _injhinuityContext = Substitute.For<IInjhinuityCommandContext>();
+            _channel = Substitute.For<IMessageChannel>();
 
-            _packageFactory.Create(default).ReturnsForAnyArgs(_requestPackage);
+            _bundleFactory.Create(default).ReturnsForAnyArgs(_requestBundle);
             _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
-            _embedFactory.CreateCustomFailureEmbed(default).ReturnsForAnyArgs(_embed);
+            _embedFactory.CreateCustomFailureEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
+            _injhinuityContext.Channel.Returns(_channel);
             _commandExclusionService.IsExcluded(default).ReturnsForAnyArgs(false);
 
-            _subject = new CustomCommandHandlerService(_requester, _packageFactory, _embedFactory, _deserializer, _channelManager, _commandExclusionService);
+            _subject = new CustomCommandHandlerService(_requester, _bundleFactory, _embedFactory, _deserializer, _commandExclusionService);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         {
             var message = "aaa aaa";
 
-            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
+            var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
             result.Should().BeFalse();
         }
@@ -74,34 +76,47 @@ namespace Injhinuity.Client.Tests.Discord.Services
             var message = "aaaa";
             _commandExclusionService.IsExcluded(message).Returns(true);
 
-            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
+            var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
             result.Should().BeFalse();
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsFound_ThenCallsTheChannelManagerAndReturnsTrue()
+        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsFound_ThenSendAMessageToChannelAndReturnTrue()
         {
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_successMessage);
             var message = "aaa";
 
-            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
+            var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
-            await _channelManager.Received().SendMessageAsync(_commandContext, _command.Body);
+            await _channel.Received().SendMessageAsync(_command.Body);
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsFoundButWithoutABody_ThenSendDefaultMessageToChannelAndReturnTrue()
+        {
+            _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_successMessage);
+            _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_noBodyCommand);
+            var message = "aaa";
+
+            var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
+
+            await _channel.Received().SendMessageAsync(CommonResources.CommandNoBody);
             result.Should().BeTrue();
         }
 
         [Fact]
         public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndHttpStatusCodeIsntSuccess_ThenCallsTheChannelManagerAndReturnsTrue()
         {
-            _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
             _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_notFoundMessage);
             var message = "aaa";
 
-            var result = await _subject.TryHandlingCustomCommand(_commandContext, message);
+            var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
-            await _channelManager.Received().SendEmbedMessageAsync(_commandContext, _embed);
+            _embedFactory.Received().CreateCustomFailureEmbedBuilder(_wrapper);
+            await _channel.Received().SendMessageAsync(string.Empty, false, Arg.Any<Embed>());
             result.Should().BeTrue();
         }
     }

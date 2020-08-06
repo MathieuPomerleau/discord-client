@@ -9,7 +9,7 @@ namespace Injhinuity.Client.Services.Requesters
 {
     public interface ICommandRequester
     {
-        Task<HttpResponseMessage> ExecuteAsync(ApiAction action, CommandRequestBundle package);
+        Task<HttpResponseMessage> ExecuteAsync(ApiAction action, CommandRequestBundle bundle);
     }
 
     public class CommandRequester : ICommandRequester
@@ -23,10 +23,10 @@ namespace Injhinuity.Client.Services.Requesters
             _apiUrlProvider = apiUrlProvider;
         }
 
-        public Task<HttpResponseMessage> ExecuteAsync(ApiAction action, CommandRequestBundle package)
+        public Task<HttpResponseMessage> ExecuteAsync(ApiAction action, CommandRequestBundle bundle)
         {
-            var url = _apiUrlProvider.GetFormattedUrl(action, package);
-            var payload = new ApiPayload(url, package.Request);
+            var url = _apiUrlProvider.GetFormattedUrl(action, bundle);
+            var payload = new ApiPayload(url, bundle.Request);
             return _apiGateway.CallAsync(action, payload);
         }
     }

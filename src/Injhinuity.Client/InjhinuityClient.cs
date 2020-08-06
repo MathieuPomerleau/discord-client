@@ -12,8 +12,8 @@ namespace Injhinuity.Client
     {
         Task RunAsync(bool shouldBlock = true);
         Task OnReadyAsync();
-        Task LogAsync(LogMessage logMessage);
-        Task LoggedInAsync();
+        Task OnDisconnectedAsync();
+        Task LogAsync(LogMessage logMessage, string tag);
     }
 
     public class InjhinuityClient : IInjhinuityClient
@@ -47,31 +47,34 @@ namespace Injhinuity.Client
 
         private async Task RegisterClientAsync()
         {
-            _commandService.Log += LogAsync;
+            _commandService.Log += (message) => LogAsync(message, "[Command Service]");
+            _discordClient.Log += (message) => LogAsync(message, "[Discord]"); ;
 
-            _discordClient.Log += LogAsync;
-            _discordClient.LoggedIn += LoggedInAsync;
             _discordClient.Ready += OnReadyAsync;
+            _discordClient.Disconnected += _ => OnDisconnectedAsync();
 
+            await _commandHandlerService.InitializeAsync();
             await _discordClient.LoginAsync(TokenType.Bot, _clientConfig.Discord.Token);
             await _discordClient.StartAsync();
-        }
-
-        public async Task OnReadyAsync()
-        {
-            await _commandHandlerService.InitializeAsync();
+            
             await _discordClient.SetActivityAsync(_activityFactory.CreatePlayingStatus($"version {_clientConfig.Version.VersionNo}"));
         }
 
-        public Task LogAsync(LogMessage logMessage)
+        public Task OnReadyAsync()
         {
-            _logger.LogInformation($"[Discord] {logMessage.ToString()}.");
+            _commandHandlerService.OnReady();
             return Task.CompletedTask;
         }
 
-        public Task LoggedInAsync()
+        public Task OnDisconnectedAsync()
         {
-            _logger.LogInformation($"[Discord] Logged in.");
+            _commandHandlerService.OnDisconnected();
+            return Task.CompletedTask;
+        }
+
+        public Task LogAsync(LogMessage logMessage, string tag)
+        {
+            _logger.LogInformation($"{tag} {logMessage.ToString()}.");
             return Task.CompletedTask;
         }
     }

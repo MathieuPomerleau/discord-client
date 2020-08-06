@@ -23,13 +23,9 @@ namespace Injhinuity.Client.Services.Api
             _mapper = mapper;
         }
 
-        public async Task<T> DeserializeAsync<T>(HttpResponseMessage message)
-        {
-            var deserialized = JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync())
+        public async Task<T> DeserializeAsync<T>(HttpResponseMessage message) =>
+            JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync())
                 ?? throw new InjhinuityException("Deserialized result is null.");
-
-            return deserialized;
-        }
 
         public async Task<K?> DeserializeAndAdaptAsync<T, K>(HttpResponseMessage message) where T : class where K : class =>
             _mapper.Map<T, K>(await DeserializeAsync<T>(message));

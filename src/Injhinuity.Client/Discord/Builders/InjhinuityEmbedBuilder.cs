@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Discord;
+using Injhinuity.Client.Discord.Embeds;
 
 namespace Injhinuity.Client.Discord.Builders
 {
@@ -12,7 +13,7 @@ namespace Injhinuity.Client.Discord.Builders
         IInjhinuityEmbedBuilder WithColor(Color color);
         IInjhinuityEmbedBuilder WithTimestamp();
         IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false);
-        Embed Build();
+        EmbedBuilder Build();
     }
 
     public class InjhinuityEmbedBuilder : IInjhinuityEmbedBuilder
@@ -24,7 +25,7 @@ namespace Injhinuity.Client.Discord.Builders
         private Color? _color;
         private string? _thumbnailUrl;
         private bool _hasTimestamp = false;
-        private IList<FieldData> _fields = new List<FieldData>();
+        private IList<InjhinuityEmbedField> _fields = new List<InjhinuityEmbedField>();
 
         public IInjhinuityEmbedBuilder Create()
         {
@@ -33,7 +34,7 @@ namespace Injhinuity.Client.Discord.Builders
             _color = null;
             _thumbnailUrl = null;
             _hasTimestamp = false;
-            _fields = new List<FieldData>();
+            _fields.Clear();
             return this;
         }
 
@@ -69,11 +70,11 @@ namespace Injhinuity.Client.Discord.Builders
 
         public IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false)
         {
-            _fields.Add(new FieldData { Name = name, Value = value, Inline = inline });
+            _fields.Add(new InjhinuityEmbedField(name, value, inline));
             return this;
         }
 
-        public Embed Build()
+        public EmbedBuilder Build()
         {
             _embedBuilder = new EmbedBuilder();
 
@@ -95,14 +96,7 @@ namespace Injhinuity.Client.Discord.Builders
             foreach (var field in _fields)
                 _embedBuilder.AddField(field.Name, field.Value, field.Inline);
 
-            return _embedBuilder.Build();
-        }
-
-        private struct FieldData
-        {
-            public string Name { get; set; }
-            public object Value { get; set; }
-            public bool Inline { get; set; }
+            return _embedBuilder;
         }
     }
 }
