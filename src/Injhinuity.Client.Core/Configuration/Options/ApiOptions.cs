@@ -2,7 +2,7 @@
 {
     public class ApiOptions : INullableOption
     {
-        private const string OptionName = "Api";
+        public static string OptionName => "Api";
 
         public string? BaseUrl { get; set; }
 

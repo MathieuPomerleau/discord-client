@@ -6,6 +6,11 @@ using AutoFixture;
 using Discord;
 using FluentAssertions;
 using Injhinuity.Client.Core.Exceptions;
+using Injhinuity.Client.Core.Validation.Entities;
+using Injhinuity.Client.Core.Validation.Entities.Resources;
+using Injhinuity.Client.Core.Validation.Enums;
+using Injhinuity.Client.Core.Validation.Factories;
+using Injhinuity.Client.Core.Validation.Validators;
 using Injhinuity.Client.Discord.Builders;
 using Injhinuity.Client.Discord.Embeds;
 using Injhinuity.Client.Discord.Entities;
@@ -38,17 +43,21 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
         private readonly ExceptionWrapper _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
         private readonly InjhinuityCommandResult _commandResult = new InjhinuityCommandResult();
+        private readonly CommandResource _commandResource = Fixture.Create<CommandResource>();
 
         private readonly ICommandRequester _requester;
         private readonly ICommandBundleFactory _bundleFactory;
         private readonly ICommandResultBuilder _resultBuilder;
         private readonly ICommandEmbedFactory _embedFactory;
+        private readonly ICommandValidator _commandValidator;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IInjhinuityCommandContextFactory _commandContextFactory;
+        private readonly IValidationResourceFactory _validationResourceFactory;
         private readonly IInjhinuityCommandContext _context;
         private readonly IReactionEmbed _reactionEmbed;
         private readonly IGuild _guild;
+        private readonly IValidationResult _validationResult;
 
         public CommandModuleTests()
         {
@@ -56,30 +65,37 @@ namespace Injhinuity.Client.Tests.Modules
             _bundleFactory = Substitute.For<ICommandBundleFactory>();
             _resultBuilder = Substitute.For<ICommandResultBuilder>();
             _embedFactory = Substitute.For<ICommandEmbedFactory>();
+            _commandValidator = Substitute.For<ICommandValidator>();
             _deserializer = Substitute.For<IApiReponseDeserializer>();
             _reactionEmbedFactory = Substitute.For<IReactionEmbedFactory>();
             _commandContextFactory = Substitute.For<IInjhinuityCommandContextFactory>();
+            _validationResourceFactory = Substitute.For<IValidationResourceFactory>();
             _context = Substitute.For<IInjhinuityCommandContext>();
             _reactionEmbed = Substitute.For<IReactionEmbed>();
             _guild = Substitute.For<IGuild>();
+            _validationResult = Substitute.For<IValidationResult>();
 
             _bundleFactory.ReturnsForAll(_requestBundle);
             _resultBuilder.ReturnsForAll(_resultBuilder);
             _resultBuilder.Build().Returns(_commandResult);
             _embedFactory.ReturnsForAll(_embedBuilder);
+            _commandValidator.Validate(default).ReturnsForAnyArgs(_validationResult);
             _deserializer.DeserializeAndAdaptEnumerableAsync<CommandResponse, Command>(default).Returns(_commands);
             _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
             _reactionEmbedFactory.CreateListReactionEmbed(default, default).ReturnsForAnyArgs(_reactionEmbed);
             _commandContextFactory.Create(default).ReturnsForAnyArgs(_context);
+            _validationResourceFactory.CreateCommand(default, default).Returns(_commandResource);
             _context.Guild.Returns(_guild);
             _guild.Id.Returns(0UL);
 
-            _subject = new CommandModule(_requester, _bundleFactory, _resultBuilder, _embedFactory, _deserializer, _reactionEmbedFactory, _commandContextFactory);
+            _subject = new CommandModule(_requester, _bundleFactory, _resultBuilder, _embedFactory, _commandValidator,
+                _deserializer, _reactionEmbedFactory, _commandContextFactory, _validationResourceFactory);
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task CreateAsync_WhenCalledAndAllSuccess_ThenReturnSuccessResult()
         {
+            _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.CreateAsync(_name, _body);
@@ -98,11 +114,31 @@ namespace Injhinuity.Client.Tests.Modules
         [Fact]
         public async Task CreateAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
         {
+            _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.CreateAsync(_name, _body);
 
             _embedFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            result.Should().Be(_commandResult);
+
+            Received.InOrder(() =>
+            {
+                _resultBuilder.Create();
+                _resultBuilder.WithEmbedBuilder(_embedBuilder);
+                _resultBuilder.Build();
+            });
+        }
+
+        [Fact]
+        public async Task CreateAsync_WhenCalledAndValidationResultIsFailure_ThenReturnFailureResult()
+        {
+            _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
+            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
+
+            var result = await _subject.CreateAsync(_name, _body);
+
+            _embedFactory.Received().CreateFailureEmbedBuilder(_validationResult);
             result.Should().Be(_commandResult);
 
             Received.InOrder(() =>

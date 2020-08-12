@@ -2,7 +2,7 @@
 {
     public class DiscordOptions : INullableOption
     {
-        private const string OptionName = "Discord";
+        public static string OptionName => "Discord";
 
         public string? Token { get; set; }
         public char? Prefix { get; set; }

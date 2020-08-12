@@ -21,6 +21,6 @@
         public const string FieldTitleReason = "Reason";
         public const string FieldValueReasonDefault = "No reason given";
 
-        public const string FieldTitleApiErrorCode = "Api error code";
+        public const string FieldTitleErrorCode = "Error code";
     }
 }

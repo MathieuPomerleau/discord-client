@@ -26,8 +26,15 @@ namespace Injhinuity.Client.Core.Configuration
             var logging = new LoggingConfig(options.Logging.LogLevel.Value);
             var discord = new DiscordConfig(options.Discord.Token, options.Discord.Prefix.Value);
             var api = new ApiConfig(options.Api.BaseUrl);
+            var validation = MapValidationConfig(options.Validation);
 
-            return new ClientConfig(version, logging, discord, api);
+            return new ClientConfig(version, logging, discord, api, validation);
+        }
+
+        private ValidationConfig MapValidationConfig(ValidationOptions options)
+        {
+            var commandValidation = new CommandValidationConfig(options.Command.CommandNameMaxLength.Value, options.Command.CommandBodyMaxLength.Value);
+            return new ValidationConfig(commandValidation);
         }
     }
 }

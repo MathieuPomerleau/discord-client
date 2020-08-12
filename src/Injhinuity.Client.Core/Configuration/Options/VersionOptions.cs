@@ -2,7 +2,7 @@
 {
     public class VersionOptions : INullableOption
     {
-        private const string OptionName = "Version";
+        public static string OptionName => "Version";
 
         public string? VersionNo { get; set; }
 

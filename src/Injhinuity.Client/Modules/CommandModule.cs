@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Injhinuity.Client.Core.Exceptions;
+using Injhinuity.Client.Core.Validation.Enums;
+using Injhinuity.Client.Core.Validation.Factories;
+using Injhinuity.Client.Core.Validation.Validators;
 using Injhinuity.Client.Discord.Builders;
 using Injhinuity.Client.Discord.Embeds;
 using Injhinuity.Client.Discord.Entities;
@@ -25,36 +28,49 @@ namespace Injhinuity.Client.Modules
         private readonly ICommandBundleFactory _bundleFactory;
         private readonly ICommandResultBuilder _resultBuilder;
         private readonly ICommandEmbedFactory _embedFactory;
+        private readonly ICommandValidator _commandValidator;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IInjhinuityCommandContextFactory _commandContextFactory;
+        private readonly IValidationResourceFactory _validationResourceFactory;
 
         private IInjhinuityCommandContext CommandContext => _commandContextFactory.Create(Context);
 
         public CommandModule(ICommandRequester requester, ICommandBundleFactory bundleFactory, ICommandResultBuilder resultBuilder,
-            ICommandEmbedFactory embedFactory, IApiReponseDeserializer deserializer, IReactionEmbedFactory reactionEmbedFactory,
-            IInjhinuityCommandContextFactory commandContextFactory)
+            ICommandEmbedFactory embedFactory, ICommandValidator commandValidator, IApiReponseDeserializer deserializer, IReactionEmbedFactory reactionEmbedFactory,
+            IInjhinuityCommandContextFactory commandContextFactory, IValidationResourceFactory validationResourceFactory)
         {
             _requester = requester;
             _bundleFactory = bundleFactory;
             _resultBuilder = resultBuilder;
             _embedFactory = embedFactory;
+            _commandValidator = commandValidator;
             _deserializer = deserializer;
             _reactionEmbedFactory = reactionEmbedFactory;
             _commandContextFactory = commandContextFactory;
+            _validationResourceFactory = validationResourceFactory;
         }
 
         [Command("create command")]
         public async Task<RuntimeResult> CreateAsync(string name, [Remainder] string body)
         {
+            var resource = _validationResourceFactory.CreateCommand(name, body);
+            var validationResult = _commandValidator.Validate(resource);
+
+            if (validationResult.ValidationCode != ValidationCode.Ok)
+            {
+                var validationEmbedBuilder = _embedFactory.CreateFailureEmbedBuilder(validationResult);
+                return EmbedResult(validationEmbedBuilder);
+            }
+
             var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name, body);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Post, bundle);
 
-            var embed = apiResult.IsSuccessStatusCode
+            var embedBuilder = apiResult.IsSuccessStatusCode
                 ? _embedFactory.CreateCreateSuccessEmbedBuilder(name, body)
                 : _embedFactory.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
 
-            return EmbedResult(embed);
+            return EmbedResult(embedBuilder);
         }
 
         [Command("delete command")]
@@ -63,11 +79,11 @@ namespace Injhinuity.Client.Modules
             var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Delete, bundle);
 
-            var embed = apiResult.IsSuccessStatusCode
+            var embedBuilder = apiResult.IsSuccessStatusCode
                 ? _embedFactory.CreateDeleteSuccessEmbedBuilder(name)
                 : _embedFactory.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
 
-            return EmbedResult(embed);
+            return EmbedResult(embedBuilder);
         }
 
         [Command("update command")]
@@ -76,11 +92,11 @@ namespace Injhinuity.Client.Modules
             var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name, body);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Put, bundle);
 
-            var embed = apiResult.IsSuccessStatusCode
+            var embedBuilder = apiResult.IsSuccessStatusCode
                 ? _embedFactory.CreateUpdateSuccessEmbedBuilder(name, body)
                 : _embedFactory.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
 
-            return EmbedResult(embed);
+            return EmbedResult(embedBuilder);
         }
 
         [Command("get commands")]
@@ -101,8 +117,8 @@ namespace Injhinuity.Client.Modules
             }
             else
             {
-                var embed = _embedFactory.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
-                return EmbedResult(embed);
+                var embedBuilder = _embedFactory.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                return EmbedResult(embedBuilder);
             }
         }
 

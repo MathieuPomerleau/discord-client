@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using AutoFixture;
+﻿using AutoFixture;
 using Discord;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
+using Injhinuity.Client.Core.Validation.Entities;
 using Injhinuity.Client.Discord.Builders;
 using Injhinuity.Client.Discord.Factories;
-using Injhinuity.Client.Model.Domain;
 using NSubstitute;
 using NSubstitute.Extensions;
 using Xunit;
@@ -20,7 +19,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         private readonly string _name = Fixture.Create<string>();
         private readonly string _body = Fixture.Create<string>();
         private readonly ExceptionWrapper _wrapper = Fixture.Create<ExceptionWrapper>();
-        private readonly IEnumerable<Command> _commands = Fixture.CreateMany<Command>();
+        private readonly IValidationResult _validationResult = new ValidationResult(Core.Validation.Enums.ValidationCode.ValidationError, "message");
 
         private readonly IInjhinuityEmbedBuilder _embedBuilder;
 
@@ -77,23 +76,33 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         }
 
         [Fact]
-        public void CreateFailureEmbedBuilder_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateFailureEmbedBuilder_WhenCalledWithAnExceptionWrapper_ThenReturnsABuiltEmbed()
         {
             _subject.CreateFailureEmbedBuilder(_wrapper);
 
             AssertFailureEmbedBuilder();
-            _embedBuilder.AddField(CommandResources.FieldTitleApiErrorCode, _wrapper.StatusCode, true);
+            _embedBuilder.AddField(CommandResources.FieldTitleErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.AddField(CommandResources.FieldTitleReason, _wrapper.Reason);
         }
 
         [Fact]
-        public void CreateCustomFailureEmbedBuilder_WhenCalled_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateFailureEmbedBuilder_WhenCalledWithAValidationResult_ThenReturnsABuiltEmbed()
+        {
+            _subject.CreateFailureEmbedBuilder(_validationResult);
+
+            AssertFailureEmbedBuilder();
+            _embedBuilder.AddField(CommandResources.FieldTitleErrorCode, _validationResult.ValidationCode, true);
+            _embedBuilder.AddField(CommandResources.FieldTitleReason, _validationResult.Message);
+        }
+
+        [Fact]
+        public void CreateCustomFailureEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
         {
             _subject.CreateCustomFailureEmbedBuilder(_wrapper);
 
             AssertFailureEmbedBuilder();
             _embedBuilder.WithTitle(CommandResources.TitleCustom);
-            _embedBuilder.AddField(CommandResources.FieldTitleApiErrorCode, _wrapper.StatusCode, true);
+            _embedBuilder.AddField(CommandResources.FieldTitleErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.AddField(CommandResources.FieldTitleReason, _wrapper.Reason ?? CommandResources.FieldValueReasonDefault);
         }
 

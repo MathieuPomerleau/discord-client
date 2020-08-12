@@ -16,7 +16,15 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
                 Discord = new DiscordOptions { Token = "token", Prefix = '!' },
                 Logging = new LoggingOptions { LogLevel = LogLevel.Information },
                 Version = new VersionOptions { VersionNo = "0" },
-                Api = new ApiOptions { BaseUrl = "url" }
+                Api = new ApiOptions { BaseUrl = "url" },
+                Validation = new ValidationOptions
+                {
+                    Command = new CommandValidationOptions
+                    {
+                        CommandBodyMaxLength = 0,
+                        CommandNameMaxLength = 0
+                    }
+                }
             };
         }
 

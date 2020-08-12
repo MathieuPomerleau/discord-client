@@ -14,27 +14,33 @@ namespace Injhinuity.Client
     {
         public void Register(IServiceCollection services)
         {
-            services
+            // Base services
+            services.AddSingleton<IInjhinuityMapper, InjhinuityMapper>()
                 .AddSingleton<IInjhinuityClient, InjhinuityClient>()
                 .AddSingleton<IInjhinuityDiscordClient, InjhinuityDiscordClient>()
                 .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
-                .AddSingleton<IInjhinuityMapper, InjhinuityMapper>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
-                .AddSingleton<IActivityFactory, ActivityFactory>()
-                .AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
-                .AddTransient<ICommandResultBuilder, CommandResultBuilder>()
-                .AddTransient<IApiGateway, ApiGateway>()
+                .AddTransient<ICommandExclusionService, CommandExclusionService>();
+
+            // Api services
+            services.AddTransient<IApiGateway, ApiGateway>()
                 .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
                 .AddTransient<IApiUrlProvider, ApiUrlProvider>()
-                .AddTransient<ICommandRequester, CommandRequester>()
+                .AddTransient<ICommandRequester, CommandRequester>();
+
+            // Builders
+            services.AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
+                .AddTransient<IReactionEmbedBuilder, ReactionEmbedBuilder>()
+                .AddTransient<ICommandResultBuilder, CommandResultBuilder>();
+
+            // Factories
+            services.AddTransient<IActivityFactory, ActivityFactory>()
+                .AddTransient<IReactionEmbedFactory, ReactionEmbedFactory>()
+                .AddTransient<IInjhinuityCommandContextFactory, InjhinuityCommandContextFactory>()
                 .AddTransient<ICommandBundleFactory, CommandBundleFactory>()
                 .AddTransient<ICommandEmbedFactory, CommandEmbedFactory>()
-                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>()
-                .AddTransient<ICommandExclusionService, CommandExclusionService>()
-                .AddTransient<IReactionEmbedBuilder, ReactionEmbedBuilder>()
-                .AddTransient<IReactionEmbedFactory, ReactionEmbedFactory>()
-                .AddTransient<IInjhinuityCommandContextFactory, InjhinuityCommandContextFactory>();
+                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>();
         }
     }
 }

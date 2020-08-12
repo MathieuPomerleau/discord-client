@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
+using Injhinuity.Client.Core.Validation.Entities;
 using Injhinuity.Client.Discord.Builders;
 
 namespace Injhinuity.Client.Discord.Factories
@@ -12,6 +13,7 @@ namespace Injhinuity.Client.Discord.Factories
         EmbedBuilder CreateUpdateSuccessEmbedBuilder(string name, string body);
         EmbedBuilder CreateGetAllSuccessEmbedBuilder();
         EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper);
+        EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result);
         EmbedBuilder CreateCustomFailureEmbedBuilder(ExceptionWrapper wrapper);
     }
 
@@ -55,16 +57,16 @@ namespace Injhinuity.Client.Discord.Factories
         }
 
         public EmbedBuilder CreateCustomFailureEmbedBuilder(ExceptionWrapper wrapper) =>
-            CreateBaseFailureEmbed()
+            CreateBaseFailureEmbed(wrapper.Reason, wrapper.StatusCode)
                 .WithTitle(CommandResources.TitleCustom)
-                .AddField(CommandResources.FieldTitleApiErrorCode, wrapper.StatusCode, true)
-                .AddField(CommandResources.FieldTitleReason, wrapper.Reason ?? CommandResources.FieldValueReasonDefault)
                 .Build();
 
         public EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper) =>
-            CreateBaseFailureEmbed()
-                .AddField(CommandResources.FieldTitleApiErrorCode, wrapper.StatusCode, true)
-                .AddField(CommandResources.FieldTitleReason, wrapper.Reason ?? CommandResources.FieldValueReasonDefault)
+            CreateBaseFailureEmbed(wrapper.Reason, wrapper.StatusCode)
+                .Build();
+
+        public EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result) =>
+            CreateBaseFailureEmbed(result.Message, result.ValidationCode)
                 .Build();
 
         private IInjhinuityEmbedBuilder CreateBaseSuccessEmbed() =>
@@ -75,10 +77,12 @@ namespace Injhinuity.Client.Discord.Factories
                 .WithColor(Color.Green)
                 .WithTimestamp();
 
-        private IInjhinuityEmbedBuilder CreateBaseFailureEmbed() =>
+        private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string? message, object errorCode) =>
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
                 .AddField(CommandResources.FieldTitleResult, CommandResources.FieldValueResultFailure, true)
+                .AddField(CommandResources.FieldTitleErrorCode, errorCode, true)
+                .AddField(CommandResources.FieldTitleReason, message ?? CommandResources.FieldValueReasonDefault)
                 .WithThumbnailUrl(IconResources.Crossmark)
                 .WithColor(Color.Red)
                 .WithTimestamp();

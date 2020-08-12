@@ -4,7 +4,7 @@ namespace Injhinuity.Client.Core.Configuration.Options
 {
     public class LoggingOptions : INullableOption
     {
-        private const string OptionName = "Logging";
+        public static string OptionName => "Logging";
 
         public LogLevel? LogLevel { get; set; }
 

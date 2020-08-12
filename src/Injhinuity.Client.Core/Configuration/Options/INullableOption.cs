@@ -2,6 +2,7 @@
 {
     public interface INullableOption
     {
+        static string OptionName { get; }
         void ContainsNull(NullableOptionsResult result);
     }
 }
