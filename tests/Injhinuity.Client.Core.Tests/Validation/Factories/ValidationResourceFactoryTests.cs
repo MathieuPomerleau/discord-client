@@ -15,11 +15,19 @@ namespace Injhinuity.Client.Core.Tests.Validation.Factories
         }
 
         [Fact]
-        public void FromCommand_WhenCalledWithValues_ThenBuildsItsResourceProperly()
+        public void CreateCommand_WhenCalledWithValues_ThenBuildsItsResourceProperly()
         {
             var result = _subject.CreateCommand("name", "body");
 
             result.Should().BeOfType<CommandResource>();
+        }
+
+        [Fact]
+        public void CreateRole_WhenCalledWithValues_ThenBuildsItsResourceProperly()
+        {
+            var result = _subject.CreateCommand("name", "body");
+
+            result.Should().BeOfType<RoleResource>();
         }
     }
 }

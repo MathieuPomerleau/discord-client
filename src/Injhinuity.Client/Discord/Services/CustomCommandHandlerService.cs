@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
+using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
-using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Enums;
 using Injhinuity.Client.Extensions;
 using Injhinuity.Client.Model.Domain;
@@ -22,16 +22,16 @@ namespace Injhinuity.Client.Discord.Services
     {
         private readonly ICommandRequester _requester;
         private readonly ICommandBundleFactory _bundleFactory;
-        private readonly ICommandEmbedFactory _embedFactory;
+        private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly ICommandExclusionService _commandExclusionService;
 
-        public CustomCommandHandlerService(ICommandRequester requester, ICommandBundleFactory bundleFactory, ICommandEmbedFactory embedFactory,
+        public CustomCommandHandlerService(ICommandRequester requester, ICommandBundleFactory bundleFactory, IEmbedBuilderFactoryProvider embedBuilderFactoryProvider,
             IApiReponseDeserializer deserializer, ICommandExclusionService commandExclusionService)
         {
             _requester = requester;
             _bundleFactory = bundleFactory;
-            _embedFactory = embedFactory;
+            _embedBuilderFactoryProvider = embedBuilderFactoryProvider;
             _deserializer = deserializer;
             _commandExclusionService = commandExclusionService;
         }
@@ -52,7 +52,7 @@ namespace Injhinuity.Client.Discord.Services
             else
             {
                 var wrapper = await _deserializer.DeserializeAsync<ExceptionWrapper>(apiResult);
-                var embedBuilder = _embedFactory.CreateCustomFailureEmbedBuilder(wrapper);
+                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateCustomFailureEmbedBuilder(wrapper);
                 await context.Channel.SendEmbedMessageAsync(embedBuilder);
             }
 

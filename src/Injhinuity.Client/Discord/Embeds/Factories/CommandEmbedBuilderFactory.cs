@@ -4,9 +4,9 @@ using Injhinuity.Client.Core.Resources;
 using Injhinuity.Client.Core.Validation.Entities;
 using Injhinuity.Client.Discord.Builders;
 
-namespace Injhinuity.Client.Discord.Factories
+namespace Injhinuity.Client.Discord.Embeds.Factories
 {
-    public interface ICommandEmbedFactory
+    public interface ICommandEmbedBuilderFactory
     {
         EmbedBuilder CreateCreateSuccessEmbedBuilder(string name, string body);
         EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name);
@@ -17,33 +17,33 @@ namespace Injhinuity.Client.Discord.Factories
         EmbedBuilder CreateCustomFailureEmbedBuilder(ExceptionWrapper wrapper);
     }
 
-    public class CommandEmbedFactory : ICommandEmbedFactory
+    public class CommandEmbedBuilderFactory : ICommandEmbedBuilderFactory
     {
         private readonly IInjhinuityEmbedBuilder _embedBuilder;
 
-        public CommandEmbedFactory(IInjhinuityEmbedBuilder embedBuilder)
+        public CommandEmbedBuilderFactory(IInjhinuityEmbedBuilder embedBuilder)
         {
             _embedBuilder = embedBuilder;
         }
 
         public EmbedBuilder CreateCreateSuccessEmbedBuilder(string name, string body) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeCreate, true)
-                .AddField(CommandResources.FieldTitleName, name)
-                .AddField(CommandResources.FieldTitleContent, body, true)
+                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true)
+                .AddField(CommonResources.FieldTitleName, name)
+                .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
 
         public EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeDelete, true)
-                .AddField(CommandResources.FieldTitleName, name)
+                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true)
+                .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
         public EmbedBuilder CreateUpdateSuccessEmbedBuilder(string name, string body) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommandResources.FieldTitleType, CommandResources.FieldValueTypeUpdate, true)
-                .AddField(CommandResources.FieldTitleName, name)
-                .AddField(CommandResources.FieldTitleContent, body, true)
+                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeUpdate, true)
+                .AddField(CommonResources.FieldTitleName, name)
+                .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
 
         public EmbedBuilder CreateGetAllSuccessEmbedBuilder()
@@ -72,7 +72,7 @@ namespace Injhinuity.Client.Discord.Factories
         private IInjhinuityEmbedBuilder CreateBaseSuccessEmbed() =>
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
-                .AddField(CommandResources.FieldTitleResult, CommandResources.FieldValueResultSuccess, true)
+                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true)
                 .WithThumbnailUrl(IconResources.Checkmark)
                 .WithColor(Color.Green)
                 .WithTimestamp();
@@ -80,9 +80,9 @@ namespace Injhinuity.Client.Discord.Factories
         private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string? message, object errorCode) =>
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
-                .AddField(CommandResources.FieldTitleResult, CommandResources.FieldValueResultFailure, true)
-                .AddField(CommandResources.FieldTitleErrorCode, errorCode, true)
-                .AddField(CommandResources.FieldTitleReason, message ?? CommandResources.FieldValueReasonDefault)
+                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true)
+                .AddField(CommonResources.FieldTitleErrorCode, errorCode, true)
+                .AddField(CommonResources.FieldTitleReason, message ?? CommonResources.FieldValueReasonDefault)
                 .WithThumbnailUrl(IconResources.Crossmark)
                 .WithColor(Color.Red)
                 .WithTimestamp();

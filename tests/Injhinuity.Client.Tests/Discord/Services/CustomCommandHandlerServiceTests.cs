@@ -6,6 +6,7 @@ using Discord;
 using FluentAssertions;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
+using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
@@ -35,7 +36,8 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
         private readonly ICommandRequester _requester;
         private readonly ICommandBundleFactory _bundleFactory;
-        private readonly ICommandEmbedFactory _embedFactory;
+        private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
+        private readonly ICommandEmbedBuilderFactory _embedBuilderFactory;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly ICommandExclusionService _commandExclusionService;
         private readonly IInjhinuityCommandContext _injhinuityContext;
@@ -45,7 +47,8 @@ namespace Injhinuity.Client.Tests.Discord.Services
         {
             _requester = Substitute.For<ICommandRequester>();
             _bundleFactory = Substitute.For<ICommandBundleFactory>();
-            _embedFactory = Substitute.For<ICommandEmbedFactory>();
+            _embedBuilderFactoryProvider = Substitute.For<IEmbedBuilderFactoryProvider>();
+            _embedBuilderFactory = Substitute.For<ICommandEmbedBuilderFactory>();
             _deserializer = Substitute.For<IApiReponseDeserializer>();
             _commandExclusionService = Substitute.For<ICommandExclusionService>();
             _injhinuityContext = Substitute.For<IInjhinuityCommandContext>();
@@ -53,11 +56,12 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
             _bundleFactory.Create(default).ReturnsForAnyArgs(_requestBundle);
             _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
-            _embedFactory.CreateCustomFailureEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
+            _embedBuilderFactoryProvider.Command.Returns(_embedBuilderFactory);
+            _embedBuilderFactory.CreateCustomFailureEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
             _injhinuityContext.Channel.Returns(_channel);
             _commandExclusionService.IsExcluded(default).ReturnsForAnyArgs(false);
 
-            _subject = new CustomCommandHandlerService(_requester, _bundleFactory, _embedFactory, _deserializer, _commandExclusionService);
+            _subject = new CustomCommandHandlerService(_requester, _bundleFactory, _embedBuilderFactoryProvider, _deserializer, _commandExclusionService);
         }
 
         [Fact]
@@ -115,7 +119,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
             var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
-            _embedFactory.Received().CreateCustomFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateCustomFailureEmbedBuilder(_wrapper);
             await _channel.Received().SendMessageAsync(string.Empty, false, Arg.Any<Embed>());
             result.Should().BeTrue();
         }

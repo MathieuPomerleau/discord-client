@@ -35,6 +35,6 @@ namespace Injhinuity.Client.Core.Validation.Validators.SubValidators
             string.IsNullOrEmpty(resource.Body);
 
         private bool IsLengthInvalid(IBodyResource resource) =>
-            resource.Body.Length > _maximumLength;
+            resource.Body!.Length > _maximumLength;
     }
 }

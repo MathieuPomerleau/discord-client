@@ -5,12 +5,16 @@ namespace Injhinuity.Client.Core.Validation.Factories
 {
     public interface IValidationResourceFactory
     {
-        public IValidationResource CreateCommand(string name, string body);
+        IValidationResource CreateCommand(string? name, string? body);
+        IValidationResource CreateRole(string? name);
     }
 
     public class ValidationResourceFactory : IValidationResourceFactory
     {
-        public IValidationResource CreateCommand(string name, string body) =>
+        public IValidationResource CreateCommand(string? name, string? body) =>
             new CommandResource(name, body);
+
+        public IValidationResource CreateRole(string? name) =>
+            new RoleResource(name);
     }
 }

@@ -2,15 +2,13 @@
 
 namespace Injhinuity.Client.Core.Validation.Entities.Resources
 {
-    public class CommandResource : IValidationResource, INameResource, IBodyResource
+    public class RoleResource : IValidationResource, INameResource
     {
         public string? Name { get; set; }
-        public string? Body { get; set; }
-
-        public CommandResource(string? name, string? body)
+        
+        public RoleResource(string? name)
         {
             Name = name;
-            Body = body;
         }
     }
 }

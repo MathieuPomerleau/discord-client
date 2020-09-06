@@ -2,6 +2,6 @@
 {
     public interface IBodyResource
     {
-        string Body { get; }
+        string? Body { get; }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface INameResource
     {
-        string Name { get; }
+        string? Name { get; }
     }
 }

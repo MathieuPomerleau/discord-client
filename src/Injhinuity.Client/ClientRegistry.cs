@@ -7,6 +7,7 @@ using Injhinuity.Client.Services.Requesters;
 using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
 using Injhinuity.Client.Services.Mappers;
+using Injhinuity.Client.Discord.Embeds.Factories;
 
 namespace Injhinuity.Client
 {
@@ -27,7 +28,8 @@ namespace Injhinuity.Client
             services.AddTransient<IApiGateway, ApiGateway>()
                 .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
                 .AddTransient<IApiUrlProvider, ApiUrlProvider>()
-                .AddTransient<ICommandRequester, CommandRequester>();
+                .AddTransient<ICommandRequester, CommandRequester>()
+                .AddTransient<IRoleRequester, RoleRequester>();
 
             // Builders
             services.AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
@@ -39,8 +41,11 @@ namespace Injhinuity.Client
                 .AddTransient<IReactionEmbedFactory, ReactionEmbedFactory>()
                 .AddTransient<IInjhinuityCommandContextFactory, InjhinuityCommandContextFactory>()
                 .AddTransient<ICommandBundleFactory, CommandBundleFactory>()
-                .AddTransient<ICommandEmbedFactory, CommandEmbedFactory>()
-                .AddTransient<IInformationEmbedFactory, InformationEmbedFactory>();
+                .AddTransient<IRoleBundleFactory, RoleBundleFactory>()
+                .AddTransient<IEmbedBuilderFactoryProvider, EmbedBuilderFactoryProvider>()
+                .AddTransient<ICommandEmbedBuilderFactory, CommandEmbedBuilderFactory>()
+                .AddTransient<IInformationEmbedBuilderFactory, InformationEmbedBuilderFactory>()
+                .AddTransient<IRoleEmbedBuilderFactory, RoleEmbedBuilderFactory>();
         }
     }
 }

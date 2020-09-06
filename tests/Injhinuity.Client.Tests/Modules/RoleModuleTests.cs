@@ -31,28 +31,27 @@ using Xunit;
 
 namespace Injhinuity.Client.Tests.Modules
 {
-    public class CommandModuleTests
+    public class RoleModuleTests
     {
         private static readonly IFixture Fixture = new Fixture();
-        private readonly CommandModule _subject;
+        private readonly RoleModule _subject;
 
         private readonly string _name = Fixture.Create<string>();
-        private readonly string _body = Fixture.Create<string>();
         private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
-        private readonly IEnumerable<Command> _commands = Fixture.CreateMany<Command>();
-        private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
+        private readonly IEnumerable<Role> _roles = Fixture.CreateMany<Role>();
+        private readonly RoleRequestBundle _requestBundle = Fixture.Create<RoleRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
         private readonly ExceptionWrapper _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
         private readonly InjhinuityCommandResult _commandResult = new InjhinuityCommandResult();
-        private readonly CommandResource _commandResource = Fixture.Create<CommandResource>();
+        private readonly RoleResource _roleResource = Fixture.Create<RoleResource>();
 
-        private readonly ICommandRequester _requester;
-        private readonly ICommandBundleFactory _bundleFactory;
+        private readonly IRoleRequester _requester;
+        private readonly IRoleBundleFactory _bundleFactory;
         private readonly ICommandResultBuilder _resultBuilder;
         private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
-        private readonly ICommandEmbedBuilderFactory _embedBuilderFactory;
-        private readonly ICommandValidator _validator;
+        private readonly IRoleEmbedBuilderFactory _embedBuilderFactory;
+        private readonly IRoleValidator _validator;
         private readonly IApiReponseDeserializer _deserializer;
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IInjhinuityCommandContextFactory _commandContextFactory;
@@ -61,15 +60,16 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly IReactionEmbed _reactionEmbed;
         private readonly IGuild _guild;
         private readonly IValidationResult _validationResult;
+        private readonly IRole _role;
 
-        public CommandModuleTests()
+        public RoleModuleTests()
         {
-            _requester = Substitute.For<ICommandRequester>();
-            _bundleFactory = Substitute.For<ICommandBundleFactory>();
+            _requester = Substitute.For<IRoleRequester>();
+            _bundleFactory = Substitute.For<IRoleBundleFactory>();
             _resultBuilder = Substitute.For<ICommandResultBuilder>();
             _embedBuilderFactoryProvider = Substitute.For<IEmbedBuilderFactoryProvider>();
-            _embedBuilderFactory = Substitute.For<ICommandEmbedBuilderFactory>();
-            _validator = Substitute.For<ICommandValidator>();
+            _embedBuilderFactory = Substitute.For<IRoleEmbedBuilderFactory>();
+            _validator = Substitute.For<IRoleValidator>();
             _deserializer = Substitute.For<IApiReponseDeserializer>();
             _reactionEmbedFactory = Substitute.For<IReactionEmbedFactory>();
             _commandContextFactory = Substitute.For<IInjhinuityCommandContextFactory>();
@@ -78,23 +78,25 @@ namespace Injhinuity.Client.Tests.Modules
             _reactionEmbed = Substitute.For<IReactionEmbed>();
             _guild = Substitute.For<IGuild>();
             _validationResult = Substitute.For<IValidationResult>();
+            _role = Substitute.For<IRole>();
 
             _bundleFactory.ReturnsForAll(_requestBundle);
             _resultBuilder.ReturnsForAll(_resultBuilder);
             _resultBuilder.Build().Returns(_commandResult);
-            _embedBuilderFactoryProvider.Command.Returns(_embedBuilderFactory);
+            _embedBuilderFactoryProvider.Role.Returns(_embedBuilderFactory);
             _embedBuilderFactory.ReturnsForAll(_embedBuilder);
             _validator.Validate(default).ReturnsForAnyArgs(_validationResult);
-            _deserializer.DeserializeAndAdaptEnumerableAsync<CommandResponse, Command>(default).Returns(_commands);
+            _deserializer.DeserializeAndAdaptEnumerableAsync<RoleResponse, Role>(default).Returns(_roles);
             _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
             _reactionEmbedFactory.CreateListReactionEmbed(default, default).ReturnsForAnyArgs(_reactionEmbed);
             _commandContextFactory.Create(default).ReturnsForAnyArgs(_context);
-            _validationResourceFactory.CreateCommand(default, default).Returns(_commandResource);
+            _validationResourceFactory.CreateCommand(default, default).Returns(_roleResource);
             _context.Guild.Returns(_guild);
             _guild.Id.Returns(0UL);
+            _role.Name.Returns(_name);
 
-            _subject = new CommandModule(_requester, _bundleFactory, _resultBuilder, _embedBuilderFactoryProvider, _validator,
-                _deserializer, _reactionEmbedFactory, _commandContextFactory, _validationResourceFactory);
+            _subject = new RoleModule(_requester, _bundleFactory, _embedBuilderFactoryProvider, _validator,
+                _reactionEmbedFactory, _validationResourceFactory, _commandContextFactory, _deserializer, _resultBuilder);
         }
 
         [Fact]
@@ -103,9 +105,9 @@ namespace Injhinuity.Client.Tests.Modules
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
-            var result = await _subject.CreateAsync(_name, _body);
+            var result = await _subject.CreateAsync(_role);
 
-            _embedBuilderFactory.Received().CreateCreateSuccessEmbedBuilder(_name, _body);
+            _embedBuilderFactory.Received().CreateCreateSuccessEmbedBuilder(_name);
             AssertResultAndEmbedBuilder(result);
         }
 
@@ -115,7 +117,7 @@ namespace Injhinuity.Client.Tests.Modules
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
-            var result = await _subject.CreateAsync(_name, _body);
+            var result = await _subject.CreateAsync(_role);
 
             _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
             AssertResultAndEmbedBuilder(result);
@@ -127,18 +129,19 @@ namespace Injhinuity.Client.Tests.Modules
             _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
-            var result = await _subject.CreateAsync(_name, _body);
+            var result = await _subject.CreateAsync(_role);
 
             _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_validationResult);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task DeleteAsync_WhenCalledAndAllSuccess_ThenReturnSuccessResult()
         {
+            _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
-            var result = await _subject.DeleteAsync(_name);
+            var result = await _subject.DeleteAsync(_role);
 
             _embedBuilderFactory.Received().CreateDeleteSuccessEmbedBuilder(_name);
             AssertResultAndEmbedBuilder(result);
@@ -147,33 +150,24 @@ namespace Injhinuity.Client.Tests.Modules
         [Fact]
         public async Task DeleteAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
         {
+            _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
-            var result = await _subject.DeleteAsync(_name);
+            var result = await _subject.DeleteAsync(_role);
 
             _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task UpdateAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task DeleteAsync_WhenCalledAndValidationResultIsFailure_ThenReturnFailureResult()
         {
-            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
-
-            var result = await _subject.UpdateAsync(_name, _body);
-
-            _embedBuilderFactory.Received().CreateUpdateSuccessEmbedBuilder(_name, _body);
-            AssertResultAndEmbedBuilder(result);
-        }
-
-        [Fact]
-        public async Task UpdateAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
-        {
+            _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
-            var result = await _subject.UpdateAsync(_name, _body);
+            var result = await _subject.DeleteAsync(_role);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_validationResult);
             AssertResultAndEmbedBuilder(result);
         }
 
@@ -185,7 +179,7 @@ namespace Injhinuity.Client.Tests.Modules
             var result = await _subject.GetAllAsync();
 
             _embedBuilderFactory.Received().CreateGetAllSuccessEmbedBuilder();
-            AssertResultAndReactionEmbedBuilder(result);
+            AssertResultAndReactionEmbed(result);
         }
 
         [Fact]
@@ -211,7 +205,7 @@ namespace Injhinuity.Client.Tests.Modules
             });
         }
 
-        private void AssertResultAndReactionEmbedBuilder(RuntimeResult result)
+        private void AssertResultAndReactionEmbed(RuntimeResult result)
         {
             result.Should().Be(_commandResult);
 

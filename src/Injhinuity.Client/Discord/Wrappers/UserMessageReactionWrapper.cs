@@ -12,6 +12,8 @@ namespace Injhinuity.Client.Discord.Wrappers
 
     public class UserMessageReactionWrapper : IUserMessageReactionWrapper
     {
+        private const long FiveHundredMillis = 500;
+        private long _lastReactTimestamp = CurrentUnixMillis();
         private bool _disposing = false;
         private readonly IUserMessage _message;
         private readonly IInjhinuityDiscordClient _discordClient;
@@ -31,27 +33,11 @@ namespace Injhinuity.Client.Discord.Wrappers
             OnReactionRemoved += reactionRemoved;
         }
 
-        private Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel messageChannel, SocketReaction reaction)
-        {
-            if (_message.Id == message.Id)
-                OnReactionAdded?.Invoke(reaction);
-
-            return Task.CompletedTask;
-        }
-
-        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel messageChannel, SocketReaction reaction)
-        {
-            if (_message.Id == message.Id)
-                OnReactionRemoved?.Invoke(reaction);
-
-            return Task.CompletedTask;
-        }
-
         public void Dispose()
         {
-            if (_disposing) 
+            if (_disposing)
                 return;
-            
+
             _disposing = true;
 
             _discordClient.ReactionAdded -= ReactionAdded;
@@ -60,5 +46,30 @@ namespace Injhinuity.Client.Discord.Wrappers
             OnReactionAdded = null;
             OnReactionRemoved = null;
         }
+
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel messageChannel, SocketReaction reaction)
+        {
+            if (CooldownHasElasped() && _message.Id == message.Id)
+            {
+                OnReactionAdded?.Invoke(reaction);
+                _lastReactTimestamp = CurrentUnixMillis();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel messageChannel, SocketReaction reaction)
+        {
+            if (CooldownHasElasped() && _message.Id == message.Id)
+            {
+                OnReactionRemoved?.Invoke(reaction);
+                _lastReactTimestamp = CurrentUnixMillis();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private bool CooldownHasElasped() => _lastReactTimestamp + FiveHundredMillis < CurrentUnixMillis();
+        private static long CurrentUnixMillis() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 }

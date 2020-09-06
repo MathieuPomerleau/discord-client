@@ -19,6 +19,7 @@ namespace Injhinuity.Client.Core
                 .AddTransient<IValidationResourceFactory, ValidationResourceFactory>();
 
             services.AddTransient(BuildCommandValidator);
+            services.AddTransient(BuildRoleValidator);
         }
 
         private ICommandValidator BuildCommandValidator(IServiceProvider provider)
@@ -26,11 +27,22 @@ namespace Injhinuity.Client.Core
             var config = provider.GetService<IClientConfig>().Validation;
             var resultBuilder = provider.GetService<IValidationResultBuilder>();
 
-            ICommandValidator commandValidator = new CommandValidator();
-            commandValidator.AddRoot(new NameValidator(resultBuilder, config.Command.CommandNameMaxLength))
+            ICommandValidator validator = new CommandValidator();
+            validator.AddRoot(new NameValidator(resultBuilder, config.Command.CommandNameMaxLength))
                 .AddNext(new BodyValidator(resultBuilder, config.Command.CommandBodyMaxLength));
 
-            return commandValidator;
+            return validator;
+        }
+
+        private IRoleValidator BuildRoleValidator(IServiceProvider provider)
+        {
+            var config = provider.GetService<IClientConfig>().Validation;
+            var resultBuilder = provider.GetService<IValidationResultBuilder>();
+
+            IRoleValidator validator = new RoleValidator();
+            validator.AddRoot(new NameValidator(resultBuilder, config.Command.CommandNameMaxLength));
+
+            return validator;
         }
     }
 }

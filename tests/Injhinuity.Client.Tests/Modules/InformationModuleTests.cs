@@ -3,8 +3,8 @@ using Discord;
 using FluentAssertions;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Discord.Builders;
+using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
-using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Modules;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -21,21 +21,24 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
 
         private readonly ICommandResultBuilder _resultBuilder;
-        private readonly IInformationEmbedFactory _informationEmbedFactory;
+        private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
+        private readonly IInformationEmbedBuilderFactory _embedBuilderFactory;
         private readonly IClientConfig _clientConfig;
 
         public InformationModuleTests()
         {
             _resultBuilder = Substitute.For<ICommandResultBuilder>();
-            _informationEmbedFactory = Substitute.For<IInformationEmbedFactory>();
+            _embedBuilderFactoryProvider = Substitute.For<IEmbedBuilderFactoryProvider>();
+            _embedBuilderFactory = Substitute.For<IInformationEmbedBuilderFactory>();
             _clientConfig = Substitute.For<IClientConfig>();
 
             _resultBuilder.ReturnsForAll(_resultBuilder);
             _resultBuilder.Build().Returns(_commandResult);
-            _informationEmbedFactory.CreateInfoEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
+            _embedBuilderFactoryProvider.Information.Returns(_embedBuilderFactory);
+            _embedBuilderFactory.CreateInfoEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
             _clientConfig.Version.Returns(new VersionConfig(_versionNo));
 
-            _subject = new InformationModule(_resultBuilder, _informationEmbedFactory, _clientConfig);
+            _subject = new InformationModule(_resultBuilder, _embedBuilderFactoryProvider, _clientConfig);
         }
 
         [Fact]
@@ -43,7 +46,7 @@ namespace Injhinuity.Client.Tests.Modules
         {
             var result = await _subject.InfoAsync();
 
-            _informationEmbedFactory.Received().CreateInfoEmbedBuilder(_versionNo);
+            _embedBuilderFactory.Received().CreateInfoEmbedBuilder(_versionNo);
             result.Should().Be(_commandResult);
 
             Received.InOrder(() =>
