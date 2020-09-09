@@ -59,6 +59,7 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly IInjhinuityCommandContext _context;
         private readonly IReactionEmbed _reactionEmbed;
         private readonly IGuild _guild;
+        private readonly IGuildUser _guildUser;
         private readonly IValidationResult _validationResult;
         private readonly IRole _role;
 
@@ -77,6 +78,7 @@ namespace Injhinuity.Client.Tests.Modules
             _context = Substitute.For<IInjhinuityCommandContext>();
             _reactionEmbed = Substitute.For<IReactionEmbed>();
             _guild = Substitute.For<IGuild>();
+            _guildUser = Substitute.For<IGuildUser>();
             _validationResult = Substitute.For<IValidationResult>();
             _role = Substitute.For<IRole>();
 
@@ -92,6 +94,7 @@ namespace Injhinuity.Client.Tests.Modules
             _commandContextFactory.Create(default).ReturnsForAnyArgs(_context);
             _validationResourceFactory.CreateCommand(default, default).Returns(_roleResource);
             _context.Guild.Returns(_guild);
+            _context.GuildUser.Returns(_guildUser);
             _guild.Id.Returns(0UL);
             _role.Name.Returns(_name);
 
@@ -100,96 +103,153 @@ namespace Injhinuity.Client.Tests.Modules
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndAllSuccess_ThenReturnSuccessResult()
+        public async Task CreateAsync_WithAllSuccess_ThenReturnSuccessResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.CreateAsync(_role);
 
-            _embedBuilderFactory.Received().CreateCreateSuccessEmbedBuilder(_name);
+            _embedBuilderFactory.Received().CreateCreateSuccess(_name);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task CreateAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.CreateAsync(_role);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndValidationResultIsFailure_ThenReturnFailureResult()
+        public async Task CreateAsync_WithValidationResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.CreateAsync(_role);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_validationResult);
+            _embedBuilderFactory.Received().CreateFailure(_validationResult);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndAllSuccess_ThenReturnSuccessResult()
+        public async Task DeleteAsync_WithAllSuccess_ThenReturnSuccessResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.DeleteAsync(_role);
 
-            _embedBuilderFactory.Received().CreateDeleteSuccessEmbedBuilder(_name);
+            _embedBuilderFactory.Received().CreateDeleteSuccess(_name);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task DeleteAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.DeleteAsync(_role);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndValidationResultIsFailure_ThenReturnFailureResult()
+        public async Task DeleteAsync_WithValidationResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.DeleteAsync(_role);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_validationResult);
+            _embedBuilderFactory.Received().CreateFailure(_validationResult);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task GetAllAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.GetAllAsync();
 
-            _embedBuilderFactory.Received().CreateGetAllSuccessEmbedBuilder();
+            _embedBuilderFactory.Received().CreateGetAllSuccess();
             AssertResultAndReactionEmbed(result);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task GetAllAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.GetAllAsync();
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
+            AssertResultAndEmbedBuilder(result);
+        }
+
+        [Fact]
+        public async Task AssignRoleAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
+        {
+            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
+
+            var result = await _subject.AssignRoleAsync(_role);
+
+            await _guildUser.Received().AddRoleAsync(_role);
+            _embedBuilderFactory.Received().CreateAssignSuccess(_name);
+            AssertResultAndEmbedBuilder(result);
+        }
+
+        [Fact]
+        public async Task AssignRoleAsync_WithApiResultIsFailure_ThenReturnFailureResult()
+        {
+            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
+
+            var result = await _subject.AssignRoleAsync(_role);
+
+            await _guildUser.DidNotReceive().AddRoleAsync(_role);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
+            AssertResultAndEmbedBuilder(result);
+        }
+
+        [Fact]
+        public async Task UnassignRoleAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
+        {
+            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
+
+            var result = await _subject.UnassignRoleAsync(_role);
+
+            await _guildUser.Received().RemoveRoleAsync(_role);
+            _embedBuilderFactory.Received().CreateUnassignSuccess(_name);
+            AssertResultAndEmbedBuilder(result);
+        }
+
+        [Fact]
+        public async Task UnassignRoleAsync_WithApiResultIsFailure_ThenReturnFailureResult()
+        {
+            _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
+
+            var result = await _subject.UnassignRoleAsync(_role);
+
+            await _guildUser.DidNotReceive().RemoveRoleAsync(_role);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
+            AssertResultAndEmbedBuilder(result);
+        }
+
+        [Fact]
+        public async Task RoleNotFoundAsync_ThenReturnFailureResult()
+        {
+            var result = await _subject.RoleNotFoundAsync(_name);
+
+            _embedBuilderFactory.Received().CreateRoleNotFoundFailure(_name);
             AssertResultAndEmbedBuilder(result);
         }
 

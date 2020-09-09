@@ -17,7 +17,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         }
 
         [Fact]
-        public void CreatePlayingStatus_WhenCalled_ReturnsTheRightTypeOfIActivity()
+        public void CreatePlayingStatus_ThenReturnsTheRightTypeOfIActivity()
         {
             var name = Fixture.Create<string>();
 

@@ -25,7 +25,10 @@ namespace Injhinuity.Client.Modules
             _resultBuilder = resultBuilder;
         }
 
-        protected IInjhinuityCommandContext CommandContext => _commandContextFactory.Create(Context);
+        protected IInjhinuityCommandContext CustomContext => _commandContextFactory.Create(Context);
+
+        protected Task<K?> DeserializeAsync<T, K>(HttpResponseMessage apiResult) where T : class where K : class =>
+            _deserializer.DeserializeAndAdaptAsync<T, K>(apiResult);
 
         protected Task<IEnumerable<K>?> DeserializeListAsync<T, K>(HttpResponseMessage apiResult) =>
             _deserializer.DeserializeAndAdaptEnumerableAsync<T, K>(apiResult);

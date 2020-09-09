@@ -14,7 +14,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public void IsExcluded_WhenCalledWithAnExcludedCommand_ThenReturnsTrue()
+        public void IsExcluded_WithAnExcludedCommand_ThenReturnsTrue()
         {
             var command = "info";
 
@@ -24,7 +24,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public void IsExcluded_WhenCalledWithAnNonExcludedCommand_ThenReturnsFalse()
+        public void IsExcluded_WithAnNonExcludedCommand_ThenReturnsFalse()
         {
             var command = "command";
 

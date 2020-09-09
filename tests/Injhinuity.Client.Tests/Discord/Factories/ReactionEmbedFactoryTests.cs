@@ -33,7 +33,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         }
 
         [Fact]
-        public void CreateListReactionEmbed_WhenCalled_ProperlyCreatesAReactionEmbed()
+        public void CreateListReactionEmbed_ThenProperlyCreatesAReactionEmbed()
         {
             var result = _subject.CreateListReactionEmbed(_fields, _embedBuilder);
 

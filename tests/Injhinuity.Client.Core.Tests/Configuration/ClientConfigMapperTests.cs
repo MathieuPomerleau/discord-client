@@ -19,7 +19,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         }
 
         [Fact]
-        public void MapFromNullableOptions_WhenCalledWithNullClientOptions_ThenThrowAnInjhinuityException()
+        public void MapFromNullableOptions_WithNullClientOptions_ThenThrowAnInjhinuityException()
         {
             Action action = () => _subject.MapFromNullableOptions(null);
 
@@ -27,7 +27,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         }
 
         [Fact]
-        public void MapFromNullableOptions_WhenCalledWithInvalidOptions_ThenThrowAnInjhinuityException()
+        public void MapFromNullableOptions_WithInvalidOptions_ThenThrowAnInjhinuityException()
         {
             var options = CreateValidOptions();
             options.Version = new VersionOptions();
@@ -39,7 +39,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration
         }
 
         [Fact]
-        public void MapFromNullableOptions_WhenCalledWithValidOptions_ThenMapsToAConfigObject()
+        public void MapFromNullableOptions_WithValidOptions_ThenMapsToAConfigObject()
         {
             var options = CreateValidOptions();
 

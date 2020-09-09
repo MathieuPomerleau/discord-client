@@ -57,7 +57,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
             _bundleFactory.Create(default).ReturnsForAnyArgs(_requestBundle);
             _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
             _embedBuilderFactoryProvider.Command.Returns(_embedBuilderFactory);
-            _embedBuilderFactory.CreateCustomFailureEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
+            _embedBuilderFactory.CreateCustomFailure(default).ReturnsForAnyArgs(_embedBuilder);
             _injhinuityContext.Channel.Returns(_channel);
             _commandExclusionService.IsExcluded(default).ReturnsForAnyArgs(false);
 
@@ -65,7 +65,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithAMessageWithSpaces_ThenReturnsFalse()
+        public async Task TryHandlingCustomCommand_WithAMessageWithSpaces_ThenReturnsFalse()
         {
             var message = "aaa aaa";
 
@@ -75,7 +75,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithAnExcludedCommand_ThenReturnsFalse()
+        public async Task TryHandlingCustomCommand_WithAnExcludedCommand_ThenReturnsFalse()
         {
             var message = "aaaa";
             _commandExclusionService.IsExcluded(message).Returns(true);
@@ -86,7 +86,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsFound_ThenSendAMessageToChannelAndReturnTrue()
+        public async Task TryHandlingCustomCommand_WithProperMessageAndCommandIsFound_ThenSendAMessageToChannelAndReturnTrue()
         {
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_successMessage);
             var message = "aaa";
@@ -98,7 +98,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndCommandIsFoundButWithoutABody_ThenSendDefaultMessageToChannelAndReturnTrue()
+        public async Task TryHandlingCustomCommand_WithProperMessageAndCommandIsFoundButWithoutABody_ThenSendDefaultMessageToChannelAndReturnTrue()
         {
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_successMessage);
             _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_noBodyCommand);
@@ -111,7 +111,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task TryHandlingCustomCommand_WhenCalledWithProperMessageAndHttpStatusCodeIsntSuccess_ThenCallsTheChannelManagerAndReturnsTrue()
+        public async Task TryHandlingCustomCommand_WithProperMessageAndHttpStatusCodeIsntSuccess_ThenCallsTheChannelManagerAndReturnsTrue()
         {
             _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_notFoundMessage);
@@ -119,7 +119,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
             var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
 
-            _embedBuilderFactory.Received().CreateCustomFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateCustomFailure(_wrapper);
             await _channel.Received().SendMessageAsync(string.Empty, false, Arg.Any<Embed>());
             result.Should().BeTrue();
         }

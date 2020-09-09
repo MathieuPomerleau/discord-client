@@ -61,7 +61,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task InitializeAsync_WhenCalled_ThenRegistersEventsAndAddsModules()
+        public async Task InitializeAsync_ThenRegistersEventsAndAddsModules()
         {
             _assemblyProvider.GetCallingAssembly().Returns(Assembly.GetEntryAssembly());
 
@@ -72,7 +72,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public void InitializeAsync_WhenCalledAndAssemblyIsNull_ThenThrowsException()
+        public void InitializeAsync_WithNullAssembly_ThenThrowsException()
         {
             Func<Task> action = async () => await _subject.InitializeAsync();
 
@@ -80,7 +80,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public void OnReady_WhenCalled_ThenRegistersMessageEvents()
+        public void OnReady_ThenRegistersMessageEvents()
         {
             _subject.OnReady();
 
@@ -89,7 +89,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public void OnDisconnected_WhenCalled_ThenUnregistersMessageEvents()
+        public void OnDisconnected_ThenUnregistersMessageEvents()
         {
             _subject.OnDisconnected();
 
@@ -98,7 +98,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task MessageReceivedAsync_WhenCalledWithoutPrefix_ThenExits()
+        public async Task MessageReceivedAsync_WithoutPrefix_ThenExits()
         {
             _message.Content.Returns("content");
 
@@ -109,7 +109,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task MessageReceivedAsync_WhenCalledWithPrefixAndCustomCommandIsHandled_ThenExecutesCustomCommandAndExits()
+        public async Task MessageReceivedAsync_WithPrefixAndCustomCommandIsHandled_ThenExecutesCustomCommandAndExits()
         {
             _message.Content.Returns("!content");
             _customCommandHandler.TryHandlingCustomCommand(_context, Arg.Any<string>()).Returns(true);
@@ -121,7 +121,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task MessageReceivedAsync_WhenCalledWithPrefixAndCustomCommandIsNotHandled_ThenExecutesCommand()
+        public async Task MessageReceivedAsync_WithPrefixAndCustomCommandIsNotHandled_ThenExecutesCommand()
         {
             _message.Content.Returns("!content");
             _customCommandHandler.TryHandlingCustomCommand(_context, Arg.Any<string>()).Returns(false);
@@ -132,7 +132,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task CommandExecutedAsync_WhenResultHasAReactionEmbed_ThenItInitializesAndExits()
+        public async Task CommandExecutedAsync_WithReactionEmbedInResult_ThenItInitializesAndExits()
         {
             _commandResult.ReactionEmbed.Returns(_reactionEmbed);
             _commandResult.EmbedBuilder.ReturnsNull();
@@ -146,7 +146,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task CommandExecutedAsync_WhenResultHasAnEmbedBuilder_ThenItSendsItAndExits()
+        public async Task CommandExecutedAsync_WithAnEmbedBuilderInResult_ThenItSendsItAndExits()
         {
             _commandResult.ReactionEmbed.ReturnsNull();
             _commandResult.EmbedBuilder.Returns(_embedBuilder);
@@ -160,7 +160,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task CommandExecutedAsync_WhenResultHasAMessage_ThenItSendsItAndExits()
+        public async Task CommandExecutedAsync_WithAMessageInResult_ThenItSendsItAndExits()
         {
             _commandResult.ReactionEmbed.ReturnsNull();
             _commandResult.EmbedBuilder.ReturnsNull();

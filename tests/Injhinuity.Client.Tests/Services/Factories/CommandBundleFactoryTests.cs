@@ -20,7 +20,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         }
 
         [Fact]
-        public void Create_WhenCalledWithGuildId_ThenCallsAppropriateFunction()
+        public void Create_WithGuildId_ThenCallsAppropriateFunction()
         {
             var result = _subject.Create(_guildId);
 
@@ -29,7 +29,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         }
 
         [Fact]
-        public void Create_WhenCalledWithGuildIdAndName_ThenCallsAppropriateFunction()
+        public void Create_WithGuildIdAndName_ThenCallsAppropriateFunction()
         {
             var result = _subject.Create(_guildId, _name);
 
@@ -39,7 +39,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         }
 
         [Fact]
-        public void Create_WhenCalledWithGuildIdAndNameAndBody_ThenCallsAppropriateFunction()
+        public void Create_GuildIdAndNameAndBody_ThenCallsAppropriateFunction()
         {
             var result = _subject.Create(_guildId, _name, _body);
 

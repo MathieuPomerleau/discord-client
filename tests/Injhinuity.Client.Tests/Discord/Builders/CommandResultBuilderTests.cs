@@ -29,7 +29,7 @@ namespace Injhinuity.Client.Tests.Discord.Results
 
         [Theory]
         [ClassData(typeof(TestData))]
-        public void Build_WhenCalledWithValues_ThenBuildsItsEmbedProperly(CommandError error, EmbedBuilder embedBuilder,
+        public void Build_WithValues_ThenBuildsItsEmbedProperly(CommandError error, EmbedBuilder embedBuilder,
             IReactionEmbed reactionEmbed, string message, string reason)
         {
             var result = _subject.Create()

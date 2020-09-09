@@ -25,7 +25,7 @@ namespace Injhinuity.Client.Tests.Services.Api
 
         [Theory]
         [ClassData(typeof(CommandTestData))]
-        public void GetFormattedUrl_WhenCalledWithAnActionAndCommandBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
+        public void GetFormattedUrl_WithAnActionAndCommandBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
         {
             var result = _subject.GetFormattedUrl(apiAction, _commandBundle);
 
@@ -33,7 +33,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public void GetFormattedUrl_WhenCalledWithAnInvalidActionAndCommandBundle_ThenThrowsAnException()
+        public void GetFormattedUrl_WithAnInvalidActionAndCommandBundle_ThenThrowsAnException()
         {
             Func<string> act = () => _subject.GetFormattedUrl((ApiAction) 999, _commandBundle);
 
@@ -42,7 +42,7 @@ namespace Injhinuity.Client.Tests.Services.Api
 
         [Theory]
         [ClassData(typeof(RoleTestData))]
-        public void GetFormattedUrl_WhenCalledWithAnActionAndRoleBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
+        public void GetFormattedUrl_WithAnActionAndRoleBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
         {
             var result = _subject.GetFormattedUrl(apiAction, _roleBundle);
 
@@ -50,7 +50,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public void GetFormattedUrl_WhenCalledWithAnInvalidActionAndRoleBundle_ThenThrowsAnException()
+        public void GetFormattedUrl_WithAnInvalidActionAndRoleBundle_ThenThrowsAnException()
         {
             Func<string> act = () => _subject.GetFormattedUrl((ApiAction)999, _roleBundle);
 

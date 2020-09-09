@@ -52,7 +52,7 @@ namespace Injhinuity.Client.Discord.Services
             else
             {
                 var wrapper = await _deserializer.DeserializeAsync<ExceptionWrapper>(apiResult);
-                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateCustomFailureEmbedBuilder(wrapper);
+                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateCustomFailure(wrapper);
                 await context.Channel.SendEmbedMessageAsync(embedBuilder);
             }
 

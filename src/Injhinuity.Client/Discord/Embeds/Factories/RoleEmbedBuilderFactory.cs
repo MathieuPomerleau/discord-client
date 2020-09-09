@@ -8,11 +8,14 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 {
     public interface IRoleEmbedBuilderFactory
     {
-        EmbedBuilder CreateCreateSuccessEmbedBuilder(string name);
-        EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name);
-        EmbedBuilder CreateGetAllSuccessEmbedBuilder();
-        EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper);
-        EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result);
+        EmbedBuilder CreateCreateSuccess(string name);
+        EmbedBuilder CreateDeleteSuccess(string name);
+        EmbedBuilder CreateGetAllSuccess();
+        EmbedBuilder CreateAssignSuccess(string name);
+        EmbedBuilder CreateUnassignSuccess(string name);
+        EmbedBuilder CreateRoleNotFoundFailure(string name);
+        EmbedBuilder CreateFailure(ExceptionWrapper wrapper);
+        EmbedBuilder CreateFailure(IValidationResult result);
     }
 
     public class RoleEmbedBuilderFactory : IRoleEmbedBuilderFactory
@@ -24,37 +27,56 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
             _embedBuilder = embedBuilder;
         }
 
-        public EmbedBuilder CreateCreateSuccessEmbedBuilder(string name) =>
-            CreateBaseSuccessEmbed()
+        public EmbedBuilder CreateCreateSuccess(string name) =>
+            CreateBaseSuccess()
                 .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
-        public EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name) =>
-            CreateBaseSuccessEmbed()
+        public EmbedBuilder CreateDeleteSuccess(string name) =>
+            CreateBaseSuccess()
                 .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
-        public EmbedBuilder CreateGetAllSuccessEmbedBuilder()
-        {
-            return _embedBuilder.Create()
+        public EmbedBuilder CreateGetAllSuccess() =>
+            _embedBuilder.Create()
                 .WithTitle(RoleResources.TitlePlural)
                 .WithThumbnailUrl(IconResources.List)
                 .WithColor(Color.Orange)
                 .WithTimestamp()
                 .Build();
-        }
 
-        public EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper) =>
-            CreateBaseFailureEmbed(wrapper.Reason, wrapper.StatusCode)
+        public EmbedBuilder CreateAssignSuccess(string name) =>
+            CreateBaseSuccess()
+                .WithTitle(RoleResources.TitleAssign)
+                .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
-        public EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result) =>
-            CreateBaseFailureEmbed(result.Message, result.ValidationCode)
+        public EmbedBuilder CreateUnassignSuccess(string name) =>
+            CreateBaseSuccess()
+                .WithTitle(RoleResources.TitleUnassign)
+                .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
-        private IInjhinuityEmbedBuilder CreateBaseSuccessEmbed() =>
+        public EmbedBuilder CreateRoleNotFoundFailure(string name) =>
+            _embedBuilder.Create()
+                .WithTitle(RoleResources.TitleRoleNotFound)
+                .AddField(CommonResources.FieldTitleName, name)
+                .WithThumbnailUrl(IconResources.Crossmark)
+                .WithColor(Color.Red)
+                .WithTimestamp()
+                .Build();
+
+        public EmbedBuilder CreateFailure(ExceptionWrapper wrapper) =>
+            CreateBaseFailure(wrapper.Reason, wrapper.StatusCode)
+                .Build();
+
+        public EmbedBuilder CreateFailure(IValidationResult result) =>
+            CreateBaseFailure(result.Message, result.ValidationCode)
+                .Build();
+
+        private IInjhinuityEmbedBuilder CreateBaseSuccess() =>
             _embedBuilder.Create()
                 .WithTitle(RoleResources.Title)
                 .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true)
@@ -62,7 +84,7 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .WithColor(Color.Green)
                 .WithTimestamp();
 
-        private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string? message, object errorCode) =>
+        private IInjhinuityEmbedBuilder CreateBaseFailure(string? message, object errorCode) =>
             _embedBuilder.Create()
                 .WithTitle(RoleResources.Title)
                 .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true)

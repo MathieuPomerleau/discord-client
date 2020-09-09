@@ -28,7 +28,7 @@ namespace Injhinuity.Client.Tests.Discord.builders
 
         [Theory]
         [ClassData(typeof(TestData))]
-        public void Build_WhenCalledWithValues_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
+        public void Build_WithValues_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
         {
             var result = _subject.Create()
                 .WithTitle(title)
@@ -55,7 +55,7 @@ namespace Injhinuity.Client.Tests.Discord.builders
 
         [Theory]
         [ClassData(typeof(TestData))]
-        public void Build_WhenCalledWithoutTimestamp_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
+        public void Build_WithoutTimestamp_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
         {
             var result = _subject.Create()
                 .WithTitle(title)

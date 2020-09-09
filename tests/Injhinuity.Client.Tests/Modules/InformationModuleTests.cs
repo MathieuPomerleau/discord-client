@@ -35,18 +35,18 @@ namespace Injhinuity.Client.Tests.Modules
             _resultBuilder.ReturnsForAll(_resultBuilder);
             _resultBuilder.Build().Returns(_commandResult);
             _embedBuilderFactoryProvider.Information.Returns(_embedBuilderFactory);
-            _embedBuilderFactory.CreateInfoEmbedBuilder(default).ReturnsForAnyArgs(_embedBuilder);
+            _embedBuilderFactory.CreateInfo(default).ReturnsForAnyArgs(_embedBuilder);
             _clientConfig.Version.Returns(new VersionConfig(_versionNo));
 
             _subject = new InformationModule(_resultBuilder, _embedBuilderFactoryProvider, _clientConfig);
         }
 
         [Fact]
-        public async Task InfoAsync_WhenCalled_ThenReturnsCommandResultWithCorrectEmbed()
+        public async Task InfoAsync_ThenReturnsCommandResultWithCorrectEmbed()
         {
             var result = await _subject.InfoAsync();
 
-            _embedBuilderFactory.Received().CreateInfoEmbedBuilder(_versionNo);
+            _embedBuilderFactory.Received().CreateInfo(_versionNo);
             result.Should().Be(_commandResult);
 
             Received.InOrder(() =>

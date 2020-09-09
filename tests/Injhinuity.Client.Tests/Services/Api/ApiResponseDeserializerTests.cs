@@ -34,7 +34,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public void DeserializeAsync_WhenCalledWithEmptyContent_ThenThrowsException()
+        public void DeserializeAsync_WithEmptyContent_ThenThrowsException()
         {
             _httpResponseMessage.Content = new StringContent("");
 
@@ -44,7 +44,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public async Task DeserializeAsync_WhenCalledWithContent_ThenReturnDeserializedObject()
+        public async Task DeserializeAsync_WithContent_ThenReturnDeserializedObject()
         {
             _httpResponseMessage.Content = new StringContent("{\"aaaa\":\"aaaa\"}");
 
@@ -54,7 +54,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public async Task DeserializeAndAdaptAsync_WhenCalled_ThenDeserializesAndCastsToProperType()
+        public async Task DeserializeAndAdaptAsync_ThenDeserializesAndCastsToProperType()
         {
             _httpResponseMessage.Content = new StringContent("{\"aaaa\":\"aaaa\"}");
 
@@ -67,7 +67,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public async Task DeserializeAndAdaptEnumerableAsync_WhenCalled_ThenDeserializesAndCastsToProperType()
+        public async Task DeserializeAndAdaptEnumerableAsync_ThenDeserializesAndCastsToProperType()
         {
             _httpResponseMessage.Content = new StringContent("[\"aaaa\"]");
 

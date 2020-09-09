@@ -18,7 +18,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Builders
 
         [Theory]
         [ClassData(typeof(TestData))]
-        public void Build_WhenCalledWithValues_ThenProperlyBuildsResult(ValidationCode validationCode, string message, (string, string) replaceValue)
+        public void Build_WithValues_ThenProperlyBuildsResult(ValidationCode validationCode, string message, (string, string) replaceValue)
         {
             var result = _subject.Create()
                 .WithCode(validationCode)

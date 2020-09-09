@@ -27,9 +27,9 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateInfoEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateInfo_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateInfoEmbedBuilder(_versionNo);
+            _subject.CreateInfo(_versionNo);
 
             Received.InOrder(() =>
             {

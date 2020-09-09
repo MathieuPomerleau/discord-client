@@ -8,13 +8,13 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 {
     public interface ICommandEmbedBuilderFactory
     {
-        EmbedBuilder CreateCreateSuccessEmbedBuilder(string name, string body);
-        EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name);
-        EmbedBuilder CreateUpdateSuccessEmbedBuilder(string name, string body);
-        EmbedBuilder CreateGetAllSuccessEmbedBuilder();
-        EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper);
-        EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result);
-        EmbedBuilder CreateCustomFailureEmbedBuilder(ExceptionWrapper wrapper);
+        EmbedBuilder CreateCreateSuccess(string name, string body);
+        EmbedBuilder CreateDeleteSuccess(string name);
+        EmbedBuilder CreateUpdateSuccess(string name, string body);
+        EmbedBuilder CreateGetAllSuccess();
+        EmbedBuilder CreateFailure(ExceptionWrapper wrapper);
+        EmbedBuilder CreateFailure(IValidationResult result);
+        EmbedBuilder CreateCustomFailure(ExceptionWrapper wrapper);
     }
 
     public class CommandEmbedBuilderFactory : ICommandEmbedBuilderFactory
@@ -26,27 +26,27 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
             _embedBuilder = embedBuilder;
         }
 
-        public EmbedBuilder CreateCreateSuccessEmbedBuilder(string name, string body) =>
+        public EmbedBuilder CreateCreateSuccess(string name, string body) =>
             CreateBaseSuccessEmbed()
                 .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
 
-        public EmbedBuilder CreateDeleteSuccessEmbedBuilder(string name) =>
+        public EmbedBuilder CreateDeleteSuccess(string name) =>
             CreateBaseSuccessEmbed()
                 .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
-        public EmbedBuilder CreateUpdateSuccessEmbedBuilder(string name, string body) =>
+        public EmbedBuilder CreateUpdateSuccess(string name, string body) =>
             CreateBaseSuccessEmbed()
                 .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeUpdate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
 
-        public EmbedBuilder CreateGetAllSuccessEmbedBuilder()
+        public EmbedBuilder CreateGetAllSuccess()
         {
             return _embedBuilder.Create()
                 .WithTitle(CommandResources.TitlePlural)
@@ -56,16 +56,16 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .Build();
         }
 
-        public EmbedBuilder CreateCustomFailureEmbedBuilder(ExceptionWrapper wrapper) =>
+        public EmbedBuilder CreateCustomFailure(ExceptionWrapper wrapper) =>
             CreateBaseFailureEmbed(wrapper.Reason, wrapper.StatusCode)
                 .WithTitle(CommandResources.TitleCustom)
                 .Build();
 
-        public EmbedBuilder CreateFailureEmbedBuilder(ExceptionWrapper wrapper) =>
+        public EmbedBuilder CreateFailure(ExceptionWrapper wrapper) =>
             CreateBaseFailureEmbed(wrapper.Reason, wrapper.StatusCode)
                 .Build();
 
-        public EmbedBuilder CreateFailureEmbedBuilder(IValidationResult result) =>
+        public EmbedBuilder CreateFailure(IValidationResult result) =>
             CreateBaseFailureEmbed(result.Message, result.ValidationCode)
                 .Build();
 

@@ -29,7 +29,7 @@ namespace Injhinuity.Client.Tests.Services.Requesters
         }
 
         [Fact]
-        public async Task ExecuteAsync_WhenCalled_ThenCallsApiGatewayWithPayload()
+        public async Task ExecuteAsync_ThenCallsApiGatewayWithPayload()
         {
             await _subject.ExecuteAsync(ApiAction.Get, _requestBundle);
 

@@ -4,6 +4,9 @@
     {
         public const string Title = "Role";
         public const string TitlePlural = "Roles";
+        public const string TitleAssign = "Assign role";
+        public const string TitleUnassign = "Unassign role";
+        public const string TitleRoleNotFound = "Role not found";
 
         public const string FieldTitleRole = "Role";
 

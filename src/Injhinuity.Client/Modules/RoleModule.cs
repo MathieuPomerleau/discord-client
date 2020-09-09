@@ -41,45 +41,45 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("create role")]
-        public async Task<RuntimeResult> CreateAsync([Remainder] IRole? role = null)
+        public async Task<RuntimeResult> CreateAsync([Remainder] IRole role)
         {
-            var resource = _validationResourceFactory.CreateRole(role?.Name);
+            var resource = _validationResourceFactory.CreateRole(role.Name);
             var validationResult = _validator.Validate(resource);
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailureEmbedBuilder(validationResult);
+                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), role!);
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), role);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Post, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Role.CreateCreateSuccessEmbedBuilder(role!.Name)
-                : _embedBuilderFactoryProvider.Role.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                ? _embedBuilderFactoryProvider.Role.CreateCreateSuccess(role.Name)
+                : _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
 
         [Command("delete role")]
-        public async Task<RuntimeResult> DeleteAsync([Remainder] IRole? role = null)
+        public async Task<RuntimeResult> DeleteAsync([Remainder] IRole role)
         {
-            var resource = _validationResourceFactory.CreateRole(role?.Name);
+            var resource = _validationResourceFactory.CreateRole(role.Name);
             var validationResult = _validator.Validate(resource);
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailureEmbedBuilder(validationResult);
+                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), role!);
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), role);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Delete, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Role.CreateDeleteSuccessEmbedBuilder(role!.Name)
-                : _embedBuilderFactoryProvider.Role.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                ? _embedBuilderFactoryProvider.Role.CreateDeleteSuccess(role.Name)
+                : _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -87,12 +87,12 @@ namespace Injhinuity.Client.Modules
         [Command("get roles")]
         public async Task<RuntimeResult> GetAllAsync()
         {
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString());
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString());
             var apiResult = await _requester.ExecuteAsync(ApiAction.GetAll, bundle);
 
             if (apiResult.IsSuccessStatusCode)
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateGetAllSuccessEmbedBuilder();
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateGetAllSuccess();
                 var roles = await DeserializeListAsync<RoleResponse, Role>(apiResult);
                 var fieldList = roles?.Select(x => new InjhinuityEmbedField(RoleResources.FieldTitleRole, x.Name));
 
@@ -102,9 +102,56 @@ namespace Injhinuity.Client.Modules
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
+        }
+
+        [Command("iam")]
+        public async Task<RuntimeResult> AssignRoleAsync([Remainder] IRole role)
+        {
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), role);
+            var apiResult = await _requester.ExecuteAsync(ApiAction.Get, bundle);
+
+            if (apiResult.IsSuccessStatusCode)
+            {
+                await CustomContext.GuildUser.AddRoleAsync(role);
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateAssignSuccess(role.Name);
+
+                return EmbedResult(embedBuilder);
+            }
+            else
+            {
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                return EmbedResult(embedBuilder);
+            }
+        }
+
+        [Command("iamnot")]
+        public async Task<RuntimeResult> UnassignRoleAsync([Remainder] IRole role)
+        {
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), role);
+            var apiResult = await _requester.ExecuteAsync(ApiAction.Get, bundle);
+
+            if (apiResult.IsSuccessStatusCode)
+            {
+                await CustomContext.GuildUser.RemoveRoleAsync(role);
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateUnassignSuccess(role.Name);
+
+                return EmbedResult(embedBuilder);
+            }
+            else
+            {
+                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                return EmbedResult(embedBuilder);
+            }
+        }
+
+        [Command("create role"), Alias("delete role", "iam", "iamnot")]
+        public Task<RuntimeResult> RoleNotFoundAsync([Remainder] string remainder)
+        {
+            var embedBuilder = _embedBuilderFactoryProvider.Role.CreateRoleNotFoundFailure(remainder);
+            return Task.FromResult(EmbedResult(embedBuilder));
         }
     }
 }

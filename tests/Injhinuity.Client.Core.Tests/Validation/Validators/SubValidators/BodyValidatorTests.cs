@@ -30,7 +30,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
         }
 
         [Fact]
-        public void Validate_WhenCalledWithAValidResource_ThenReturnsOkResult()
+        public void Validate_WithAValidResource_ThenReturnsOkResult()
         {
             var resource = new CommandResource("name", "body");
 
@@ -41,7 +41,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
         }
 
         [Fact]
-        public void Validate_WhenCalledWithAnInvalidResourceType_ThenReturnsParseErrorResult()
+        public void Validate_WithAnInvalidResourceType_ThenReturnsParseErrorResult()
         {
             var resource = new DummyResource();
 
@@ -52,7 +52,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
         }
 
         [Fact]
-        public void Validate_WhenCalledWithAnEmptyContent_ThenReturnsValidationErrorResult()
+        public void Validate_WithAnEmptyContent_ThenReturnsValidationErrorResult()
         {
             var resource = new CommandResource("name", "");
 
@@ -63,7 +63,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
         }
 
         [Fact]
-        public void Validate_WhenCalledWithAContentOverMaximumLength_ThenReturnsValidationErrorResult()
+        public void Validate_WithAContentOverMaximumLength_ThenReturnsValidationErrorResult()
         {
             var resource = new CommandResource("name", "verylongbody");
 
@@ -74,7 +74,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
         }
 
         [Fact]
-        public void Validate_WhenCalledAndSucceedsAndHasALinkedValidator_ThenReturnsTheLinkedValidatorResult()
+        public void Validate_AndSucceedsAndHasALinkedValidator_ThenReturnsTheLinkedValidatorResult()
         {
             var resource = new CommandResource("name", "body");
             _subject.Next = _linkedValidator;

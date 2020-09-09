@@ -14,7 +14,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithNonNullProperties_ThenResultIsValid()
+        public void ContainsNull_WithNonNullProperties_ThenResultIsValid()
         {
             var result = new NullableOptionsResult();
             
@@ -24,7 +24,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         }
 
         [Fact]
-        public void ContainsNull_WhenCalledWithAtLeastOneNullOptions_ThenResultIsNotValid()
+        public void ContainsNull_WithAtLeastOneNullOptions_ThenResultIsNotValid()
         {
             var result = new NullableOptionsResult();
             _subject.VersionNo = null;

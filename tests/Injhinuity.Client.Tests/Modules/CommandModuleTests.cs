@@ -98,104 +98,104 @@ namespace Injhinuity.Client.Tests.Modules
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndAllSuccess_ThenReturnSuccessResult()
+        public async Task CreateAsync_WithAllSuccess_ThenReturnSuccessResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.CreateAsync(_name, _body);
 
-            _embedBuilderFactory.Received().CreateCreateSuccessEmbedBuilder(_name, _body);
+            _embedBuilderFactory.Received().CreateCreateSuccess(_name, _body);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task CreateAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.Ok);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.CreateAsync(_name, _body);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task CreateAsync_WhenCalledAndValidationResultIsFailure_ThenReturnFailureResult()
+        public async Task CreateAsync_WithValidationResultIsFailure_ThenReturnFailureResult()
         {
             _validationResult.ValidationCode.Returns(ValidationCode.ValidationError);
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.CreateAsync(_name, _body);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_validationResult);
+            _embedBuilderFactory.Received().CreateFailure(_validationResult);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task DeleteAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.DeleteAsync(_name);
 
-            _embedBuilderFactory.Received().CreateDeleteSuccessEmbedBuilder(_name);
+            _embedBuilderFactory.Received().CreateDeleteSuccess(_name);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task DeleteAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.DeleteAsync(_name);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task UpdateAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task UpdateAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.UpdateAsync(_name, _body);
 
-            _embedBuilderFactory.Received().CreateUpdateSuccessEmbedBuilder(_name, _body);
+            _embedBuilderFactory.Received().CreateUpdateSuccess(_name, _body);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task UpdateAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task UpdateAsync_WithApiResultIsFailure_ThenReturnFailureResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.UpdateAsync(_name, _body);
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenCalledAndApiResultIsSuccess_ThenReturnSuccessResult()
+        public async Task GetAllAsync_WithApiResultIsSuccess_ThenReturnSuccessResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_successMessage);
 
             var result = await _subject.GetAllAsync();
 
-            _embedBuilderFactory.Received().CreateGetAllSuccessEmbedBuilder();
+            _embedBuilderFactory.Received().CreateGetAllSuccess();
             AssertResultAndReactionEmbedBuilder(result);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenCalledAndApiResultIsFailure_ThenReturnFailureResult()
+        public async Task GetAllAsync_WithResultIsFailure_ThenReturnFailureResult()
         {
             _requester.ExecuteAsync(Arg.Any<ApiAction>(), _requestBundle).Returns(_notFoundMessage);
 
             var result = await _subject.GetAllAsync();
 
-            _embedBuilderFactory.Received().CreateFailureEmbedBuilder(_wrapper);
+            _embedBuilderFactory.Received().CreateFailure(_wrapper);
             AssertResultAndEmbedBuilder(result);
         }
 

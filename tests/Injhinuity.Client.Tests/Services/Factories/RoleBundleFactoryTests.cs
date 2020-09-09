@@ -28,7 +28,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         }
 
         [Fact]
-        public void Create_WhenCalledWithGuildId_ThenCallsAppropriateFunction()
+        public void Create_WithGuildId_ThenCallsAppropriateFunction()
         {
             var result = _subject.Create(_guildId);
 
@@ -37,7 +37,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         }
 
         [Fact]
-        public void Create_WhenCalledWithARole_ThenCallsAppropriateFunction()
+        public void Create_ARole_ThenCallsAppropriateFunction()
         {
             var result = _subject.Create(_guildId, _role);
 

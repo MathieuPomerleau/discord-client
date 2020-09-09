@@ -22,7 +22,7 @@ namespace Injhinuity.Client.Modules
         [Command("info")]
         public Task<RuntimeResult> InfoAsync()
         {
-            var embedBuilder = _embedBuilderFactoryProvider.Information.CreateInfoEmbedBuilder(_clientConfig.Version.VersionNo);
+            var embedBuilder = _embedBuilderFactoryProvider.Information.CreateInfo(_clientConfig.Version.VersionNo);
             var result = _resultBuilder.Create()
                 .WithEmbedBuilder(embedBuilder)
                 .Build();

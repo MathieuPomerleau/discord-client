@@ -18,7 +18,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
 
         [Fact]
-        public void Get_WhenCalledWithSamePages_ThenReturnsSameEmbedBuilder()
+        public void Get_WithSamePages_ThenReturnsSameEmbedBuilder()
         {
             var fields = GetOnePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -30,7 +30,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void Get_WhenCalledWithDifferentPageAndNotMaxPage_ThenReturnsNewBuilderWithNewPageContent()
+        public void Get_WithDifferentPageAndNotMaxPage_ThenReturnsNewBuilderWithNewPageContent()
         {
             var fields = GetThreePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -43,7 +43,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void Get_WhenCalledAfterNoOpPageChange_ThenReturnsSameBuilderAsBefore()
+        public void Get_AfterNoOpPageChange_ThenReturnsSameBuilderAsBefore()
         {
             var fields = GetOnePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -56,7 +56,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void NextPage_WhenCalledAndOnSinglepage_ThenDoesntChangePage()
+        public void NextPage_OnSinglepage_ThenDoesntChangePage()
         {
             var fields = GetOnePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -68,7 +68,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void NextPage_WhenCalledAndOnMaxPage_ThenDoesntChangePage()
+        public void NextPage_OnMaxPage_ThenDoesntChangePage()
         {
             var fields = GetThreePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -82,7 +82,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void NextPage_WhenCalledAndNotSinglePageNotMaxPage_ThenChangesPage()
+        public void NextPage_NotSinglePageNotMaxPage_ThenChangesPage()
         {
             var fields = GetThreePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -95,7 +95,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void PreviousPage_WhenCalledAndOnSinglepage_ThenDoesntChangePage()
+        public void PreviousPage_OnSinglepage_ThenDoesntChangePage()
         {
             var fields = GetOnePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -107,7 +107,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void PreviousPage_WhenCalledAndOnMinPage_ThenDoesntChangePage()
+        public void PreviousPage_OnMinPage_ThenDoesntChangePage()
         {
             var fields = GetThreePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);
@@ -119,7 +119,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Content
         }
 
         [Fact]
-        public void PreviousPage_WhenCalledAndNotSinglePageNotMaxPage_ThenChangesPage()
+        public void PreviousPage_NotSinglePageNotMaxPage_ThenChangesPage()
         {
             var fields = GetThreePageFields();
             _subject = new ListEmbedContent(_fieldsPerPage, fields, _embedBuilder);

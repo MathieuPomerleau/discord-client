@@ -46,7 +46,7 @@ namespace Injhinuity.Client.Tests
         }
 
         [Fact]
-        public async Task RunAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
+        public async Task RunAsync_ThenStartupRegisterDiscordServicesAndLogin()
         {
             await _subject.RunAsync(false);
 
@@ -63,7 +63,7 @@ namespace Injhinuity.Client.Tests
         }
 
         [Fact]
-        public async Task OnReadyAsync_WhenCalled_ThenCallsCommandHandlerOnReady()
+        public async Task OnReadyAsync_ThenCallsCommandHandlerOnReady()
         {
             await _subject.OnReadyAsync();
 
@@ -71,7 +71,7 @@ namespace Injhinuity.Client.Tests
         }
 
         [Fact]
-        public async Task OnDisconnectedAsync_WhenCalled_ThenCallsCommandHandlerOnDisconnected()
+        public async Task OnDisconnectedAsync_ThenCallsCommandHandlerOnDisconnected()
         {
             await _subject.OnDisconnectedAsync();
 
@@ -79,7 +79,7 @@ namespace Injhinuity.Client.Tests
         }
 
         [Fact]
-        public async Task LogAsync_WhenCalled_ThenStartupRegisterDiscordServicesAndLogin()
+        public async Task LogAsync_ThenStartupRegisterDiscordServicesAndLogin()
         {
             await _subject.LogAsync(_logMessage, "[Discord]");
 

@@ -32,41 +32,41 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateCreateSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateCreateSuccess_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateCreateSuccessEmbedBuilder(_name, _body);
+            _subject.CreateCreateSuccess(_name, _body);
 
-            AssertSuccessEmbedBuilder();
+            AssertSuccess();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateDeleteSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateDeleteSuccess_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateDeleteSuccessEmbedBuilder(_name);
+            _subject.CreateDeleteSuccess(_name);
 
-            AssertSuccessEmbedBuilder();
+            AssertSuccess();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateUpdateSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateUpdateSuccess_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateUpdateSuccessEmbedBuilder(_name, _body);
+            _subject.CreateUpdateSuccess(_name, _body);
 
-            AssertSuccessEmbedBuilder();
+            AssertSuccess();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeUpdate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateGetAllSuccessEmbedBuilder_WhenCalledWithCommands_ThenReturnsABuiltEmbed()
+        public void CreateGetAllSuccess_WithCommands_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateGetAllSuccessEmbedBuilder();
+            _subject.CreateGetAllSuccess();
 
             _embedBuilder.Received().Create();
             _embedBuilder.Received().WithTitle(CommandResources.TitlePlural);
@@ -76,37 +76,37 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateFailureEmbedBuilder_WhenCalledWithAnExceptionWrapper_ThenReturnsABuiltEmbed()
+        public void CreateFailure_WithAnExceptionWrapper_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateFailureEmbedBuilder(_wrapper);
+            _subject.CreateFailure(_wrapper);
 
-            AssertFailureEmbedBuilder();
+            AssertFailure();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleReason, _wrapper.Reason);
         }
 
         [Fact]
-        public void CreateFailureEmbedBuilder_WhenCalledWithAValidationResult_ThenReturnsABuiltEmbed()
+        public void CreateFailure_WithAValidationResult_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateFailureEmbedBuilder(_validationResult);
+            _subject.CreateFailure(_validationResult);
 
-            AssertFailureEmbedBuilder();
+            AssertFailure();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleErrorCode, _validationResult.ValidationCode, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleReason, _validationResult.Message);
         }
 
         [Fact]
-        public void CreateCustomFailureEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateCustomFailure_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateCustomFailureEmbedBuilder(_wrapper);
+            _subject.CreateCustomFailure(_wrapper);
 
-            AssertFailureEmbedBuilder();
+            AssertFailure();
             _embedBuilder.Received().WithTitle(CommandResources.TitleCustom);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleReason, _wrapper.Reason);
         }
 
-        private void AssertSuccessEmbedBuilder()
+        private void AssertSuccess()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
@@ -116,7 +116,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithTimestamp();
         }
 
-        private void AssertFailureEmbedBuilder()
+        private void AssertFailure()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true);

@@ -46,16 +46,16 @@ namespace Injhinuity.Client.Modules
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Command.CreateFailureEmbedBuilder(validationResult);
+                var validationEmbedBuilder = _embedBuilderFactoryProvider.Command.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name, body);
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), name, body);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Post, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateCreateSuccessEmbedBuilder(name, body)
-                : _embedBuilderFactoryProvider.Command.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                ? _embedBuilderFactoryProvider.Command.CreateCreateSuccess(name, body)
+                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -63,12 +63,12 @@ namespace Injhinuity.Client.Modules
         [Command("delete command")]
         public async Task<RuntimeResult> DeleteAsync(string name)
         {
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name);
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), name);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Delete, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateDeleteSuccessEmbedBuilder(name)
-                : _embedBuilderFactoryProvider.Command.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                ? _embedBuilderFactoryProvider.Command.CreateDeleteSuccess(name)
+                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -76,12 +76,12 @@ namespace Injhinuity.Client.Modules
         [Command("update command")]
         public async Task<RuntimeResult> UpdateAsync(string name, [Remainder] string body)
         {
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString(), name, body);
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), name, body);
             var apiResult = await _requester.ExecuteAsync(ApiAction.Put, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateUpdateSuccessEmbedBuilder(name, body)
-                : _embedBuilderFactoryProvider.Command.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                ? _embedBuilderFactoryProvider.Command.CreateUpdateSuccess(name, body)
+                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -89,12 +89,12 @@ namespace Injhinuity.Client.Modules
         [Command("get commands")]
         public async Task<RuntimeResult> GetAllAsync()
         {
-            var bundle = _bundleFactory.Create(CommandContext.Guild.Id.ToString());
+            var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString());
             var apiResult = await _requester.ExecuteAsync(ApiAction.GetAll, bundle);
 
             if (apiResult.IsSuccessStatusCode)
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateGetAllSuccessEmbedBuilder();
+                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateGetAllSuccess();
                 var commands = await DeserializeListAsync<CommandResponse, Command>(apiResult);
                 var fieldList = commands?.Select(x => new InjhinuityEmbedField(x.Name, x.Body));
 
@@ -104,7 +104,7 @@ namespace Injhinuity.Client.Modules
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateFailureEmbedBuilder(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
         }

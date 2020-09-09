@@ -31,29 +31,29 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateCreateSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateCreateSuccess_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateCreateSuccessEmbedBuilder(_name);
+            _subject.CreateCreateSuccess(_name);
 
-            AssertSuccessEmbedBuilder();
+            AssertSuccess();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateDeleteSuccessEmbedBuilder_WhenCalled_ThenReturnsABuiltEmbed()
+        public void CreateDeleteSuccess_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateDeleteSuccessEmbedBuilder(_name);
+            _subject.CreateDeleteSuccess(_name);
 
-            AssertSuccessEmbedBuilder();
+            AssertSuccess();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
         [Fact]
-        public void CreateGetAllSuccessEmbedBuilder_WhenCalledWithRoles_ThenReturnsABuiltEmbed()
+        public void CreateGetAllSuccess_WithRoles_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateGetAllSuccessEmbedBuilder();
+            _subject.CreateGetAllSuccess();
 
             _embedBuilder.Received().Create();
             _embedBuilder.Received().WithTitle(RoleResources.TitlePlural);
@@ -63,26 +63,67 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateFailureEmbedBuilder_WhenCalledWithAnExceptionWrapper_ThenReturnsABuiltEmbed()
+        public void CreateAssignSuccess_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateFailureEmbedBuilder(_wrapper);
+            _subject.CreateAssignSuccess(_name);
 
-            AssertFailureEmbedBuilder();
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleAssign);
+            _embedBuilder.Received().WithColor(Color.Green);
+            _embedBuilder.Received().WithTimestamp();
+        }
+
+        [Fact]
+        public void CreateUnassignSuccess_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateUnassignSuccess(_name);
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleUnassign);
+            _embedBuilder.Received().WithColor(Color.Green);
+            _embedBuilder.Received().WithTimestamp();
+        }
+
+        [Fact]
+        public void CreateRoleNotFoundFailure_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateRoleNotFoundFailure(_name);
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleRoleNotFound);
+            _embedBuilder.Received().WithColor(Color.Red);
+            _embedBuilder.Received().WithTimestamp();
+        }
+
+        [Fact]
+        public void CreateFailure_WithAnExceptionWrapper_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateFailure(_wrapper);
+
+            AssertFailure();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleErrorCode, _wrapper.StatusCode, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleReason, _wrapper.Reason);
         }
 
         [Fact]
-        public void CreateFailureEmbedBuilder_WhenCalledWithAValidationResult_ThenReturnsABuiltEmbed()
+        public void CreateFailure_WithAValidationResult_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateFailureEmbedBuilder(_validationResult);
+            _subject.CreateFailure(_validationResult);
 
-            AssertFailureEmbedBuilder();
+            AssertFailure();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleErrorCode, _validationResult.ValidationCode, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleReason, _validationResult.Message);
         }
 
-        private void AssertSuccessEmbedBuilder()
+        private void AssertSuccess()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
@@ -92,7 +133,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithTimestamp();
         }
 
-        private void AssertFailureEmbedBuilder()
+        private void AssertFailure()
         {
             _embedBuilder.Received().Create();
             _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true);

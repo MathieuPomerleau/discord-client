@@ -6,7 +6,7 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 {
     public interface IInformationEmbedBuilderFactory
     {
-        EmbedBuilder CreateInfoEmbedBuilder(string versionNo);
+        EmbedBuilder CreateInfo(string versionNo);
     }
 
     public class InformationEmbedBuilderFactory : IInformationEmbedBuilderFactory
@@ -18,7 +18,7 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
             _embedBuilder = embedBuilder;
         }
 
-        public EmbedBuilder CreateInfoEmbedBuilder(string versionNo) =>
+        public EmbedBuilder CreateInfo(string versionNo) =>
             _embedBuilder
                 .WithTitle(InformationResources.Title)
                 .AddField(InformationResources.FieldTitleVersion, versionNo, true)

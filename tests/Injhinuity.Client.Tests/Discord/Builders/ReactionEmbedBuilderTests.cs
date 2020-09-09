@@ -30,7 +30,7 @@ namespace Injhinuity.Client.Tests.Discord.Builders
         }
 
         [Fact]
-        public void Build_WhenCalledWithValues_ThenProperlyBuildsEmbedBuilder()
+        public void Build_WithValues_ThenProperlyBuildsEmbedBuilder()
         {
             var result = _subject.Create()
                 .WithButton(_emote, null)
@@ -42,7 +42,7 @@ namespace Injhinuity.Client.Tests.Discord.Builders
         }
 
         [Fact]
-        public void Build_WhenCalledWithoutContent_ThenThrowsException()
+        public void Build_WithoutContent_ThenThrowsException()
         {
             Action result = () => _subject.Create().Build();
 
