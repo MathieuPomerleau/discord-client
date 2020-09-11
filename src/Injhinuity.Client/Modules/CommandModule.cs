@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Injhinuity.Client.Core.Validation.Enums;
 using Injhinuity.Client.Core.Validation.Factories;
@@ -39,6 +40,7 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("create command")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task<RuntimeResult> CreateAsync(string name, [Remainder] string body)
         {
             var resource = _validationResourceFactory.CreateCommand(name, body);
@@ -61,6 +63,7 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("delete command")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task<RuntimeResult> DeleteAsync(string name)
         {
             var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), name);
@@ -74,6 +77,7 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("update command")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task<RuntimeResult> UpdateAsync(string name, [Remainder] string body)
         {
             var bundle = _bundleFactory.Create(CustomContext.Guild.Id.ToString(), name, body);

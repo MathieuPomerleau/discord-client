@@ -16,23 +16,23 @@ namespace Injhinuity.Client.Discord.Entities
 
     public class InjhinuityCommandContext : IInjhinuityCommandContext
     {
-        private readonly ICommandContext Context;
+        private readonly ICommandContext _context;
 
-        public IGuild Guild => Context.Guild;
-        public IMessageChannel Channel => Context.Channel;
-        public IUserMessage Message => Context.Message;
-        public IGuildUser GuildUser => (IGuildUser)Context.User;
+        public IGuild Guild => _context.Guild;
+        public IMessageChannel Channel => _context.Channel;
+        public IUserMessage Message => _context.Message;
+        public IGuildUser GuildUser => (IGuildUser)_context.User;
 
         public InjhinuityCommandContext(ICommandContext context)
         {
-            Context = context;
+            _context = context;
         }
 
         public InjhinuityCommandContext(IInjhinuityDiscordClient client, IInjhinuityUserMessage message)
         {
-            Context = new SocketCommandContext((DiscordSocketClient)client, message.GetSocketMessage());
+            _context = new SocketCommandContext((DiscordSocketClient)client, message.GetSocketMessage());
         }
 
-        public SocketCommandContext GetSocketContext() => (SocketCommandContext)Context;
+        public SocketCommandContext GetSocketContext() => (SocketCommandContext)_context;
     }
 }

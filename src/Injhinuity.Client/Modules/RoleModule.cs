@@ -41,6 +41,7 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("create role")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task<RuntimeResult> CreateAsync([Remainder] IRole role)
         {
             var resource = _validationResourceFactory.CreateRole(role.Name);
@@ -63,6 +64,7 @@ namespace Injhinuity.Client.Modules
         }
 
         [Command("delete role")]
+        [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task<RuntimeResult> DeleteAsync([Remainder] IRole role)
         {
             var resource = _validationResourceFactory.CreateRole(role.Name);
