@@ -4,19 +4,9 @@ namespace Injhinuity.Client.Core.Validation.Entities
 {
     public interface IValidationResult
     {
-        ValidationCode ValidationCode { get; set; }
-        string? Message { get; set; }
+        ValidationCode ValidationCode { get; }
+        string? Message { get; }
     }
 
-    public class ValidationResult : IValidationResult
-    {
-        public ValidationCode ValidationCode { get; set; }
-        public string? Message { get; set; }
-
-        public ValidationResult(ValidationCode validationCode, string? message = null)
-        {
-            ValidationCode = validationCode;
-            Message = message;
-        }
-    }
+    public record ValidationResult(ValidationCode ValidationCode, string? Message = null) : IValidationResult {}
 }

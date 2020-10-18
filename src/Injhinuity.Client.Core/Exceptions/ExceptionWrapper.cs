@@ -2,11 +2,5 @@
 
 namespace Injhinuity.Client.Core.Exceptions
 {
-    public class ExceptionWrapper
-    {
-        public string? Name { get; set; }
-        public string? Message { get; set; }
-        public string? Reason { get; set; }
-        public HttpStatusCode StatusCode { get; set; }
-    }
+    public record ExceptionWrapper(HttpStatusCode StatusCode, string? Name = null, string? Message = null, string? Reason = null) {}
 }

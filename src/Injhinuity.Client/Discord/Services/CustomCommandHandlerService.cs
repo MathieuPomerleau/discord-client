@@ -47,7 +47,7 @@ namespace Injhinuity.Client.Discord.Services
             if (apiResult.IsSuccessStatusCode)
             {
                 var command = await _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(apiResult);
-                await context.Channel.SendMessageAsync(command?.Body ?? CommonResources.CommandNoBody);
+                await context.Channel.SendMessageAsync(!string.IsNullOrWhiteSpace(command?.Body) ? command.Body : CommonResources.CommandNoBody);
             }
             else
             {

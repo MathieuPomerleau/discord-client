@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
+using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Extensions;
@@ -18,7 +19,8 @@ namespace Injhinuity.Client.Discord.Services
         void OnReady();
         void OnDisconnected();
         Task MessageReceivedAsync(IInjhinuityCommandContext context);
-        Task CommandExecutedAsync(IInjhinuityCommandContext context, IInjhinuityCommandResult result);
+        Task HandleInjhinuityCommandResultAsync(IInjhinuityCommandContext context, IInjhinuityCommandResult result);
+        Task HandleRegularCommandResultAsync(IInjhinuityCommandContext context, IResult result);
     }
 
     public class CommandHandlerService : ICommandHandlerService
@@ -30,10 +32,11 @@ namespace Injhinuity.Client.Discord.Services
         private readonly IAssemblyProvider _assemblyProvider;
         private readonly ICustomCommandHandlerService _customCommandHandler;
         private readonly IInjhinuityCommandContextFactory _commandContextFactory;
+        private readonly IPermissionEmbedBuilderFactory _permissionEmbedBuilderFactory;
 
         public CommandHandlerService(IServiceProvider provider, IInjhinuityDiscordClient discordClient, IInjhinuityCommandService commandService,
             IClientConfig clientConfig, IAssemblyProvider assemblyProvider, ICustomCommandHandlerService customCommandHandler,
-            IInjhinuityCommandContextFactory commandContextFactory)
+            IInjhinuityCommandContextFactory commandContextFactory, IPermissionEmbedBuilderFactory permissionEmbedBuilderFactory)
         {
             _provider = provider;
             _discordClient = discordClient;
@@ -42,6 +45,7 @@ namespace Injhinuity.Client.Discord.Services
             _assemblyProvider = assemblyProvider;
             _customCommandHandler = customCommandHandler;
             _commandContextFactory = commandContextFactory;
+            _permissionEmbedBuilderFactory = permissionEmbedBuilderFactory;
         }
 
         public async Task InitializeAsync()
@@ -63,18 +67,10 @@ namespace Injhinuity.Client.Discord.Services
 
         private Task MessageReceivedDecoratorAsync(SocketMessage rawMessage)
         {
-            if (!(rawMessage is SocketUserMessage message) || message.Source != MessageSource.User)
+            if (rawMessage is not SocketUserMessage message || message.Source != MessageSource.User)
                 return Task.CompletedTask;
 
             return MessageReceivedAsync(_commandContextFactory.Create(_discordClient, new InjhinuityUserMessage(message)));
-        }
-
-        private Task CommandExecutedDecoratorAsync(Optional<CommandInfo> _, ICommandContext context, IResult result)
-        {
-            if (!(result is InjhinuityCommandResult injhinuityResult))
-                return Task.CompletedTask;
-
-            return CommandExecutedAsync(_commandContextFactory.Create(context), injhinuityResult);
         }
 
         public async Task MessageReceivedAsync(IInjhinuityCommandContext context)
@@ -89,25 +85,39 @@ namespace Injhinuity.Client.Discord.Services
             await _commandService.ExecuteAsync(context.GetSocketContext(), argPos, _provider);
         }
 
-        public async Task CommandExecutedAsync(IInjhinuityCommandContext context, IInjhinuityCommandResult result)
+        private Task CommandExecutedDecoratorAsync(Optional<CommandInfo> _, ICommandContext context, IResult result)
         {
-            if (!(result.ReactionEmbed is null))
+            if (result is InjhinuityCommandResult injhinuityResult)
+                return HandleInjhinuityCommandResultAsync(_commandContextFactory.Create(context), injhinuityResult);
+            else
+                return HandleRegularCommandResultAsync(_commandContextFactory.Create(context), result);
+        }
+
+        public async Task HandleInjhinuityCommandResultAsync(IInjhinuityCommandContext context, IInjhinuityCommandResult result)
+        {
+            if (result.ReactionEmbed is not null)
             {
                 await result.ReactionEmbed.InitializeAsync(context);
                 return;
             }
 
-            if (!(result.EmbedBuilder is null))
+            if (result.EmbedBuilder is not null)
             {
                 await context.Channel.SendEmbedMessageAsync(result.EmbedBuilder);
                 return;
             }
 
-            if (!(result.Message is null))
+            if (result.Message is not null)
             {
                 await context.Channel.SendMessageAsync(result.Message);
                 return;
             }
+        }
+
+        public async Task HandleRegularCommandResultAsync(IInjhinuityCommandContext context, IResult result)
+        {
+            if (result.ErrorReason.Contains("guild permission"))
+                await context.Channel.SendEmbedMessageAsync(_permissionEmbedBuilderFactory.CreateMissingPermissionFailure());
         }
     }
 }

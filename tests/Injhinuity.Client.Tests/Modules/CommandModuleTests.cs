@@ -43,7 +43,7 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-        private readonly ExceptionWrapper _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
+        private readonly ExceptionWrapper _wrapper = new ExceptionWrapper(HttpStatusCode.NotFound);
         private readonly InjhinuityCommandResult _commandResult = new InjhinuityCommandResult();
         private readonly CommandResource _commandResource = Fixture.Create<CommandResource>();
 

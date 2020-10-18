@@ -45,7 +45,9 @@ namespace Injhinuity.Client
                 .AddTransient<IEmbedBuilderFactoryProvider, EmbedBuilderFactoryProvider>()
                 .AddTransient<ICommandEmbedBuilderFactory, CommandEmbedBuilderFactory>()
                 .AddTransient<IInformationEmbedBuilderFactory, InformationEmbedBuilderFactory>()
-                .AddTransient<IRoleEmbedBuilderFactory, RoleEmbedBuilderFactory>();
+                .AddTransient<IRoleEmbedBuilderFactory, RoleEmbedBuilderFactory>()
+                .AddTransient<IAdminEmbedBuilderFactory, AdminEmbedBuilderFactory>()
+                .AddTransient<IPermissionEmbedBuilderFactory, PermissionEmbedBuilderFactory>();
         }
     }
 }

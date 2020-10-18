@@ -36,7 +36,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateCreateSuccess(_name);
 
             AssertSuccess();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
@@ -46,7 +45,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateDeleteSuccess(_name);
 
             AssertSuccess();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
@@ -68,7 +66,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateAssignSuccess(_name);
 
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.TitleAssign);
@@ -82,7 +79,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateUnassignSuccess(_name);
 
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.TitleUnassign);
@@ -101,6 +97,7 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithTitle(RoleResources.TitleRoleNotFound);
             _embedBuilder.Received().WithColor(Color.Red);
             _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
         }
 
         [Fact]
@@ -126,21 +123,21 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         private void AssertSuccess()
         {
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.Title);
             _embedBuilder.Received().WithColor(Color.Green);
             _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
         }
 
         private void AssertFailure()
         {
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
             _embedBuilder.Received().WithTitle(RoleResources.Title);
             _embedBuilder.Received().WithColor(Color.Red);
             _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
         }
     }
 }

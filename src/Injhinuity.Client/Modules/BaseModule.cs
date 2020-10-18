@@ -6,6 +6,7 @@ using Discord.Commands;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Discord.Builders;
 using Injhinuity.Client.Discord.Embeds;
+using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Services.Api;
@@ -18,11 +19,15 @@ namespace Injhinuity.Client.Modules
         private readonly IApiReponseDeserializer _deserializer;
         private readonly ICommandResultBuilder _resultBuilder;
 
-        protected BaseModule(IInjhinuityCommandContextFactory commandContextFactory, IApiReponseDeserializer deserializer, ICommandResultBuilder resultBuilder)
+        protected readonly IEmbedBuilderFactoryProvider EmbedBuilderFactoryProvider;
+
+        protected BaseModule(IInjhinuityCommandContextFactory commandContextFactory, IApiReponseDeserializer deserializer, ICommandResultBuilder resultBuilder,
+            IEmbedBuilderFactoryProvider embedBuilderFactoryProvider)
         {
             _commandContextFactory = commandContextFactory;
             _deserializer = deserializer;
             _resultBuilder = resultBuilder;
+            EmbedBuilderFactoryProvider = embedBuilderFactoryProvider;
         }
 
         protected IInjhinuityCommandContext CustomContext => _commandContextFactory.Create(Context);

@@ -28,20 +28,17 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 
         public EmbedBuilder CreateCreateSuccess(string name, string body) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
 
         public EmbedBuilder CreateDeleteSuccess(string name) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
         public EmbedBuilder CreateUpdateSuccess(string name, string body) =>
             CreateBaseSuccessEmbed()
-                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeUpdate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .AddField(CommonResources.FieldTitleContent, body, true)
                 .Build();
@@ -72,7 +69,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
         private IInjhinuityEmbedBuilder CreateBaseSuccessEmbed() =>
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
-                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true)
                 .WithThumbnailUrl(IconResources.Checkmark)
                 .WithColor(Color.Green)
                 .WithTimestamp();
@@ -80,7 +76,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
         private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string? message, object errorCode) =>
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
-                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true)
                 .AddField(CommonResources.FieldTitleErrorCode, errorCode, true)
                 .AddField(CommonResources.FieldTitleReason, message ?? CommonResources.FieldValueReasonDefault)
                 .WithThumbnailUrl(IconResources.Crossmark)

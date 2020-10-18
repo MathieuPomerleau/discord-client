@@ -29,13 +29,11 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 
         public EmbedBuilder CreateCreateSuccess(string name) =>
             CreateBaseSuccess()
-                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
         public EmbedBuilder CreateDeleteSuccess(string name) =>
             CreateBaseSuccess()
-                .AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true)
                 .AddField(CommonResources.FieldTitleName, name)
                 .Build();
 
@@ -79,7 +77,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
         private IInjhinuityEmbedBuilder CreateBaseSuccess() =>
             _embedBuilder.Create()
                 .WithTitle(RoleResources.Title)
-                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true)
                 .WithThumbnailUrl(IconResources.Checkmark)
                 .WithColor(Color.Green)
                 .WithTimestamp();
@@ -87,7 +84,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
         private IInjhinuityEmbedBuilder CreateBaseFailure(string? message, object errorCode) =>
             _embedBuilder.Create()
                 .WithTitle(RoleResources.Title)
-                .AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true)
                 .AddField(CommonResources.FieldTitleErrorCode, errorCode, true)
                 .AddField(CommonResources.FieldTitleReason, message ?? CommonResources.FieldValueReasonDefault)
                 .WithThumbnailUrl(IconResources.Crossmark)

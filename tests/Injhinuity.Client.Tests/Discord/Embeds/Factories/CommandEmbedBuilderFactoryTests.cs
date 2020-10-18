@@ -37,7 +37,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateCreateSuccess(_name, _body);
 
             AssertSuccess();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeCreate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
@@ -48,7 +47,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateDeleteSuccess(_name);
 
             AssertSuccess();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeDelete, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
 
@@ -58,7 +56,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _subject.CreateUpdateSuccess(_name, _body);
 
             AssertSuccess();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleType, CommonResources.FieldValueTypeUpdate, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleContent, _body, true);
             _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
         }
@@ -109,21 +106,21 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         private void AssertSuccess()
         {
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultSuccess, true);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(CommandResources.Title);
             _embedBuilder.Received().WithColor(Color.Green);
             _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
         }
 
         private void AssertFailure()
         {
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleResult, CommonResources.FieldValueResultFailure, true);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
             _embedBuilder.Received().WithTitle(CommandResources.Title);
             _embedBuilder.Received().WithColor(Color.Red);
             _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
         }
     }
 }

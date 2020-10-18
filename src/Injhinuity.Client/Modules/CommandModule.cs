@@ -22,18 +22,17 @@ namespace Injhinuity.Client.Modules
     {
         private readonly ICommandRequester _requester;
         private readonly ICommandBundleFactory _bundleFactory;
-        private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
         private readonly ICommandValidator _validator;
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IValidationResourceFactory _validationResourceFactory;
 
         public CommandModule(ICommandRequester requester, ICommandBundleFactory bundleFactory, ICommandResultBuilder resultBuilder,
             IEmbedBuilderFactoryProvider embedBuilderFactoryProvider, ICommandValidator validator, IApiReponseDeserializer deserializer, IReactionEmbedFactory reactionEmbedFactory,
-            IInjhinuityCommandContextFactory commandContextFactory, IValidationResourceFactory validationResourceFactory) : base(commandContextFactory, deserializer, resultBuilder)
+            IInjhinuityCommandContextFactory commandContextFactory, IValidationResourceFactory validationResourceFactory)
+            : base(commandContextFactory, deserializer, resultBuilder, embedBuilderFactoryProvider)
         {
             _requester = requester;
             _bundleFactory = bundleFactory;
-            _embedBuilderFactoryProvider = embedBuilderFactoryProvider;
             _validator = validator;
             _reactionEmbedFactory = reactionEmbedFactory;
             _validationResourceFactory = validationResourceFactory;
@@ -48,7 +47,7 @@ namespace Injhinuity.Client.Modules
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Command.CreateFailure(validationResult);
+                var validationEmbedBuilder = EmbedBuilderFactoryProvider.Command.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
@@ -56,8 +55,8 @@ namespace Injhinuity.Client.Modules
             var apiResult = await _requester.ExecuteAsync(ApiAction.Post, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateCreateSuccess(name, body)
-                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                ? EmbedBuilderFactoryProvider.Command.CreateCreateSuccess(name, body)
+                : EmbedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -70,8 +69,8 @@ namespace Injhinuity.Client.Modules
             var apiResult = await _requester.ExecuteAsync(ApiAction.Delete, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateDeleteSuccess(name)
-                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                ? EmbedBuilderFactoryProvider.Command.CreateDeleteSuccess(name)
+                : EmbedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -84,8 +83,8 @@ namespace Injhinuity.Client.Modules
             var apiResult = await _requester.ExecuteAsync(ApiAction.Put, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Command.CreateUpdateSuccess(name, body)
-                : _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                ? EmbedBuilderFactoryProvider.Command.CreateUpdateSuccess(name, body)
+                : EmbedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -98,7 +97,7 @@ namespace Injhinuity.Client.Modules
 
             if (apiResult.IsSuccessStatusCode)
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateGetAllSuccess();
+                var embedBuilder = EmbedBuilderFactoryProvider.Command.CreateGetAllSuccess();
                 var commands = await DeserializeListAsync<CommandResponse, Command>(apiResult);
                 var fieldList = commands?.Select(x => new InjhinuityEmbedField(x.Name, x.Body));
 
@@ -108,7 +107,7 @@ namespace Injhinuity.Client.Modules
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = EmbedBuilderFactoryProvider.Command.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
         }

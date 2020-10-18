@@ -24,23 +24,23 @@ namespace Injhinuity.Client.Core
 
         private ICommandValidator BuildCommandValidator(IServiceProvider provider)
         {
-            var config = provider.GetService<IClientConfig>().Validation;
-            var resultBuilder = provider.GetService<IValidationResultBuilder>();
+            var config = provider.GetService<IClientConfig>()!.Validation;
+            var resultBuilder = provider.GetService<IValidationResultBuilder>()!;
 
             ICommandValidator validator = new CommandValidator();
-            validator.AddRoot(new NameValidator(resultBuilder, config.Command.CommandNameMaxLength))
-                .AddNext(new BodyValidator(resultBuilder, config.Command.CommandBodyMaxLength));
+            validator.AddRoot(new NameValidator(resultBuilder, config.Command.NameMaxLength))
+                .AddNext(new BodyValidator(resultBuilder, config.Command.BodyMaxLength));
 
             return validator;
         }
 
         private IRoleValidator BuildRoleValidator(IServiceProvider provider)
         {
-            var config = provider.GetService<IClientConfig>().Validation;
-            var resultBuilder = provider.GetService<IValidationResultBuilder>();
+            var config = provider.GetService<IClientConfig>()!.Validation;
+            var resultBuilder = provider.GetService<IValidationResultBuilder>()!;
 
             IRoleValidator validator = new RoleValidator();
-            validator.AddRoot(new NameValidator(resultBuilder, config.Command.CommandNameMaxLength));
+            validator.AddRoot(new NameValidator(resultBuilder, config.Command.NameMaxLength));
 
             return validator;
         }

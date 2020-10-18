@@ -8,7 +8,6 @@ using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Core.Resources;
 using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
-using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Discord.Services;
 using Injhinuity.Client.Model.Domain;
 using Injhinuity.Client.Model.Domain.Requests.Bundles;
@@ -32,7 +31,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-        private readonly ExceptionWrapper _wrapper = new ExceptionWrapper { StatusCode = HttpStatusCode.NotFound };
+        private readonly ExceptionWrapper _wrapper = new ExceptionWrapper(HttpStatusCode.NotFound);
 
         private readonly ICommandRequester _requester;
         private readonly ICommandBundleFactory _bundleFactory;

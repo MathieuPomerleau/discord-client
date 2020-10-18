@@ -23,18 +23,16 @@ namespace Injhinuity.Client.Modules
     {
         private readonly IRoleRequester _requester;
         private readonly IRoleBundleFactory _bundleFactory;
-        private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
         private readonly IRoleValidator _validator;
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IValidationResourceFactory _validationResourceFactory;
 
         public RoleModule(IRoleRequester requester, IRoleBundleFactory bundleFactory, IEmbedBuilderFactoryProvider embedBuilderFactoryProvider, IRoleValidator validator, IReactionEmbedFactory reactionEmbedFactory,
             IValidationResourceFactory validationResourceFactory, IInjhinuityCommandContextFactory commandContextFactory, IApiReponseDeserializer deserializer, ICommandResultBuilder resultBuilder)
-            : base(commandContextFactory, deserializer, resultBuilder)
+            : base(commandContextFactory, deserializer, resultBuilder, embedBuilderFactoryProvider)
         {
             _requester = requester;
             _bundleFactory = bundleFactory;
-            _embedBuilderFactoryProvider = embedBuilderFactoryProvider;
             _validator = validator;
             _reactionEmbedFactory = reactionEmbedFactory;
             _validationResourceFactory = validationResourceFactory;
@@ -49,7 +47,7 @@ namespace Injhinuity.Client.Modules
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(validationResult);
+                var validationEmbedBuilder = EmbedBuilderFactoryProvider.Role.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
@@ -57,8 +55,8 @@ namespace Injhinuity.Client.Modules
             var apiResult = await _requester.ExecuteAsync(ApiAction.Post, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Role.CreateCreateSuccess(role.Name)
-                : _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                ? EmbedBuilderFactoryProvider.Role.CreateCreateSuccess(role.Name)
+                : EmbedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -72,7 +70,7 @@ namespace Injhinuity.Client.Modules
 
             if (validationResult.ValidationCode != ValidationCode.Ok)
             {
-                var validationEmbedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(validationResult);
+                var validationEmbedBuilder = EmbedBuilderFactoryProvider.Role.CreateFailure(validationResult);
                 return EmbedResult(validationEmbedBuilder);
             }
 
@@ -80,8 +78,8 @@ namespace Injhinuity.Client.Modules
             var apiResult = await _requester.ExecuteAsync(ApiAction.Delete, bundle);
 
             var embedBuilder = apiResult.IsSuccessStatusCode
-                ? _embedBuilderFactoryProvider.Role.CreateDeleteSuccess(role.Name)
-                : _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                ? EmbedBuilderFactoryProvider.Role.CreateDeleteSuccess(role.Name)
+                : EmbedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
 
             return EmbedResult(embedBuilder);
         }
@@ -94,7 +92,7 @@ namespace Injhinuity.Client.Modules
 
             if (apiResult.IsSuccessStatusCode)
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateGetAllSuccess();
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateGetAllSuccess();
                 var roles = await DeserializeListAsync<RoleResponse, Role>(apiResult);
                 var fieldList = roles?.Select(x => new InjhinuityEmbedField(RoleResources.FieldTitleRole, x.Name));
 
@@ -104,7 +102,7 @@ namespace Injhinuity.Client.Modules
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
         }
@@ -118,13 +116,13 @@ namespace Injhinuity.Client.Modules
             if (apiResult.IsSuccessStatusCode)
             {
                 await CustomContext.GuildUser.AddRoleAsync(role);
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateAssignSuccess(role.Name);
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateAssignSuccess(role.Name);
 
                 return EmbedResult(embedBuilder);
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
         }
@@ -138,13 +136,13 @@ namespace Injhinuity.Client.Modules
             if (apiResult.IsSuccessStatusCode)
             {
                 await CustomContext.GuildUser.RemoveRoleAsync(role);
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateUnassignSuccess(role.Name);
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateUnassignSuccess(role.Name);
 
                 return EmbedResult(embedBuilder);
             }
             else
             {
-                var embedBuilder = _embedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
+                var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateFailure(await GetExceptionWrapperAsync(apiResult));
                 return EmbedResult(embedBuilder);
             }
         }
@@ -152,7 +150,7 @@ namespace Injhinuity.Client.Modules
         [Command("create role"), Alias("delete role", "iam", "iamnot")]
         public Task<RuntimeResult> RoleNotFoundAsync([Remainder] string remainder)
         {
-            var embedBuilder = _embedBuilderFactoryProvider.Role.CreateRoleNotFoundFailure(remainder);
+            var embedBuilder = EmbedBuilderFactoryProvider.Role.CreateRoleNotFoundFailure(remainder);
             return Task.FromResult(EmbedResult(embedBuilder));
         }
     }
