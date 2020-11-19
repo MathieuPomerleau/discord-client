@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Configuration.Options;
+using Injhinuity.Client.Core.Exceptions;
+using Injhinuity.Client.Discord.Converters;
+using Injhinuity.Client.Discord.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,7 +27,6 @@ namespace Injhinuity.Client
             Register(services);
 
             using var provider = services.BuildServiceProvider();
-
             await provider.GetRequiredService<IInjhinuityClient>().RunAsync();
         }
 
@@ -38,6 +41,21 @@ namespace Injhinuity.Client
                .Get<ClientOptions>();
 
             services.AddSingleton(_configMapper.MapFromNullableOptions(options));
+            services.AddSingleton<IInjhinuityDiscordClientConfig>(provider =>
+            {
+                var config = provider.GetService<IClientConfig>();
+                var converter = provider.GetService<ILogSeverityConverter>();
+
+                if (config is null || converter is null)
+                    throw new InjhinuityException("Missing required services for creation of discord client configuration.");
+
+                var discordConfig = new DiscordSocketConfig
+                {
+                    LogLevel = converter.FromLogLevel(config.Logging.DiscordLogLevel)
+                };
+
+                return new InjhinuityDiscordClientConfig(discordConfig);
+            });
         }
 
         private static void ConfigureLogging(IServiceCollection services)
@@ -46,7 +64,7 @@ namespace Injhinuity.Client
 
             services.AddLogging(opt => opt.AddConsole())
                 .Configure<LoggerFilterOptions>(opt => {
-                    opt.MinLevel = provider.GetRequiredService<IClientConfig>().Logging.LogLevel;
+                    opt.MinLevel = provider.GetRequiredService<IClientConfig>().Logging.AppLogLevel;
                 });
         }
 

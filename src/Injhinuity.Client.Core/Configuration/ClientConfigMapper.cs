@@ -13,7 +13,7 @@ namespace Injhinuity.Client.Core.Configuration
     {
         public IClientConfig MapFromNullableOptions(IClientOptions clientOptions)
         {
-            if (!(clientOptions is ClientOptions options))
+            if (clientOptions is not ClientOptions options)
                 throw new InjhinuityException("Configuration couldn't be built, options are null");
 
             var result = new NullableOptionsResult();
@@ -23,7 +23,7 @@ namespace Injhinuity.Client.Core.Configuration
                 throw new InjhinuityException($"The following values are missing from the configuration:\n{result}");
 
             var version = new VersionConfig(options.Version.VersionNo);
-            var logging = new LoggingConfig(options.Logging.LogLevel.Value);
+            var logging = new LoggingConfig(options.Logging.AppLogLevel.Value, options.Logging.DiscordLogLevel.Value);
             var discord = new DiscordConfig(options.Discord.Token, options.Discord.Prefix.Value);
             var api = new ApiConfig(options.Api.BaseUrl);
             var validation = MapValidationConfig(options.Validation);
@@ -31,7 +31,7 @@ namespace Injhinuity.Client.Core.Configuration
             return new ClientConfig(version, logging, discord, api, validation);
         }
 
-        private ValidationConfig MapValidationConfig(ValidationOptions options)
+        private static ValidationConfig MapValidationConfig(ValidationOptions options)
         {
             var commandValidation = new CommandValidationConfig(options.Command.CommandNameMaxLength.Value, options.Command.CommandBodyMaxLength.Value);
             return new ValidationConfig(commandValidation);

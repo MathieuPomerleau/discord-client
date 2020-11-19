@@ -54,7 +54,8 @@ namespace Injhinuity.Client.Core.Tests.Configuration
             result.Version.Should().NotBeNull();
             result.Version.VersionNo.Should().NotBeNull();
             result.Logging.Should().NotBeNull();
-            result.Logging.LogLevel.Should().NotBeNull();
+            result.Logging.AppLogLevel.Should().NotBeNull();
+            result.Logging.DiscordLogLevel.Should().NotBeNull();
             result.Api.Should().NotBeNull();
             result.Api.BaseUrl.Should().NotBeNull();
             result.Validation.Command.Should().NotBeNull();
@@ -64,7 +65,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration
             new ClientOptions
             {
                 Discord = new DiscordOptions { Token = "token", Prefix = '!' },
-                Logging = new LoggingOptions { LogLevel = LogLevel.Information },
+                Logging = new LoggingOptions { AppLogLevel = LogLevel.Information, DiscordLogLevel = LogLevel.Information },
                 Version = new VersionOptions { VersionNo = "0" },
                 Api = new ApiOptions { BaseUrl = "url" },
                 Validation = new ValidationOptions

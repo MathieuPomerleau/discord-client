@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Injhinuity.Client.Discord.Entities;
 
 namespace Injhinuity.Client.Discord.Services
 {
@@ -23,5 +24,8 @@ namespace Injhinuity.Client.Discord.Services
         SocketSelfUser CurrentUser { get; }
     }
 
-    public class InjhinuityDiscordClient : DiscordSocketClient, IInjhinuityDiscordClient { }
+    public class InjhinuityDiscordClient : DiscordSocketClient, IInjhinuityDiscordClient
+    {
+        public InjhinuityDiscordClient(IInjhinuityDiscordClientConfig config) : base(config.Config) {}
+    }
 }

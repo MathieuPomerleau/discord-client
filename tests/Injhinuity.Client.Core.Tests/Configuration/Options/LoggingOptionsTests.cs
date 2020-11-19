@@ -11,7 +11,11 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
 
         public LoggingOptionsTests()
         {
-            _subject = new LoggingOptions { LogLevel = LogLevel.Information };
+            _subject = new LoggingOptions
+            {
+                AppLogLevel = LogLevel.Information,
+                DiscordLogLevel = LogLevel.Information
+            };
         }
 
         [Fact]
@@ -28,12 +32,12 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
         public void ContainsNull_WithAtLeastOneNullOptions_ThenResultIsNotValid()
         {
             var result = new NullableOptionsResult();
-            _subject.LogLevel = null;
+            _subject.AppLogLevel = null;
 
             _subject.ContainsNull(result);
 
             result.IsValid.Should().BeFalse();
-            result.NullValues.Should().Contain(("Logging", "LogLevel"));
+            result.NullValues.Should().Contain(("Logging", "AppLogLevel"));
         }
     }
 }

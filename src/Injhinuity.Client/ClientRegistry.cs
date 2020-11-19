@@ -8,6 +8,7 @@ using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
 using Injhinuity.Client.Services.Mappers;
 using Injhinuity.Client.Discord.Embeds.Factories;
+using Injhinuity.Client.Discord.Converters;
 
 namespace Injhinuity.Client
 {
@@ -48,6 +49,9 @@ namespace Injhinuity.Client
                 .AddTransient<IRoleEmbedBuilderFactory, RoleEmbedBuilderFactory>()
                 .AddTransient<IAdminEmbedBuilderFactory, AdminEmbedBuilderFactory>()
                 .AddTransient<IPermissionEmbedBuilderFactory, PermissionEmbedBuilderFactory>();
+
+            // Misc
+            services.AddTransient<ILogSeverityConverter, LogSeverityConverter>();
         }
     }
 }

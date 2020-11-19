@@ -6,12 +6,16 @@ namespace Injhinuity.Client.Core.Configuration.Options
     {
         public static string OptionName => "Logging";
 
-        public LogLevel? LogLevel { get; set; }
+        public LogLevel? AppLogLevel { get; set; }
+        public LogLevel? DiscordLogLevel { get; set; }
 
         public void ContainsNull(NullableOptionsResult result)
         {
-            if (LogLevel is null)
-                result.AddValueToResult(OptionName, "LogLevel");
+            if (AppLogLevel is null)
+                result.AddValueToResult(OptionName, "AppLogLevel");
+
+            if (DiscordLogLevel is null)
+                result.AddValueToResult(OptionName, "DiscordLogLevel");
         }
     }
 }

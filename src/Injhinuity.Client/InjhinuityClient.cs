@@ -48,7 +48,7 @@ namespace Injhinuity.Client
         private async Task RegisterClientAsync()
         {
             _commandService.Log += (message) => LogAsync(message, "[Command Service]");
-            _discordClient.Log += (message) => LogAsync(message, "[Discord]"); ;
+            _discordClient.Log += (message) => LogAsync(message, "[Discord]");
 
             _discordClient.Ready += OnReadyAsync;
             _discordClient.Disconnected += _ => OnDisconnectedAsync();
