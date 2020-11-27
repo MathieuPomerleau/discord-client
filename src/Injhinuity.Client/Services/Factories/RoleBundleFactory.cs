@@ -7,7 +7,7 @@ namespace Injhinuity.Client.Services.Factories
     public interface IRoleBundleFactory
     {
         RoleRequestBundle Create(string guildId);
-        RoleRequestBundle Create(string guildId, IRole role);
+        RoleRequestBundle Create(string guildId, string roleId, string roleName, string emote = "");
     }
 
     public class RoleBundleFactory : IRoleBundleFactory
@@ -15,7 +15,7 @@ namespace Injhinuity.Client.Services.Factories
         public RoleRequestBundle Create(string guildId) =>
             new RoleRequestBundle(guildId);
 
-        public RoleRequestBundle Create(string guildId, IRole role) =>
-            new RoleRequestBundle(guildId, new RoleRequest(role.Id.ToString(), role.Name));
+        public RoleRequestBundle Create(string guildId, string roleId, string roleName, string emote = "") =>
+            new RoleRequestBundle(guildId, new RoleRequest(roleId, roleName, emote));
     }
 }

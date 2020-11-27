@@ -23,6 +23,8 @@ namespace Injhinuity.Client
                 .AddSingleton<IInjhinuityCommandService, InjhinuityCommandService>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<ICustomCommandHandlerService, CustomCommandHandlerService>()
+                .AddSingleton<IReactionRoleEmbedService, ReactionRoleEmbedService>()
+                .AddSingleton<IInitialStartupHandler, InitialStartupHandler>()
                 .AddTransient<ICommandExclusionService, CommandExclusionService>();
 
             // Api services
@@ -30,7 +32,8 @@ namespace Injhinuity.Client
                 .AddTransient<IApiReponseDeserializer, ApiResponseDeserializer>()
                 .AddTransient<IApiUrlProvider, ApiUrlProvider>()
                 .AddTransient<ICommandRequester, CommandRequester>()
-                .AddTransient<IRoleRequester, RoleRequester>();
+                .AddTransient<IRoleRequester, RoleRequester>()
+                .AddTransient<IGuildRequester, GuildRequester>();
 
             // Builders
             services.AddTransient<IInjhinuityEmbedBuilder, InjhinuityEmbedBuilder>()
@@ -43,6 +46,7 @@ namespace Injhinuity.Client
                 .AddTransient<IInjhinuityCommandContextFactory, InjhinuityCommandContextFactory>()
                 .AddTransient<ICommandBundleFactory, CommandBundleFactory>()
                 .AddTransient<IRoleBundleFactory, RoleBundleFactory>()
+                .AddTransient<IGuildBundleFactory, GuildBundleFactory>()
                 .AddTransient<IEmbedBuilderFactoryProvider, EmbedBuilderFactoryProvider>()
                 .AddTransient<ICommandEmbedBuilderFactory, CommandEmbedBuilderFactory>()
                 .AddTransient<IInformationEmbedBuilderFactory, InformationEmbedBuilderFactory>()

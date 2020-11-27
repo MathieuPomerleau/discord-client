@@ -46,12 +46,12 @@ namespace Injhinuity.Client.Discord.Services
 
             if (apiResult.IsSuccessStatusCode)
             {
-                var command = await _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(apiResult);
+                var command = await _deserializer.StrictDeserializeAndAdaptAsync<CommandResponse, Command>(apiResult);
                 await context.Channel.SendMessageAsync(!string.IsNullOrWhiteSpace(command?.Body) ? command.Body : CommonResources.CommandNoBody);
             }
             else
             {
-                var wrapper = await _deserializer.DeserializeAsync<ExceptionWrapper>(apiResult);
+                var wrapper = await _deserializer.StrictDeserializeAsync<ExceptionWrapper>(apiResult);
                 var embedBuilder = _embedBuilderFactoryProvider.Command.CreateCustomFailure(wrapper);
                 await context.Channel.SendEmbedMessageAsync(embedBuilder);
             }

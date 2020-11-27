@@ -1,6 +1,4 @@
 ﻿namespace Injhinuity.Client.Model.Domain.Requests
 {
-    public interface IRequest
-    {
-    }
+    public interface IRequest {}
 }

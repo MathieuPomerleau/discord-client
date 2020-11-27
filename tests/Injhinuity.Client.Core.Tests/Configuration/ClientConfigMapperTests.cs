@@ -46,7 +46,6 @@ namespace Injhinuity.Client.Core.Tests.Configuration
             var result = _subject.MapFromNullableOptions(options);
 
             using var scope = new AssertionScope();
-
             result.Should().BeOfType<ClientConfig>();
             result.Discord.Should().NotBeNull();
             result.Discord.Token.Should().NotBeNull();

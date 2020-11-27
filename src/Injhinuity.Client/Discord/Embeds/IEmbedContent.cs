@@ -2,7 +2,7 @@
 
 namespace Injhinuity.Client.Discord.Embeds
 {
-    public interface IReactionEmbedContent
+    public interface IEmbedContent
     {
         public EmbedBuilder Get();
     }

@@ -11,7 +11,8 @@ namespace Injhinuity.Client.Discord.Factories
 {
     public interface IReactionEmbedFactory
     {
-        IReactionEmbed CreateListReactionEmbed(IEnumerable<InjhinuityEmbedField>? fields, EmbedBuilder embedBuilder);
+        IPageReactionEmbed CreatePageReactionEmbed(EmbedBuilder embedBuilder, IEnumerable<InjhinuityEmbedField>? fields);
+        IReactionRoleEmbed CreateRoleReactionEmbed(EmbedBuilder embedBuilder, IEnumerable<string> rows, IEnumerable<UserReactionButton> buttons);
     }
 
     public class ReactionEmbedFactory : IReactionEmbedFactory
@@ -23,14 +24,15 @@ namespace Injhinuity.Client.Discord.Factories
             _builder = builder;
         }
 
-        public IReactionEmbed CreateListReactionEmbed(IEnumerable<InjhinuityEmbedField>? fields, EmbedBuilder embedBuilder)
+        public IPageReactionEmbed CreatePageReactionEmbed(EmbedBuilder embedBuilder, IEnumerable<InjhinuityEmbedField>? fields)
         {
-            var content = new ListEmbedContent(9, fields, embedBuilder);
+            var content = new PagedListEmbedContent(9, fields, embedBuilder);
 
             return _builder.Create()
                 .WithLifetime(60)
                 .WithContent(content)
-                .WithButton(InjhinuityEmote.LeftArrow, () => {
+                .WithButton(InjhinuityEmote.LeftArrow, () =>
+                {
                     content.PreviousPage();
                     return Task.CompletedTask;
                 })
@@ -39,7 +41,17 @@ namespace Injhinuity.Client.Discord.Factories
                     content.NextPage();
                     return Task.CompletedTask;
                 })
-                .Build();
+                .BuildPage();
+        }
+
+        public IReactionRoleEmbed CreateRoleReactionEmbed(EmbedBuilder embedBuilder, IEnumerable<string> rows, IEnumerable<UserReactionButton> buttons)
+        {
+            var content = new DescriptionListEmbedContent(embedBuilder, rows);
+
+            return _builder.Create()
+                .WithContent(content)
+                .WithUserButtons(buttons)
+                .BuildRole();
         }
     }
 }

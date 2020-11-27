@@ -27,6 +27,7 @@ namespace Injhinuity.Client.Tests
         private readonly IInjhinuityCommandService _commandService;
         private readonly ICommandHandlerService _commandHandlerService;
         private readonly IActivityFactory _activityFactory;
+        private readonly IInitialStartupHandler _initialStartupHandler;
 
         public InjhinuityClientTests()
         {
@@ -36,13 +37,14 @@ namespace Injhinuity.Client.Tests
             _commandService = Substitute.For<IInjhinuityCommandService>();
             _commandHandlerService = Substitute.For<ICommandHandlerService>();
             _activityFactory = Substitute.For<IActivityFactory>();
+            _initialStartupHandler = Substitute.For<IInitialStartupHandler>();
             
             _activityFactory.CreatePlayingStatus(Arg.Any<string>()).Returns(_activity);
             _clientConfig.Version.Returns(new VersionConfig(_versionNo));
             _clientConfig.Discord.Returns(_discordConfig);
 
             _subject = new InjhinuityClient(_consoleLogger, _clientConfig, _discordClient,
-                _commandService, _commandHandlerService, _activityFactory);
+                _commandService, _commandHandlerService, _activityFactory, _initialStartupHandler);
         }
 
         [Fact]
@@ -63,11 +65,13 @@ namespace Injhinuity.Client.Tests
         }
 
         [Fact]
-        public async Task OnReadyAsync_ThenCallsCommandHandlerOnReady()
+        public async Task OnReadyAsync_ThenCallsAppropriateServices()
         {
             await _subject.OnReadyAsync();
 
             _commandHandlerService.Received().OnReady();
+            await _initialStartupHandler.Received().ExecuteColdStartupAsync();
+            await _initialStartupHandler.Received().ExecuteWarmStartupAsync();
         }
 
         [Fact]

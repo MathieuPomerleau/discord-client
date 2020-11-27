@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -11,39 +12,38 @@ using Injhinuity.Client.Extensions;
 
 namespace Injhinuity.Client.Discord.Embeds
 {
-    public interface IReactionEmbed
+    public interface IPageReactionEmbed : IReactionEmbed
     {
-        Task InitializeAsync(IInjhinuityCommandContext context);
+        Task InitalizeAsync(IInjhinuityCommandContext context);
     }
 
-    public class ReactionEmbed : IReactionEmbed
+    public class PageReactionEmbed : IPageReactionEmbed
     {
-        private readonly Timer _timer;
         private readonly IInjhinuityDiscordClient _discordClient;
 
         private IUserMessage? _message;
-        private IUserMessageReactionWrapper? _wrapper;
+        private IMessageReactionWrapper? _wrapper;
 
-        public IEnumerable<ReactionButton> Buttons { get; set; }
-        public IReactionEmbedContent Content { get; set; }
+        public IEnumerable<ReactionButton> Buttons { get; init; }
+        public IEmbedContent Content { get; init; }
 
-        public ReactionEmbed(long lifetimeInSeconds, IInjhinuityDiscordClient discordClient, IEnumerable<ReactionButton> buttons,
-            IReactionEmbedContent content)
+        public PageReactionEmbed(long lifetimeInSeconds, IInjhinuityDiscordClient discordClient,
+            IEnumerable<ReactionButton> buttons, IEmbedContent content)
         {
             _discordClient = discordClient;
             Buttons = buttons;
             Content = content;
 
-            _timer = new Timer(lifetimeInSeconds * 1000)
+            var timer = new Timer(lifetimeInSeconds * 1000)
             {
                 Enabled = true,
                 AutoReset = false
             };
-            _timer.Elapsed += OnLifetimePassed;
-            _timer.Start();
+            timer.Elapsed += OnLifetimePassed;
+            timer.Start();
         }
 
-        public async Task InitializeAsync(IInjhinuityCommandContext context)
+        public async Task InitalizeAsync(IInjhinuityCommandContext context)
         {
             var content = Content.Get();
             
@@ -53,8 +53,7 @@ namespace Injhinuity.Client.Discord.Embeds
             _wrapper = _message.OnReaction(_discordClient, OnReactionHandlerAsync, OnReactionHandlerAsync);
         }
 
-        private void ForceContentUpdate() =>
-            _message?.ModifyAsync(x => x.Embed = Content.Get().Build());
+        private void ForceContentUpdate() => _message?.ModifyAsync(x => x.Embed = Content.Get().Build());
 
         private void OnLifetimePassed(object sender, ElapsedEventArgs e)
         {

@@ -6,7 +6,8 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
 {
     public interface IPermissionEmbedBuilderFactory
     {
-        EmbedBuilder CreateMissingPermissionFailure();
+        EmbedBuilder CreateMissingUserPermissionFailure();
+        EmbedBuilder CreateMissingBotPermissionFailure();
     }
 
     public class PermissionEmbedBuilderFactory : IPermissionEmbedBuilderFactory
@@ -18,13 +19,20 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
             _embedBuilder = embedBuilder;
         }
 
-        public EmbedBuilder CreateMissingPermissionFailure() =>
+        public EmbedBuilder CreateMissingUserPermissionFailure() =>
             _embedBuilder.Create()
-                .WithTitle(PermissionResources.TitleMissingPermission)
-                .WithDescription(PermissionResources.DescMissingPermission)
+                .WithTitle(PermissionResources.TitleMissingUserPermission)
+                .WithDescription(PermissionResources.DescMissingUserPermission)
                 .WithThumbnailUrl(IconResources.Crossmark)
                 .WithColor(Color.Red)
-                .WithTimestamp()
+                .Build();
+
+        public EmbedBuilder CreateMissingBotPermissionFailure() =>
+            _embedBuilder.Create()
+                .WithTitle(PermissionResources.TitleMissingBotPermission)
+                .WithDescription(PermissionResources.DescMissingBotPermission)
+                .WithThumbnailUrl(IconResources.Crossmark)
+                .WithColor(Color.Red)
                 .Build();
     }
 }

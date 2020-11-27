@@ -13,6 +13,7 @@ using Injhinuity.Client.Model.Domain;
 using Injhinuity.Client.Model.Domain.Responses;
 using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
+using Injhinuity.Client.Services.Mappers;
 using Injhinuity.Client.Services.Requesters;
 using InjhinuityEmbedField = Injhinuity.Client.Discord.Embeds.InjhinuityEmbedField;
 
@@ -27,9 +28,10 @@ namespace Injhinuity.Client.Modules
         private readonly IValidationResourceFactory _validationResourceFactory;
 
         public CommandModule(ICommandRequester requester, ICommandBundleFactory bundleFactory, ICommandResultBuilder resultBuilder,
-            IEmbedBuilderFactoryProvider embedBuilderFactoryProvider, ICommandValidator validator, IApiReponseDeserializer deserializer, IReactionEmbedFactory reactionEmbedFactory,
-            IInjhinuityCommandContextFactory commandContextFactory, IValidationResourceFactory validationResourceFactory)
-            : base(commandContextFactory, deserializer, resultBuilder, embedBuilderFactoryProvider)
+            IEmbedBuilderFactoryProvider embedBuilderFactoryProvider, ICommandValidator validator, IApiReponseDeserializer deserializer,
+            IReactionEmbedFactory reactionEmbedFactory, IInjhinuityCommandContextFactory commandContextFactory, IValidationResourceFactory validationResourceFactory,
+            IInjhinuityMapper mapper)
+            : base(commandContextFactory, deserializer, resultBuilder, mapper, embedBuilderFactoryProvider)
         {
             _requester = requester;
             _bundleFactory = bundleFactory;
@@ -98,11 +100,10 @@ namespace Injhinuity.Client.Modules
             if (apiResult.IsSuccessStatusCode)
             {
                 var embedBuilder = EmbedBuilderFactoryProvider.Command.CreateGetAllSuccess();
-                var commands = await DeserializeListAsync<CommandResponse, Command>(apiResult);
-                var fieldList = commands?.Select(x => new InjhinuityEmbedField(x.Name, x.Body));
+                var commands = await StrictDeserializeListAsync<CommandResponse, Command>(apiResult);
+                var fieldList = commands.Select(x => new InjhinuityEmbedField(x.Name, x.Body));
 
-                var reactionEmbed = _reactionEmbedFactory.CreateListReactionEmbed(fieldList, embedBuilder);
-
+                var reactionEmbed = _reactionEmbedFactory.CreatePageReactionEmbed(embedBuilder, fieldList);
                 return ReactionEmbedResult(reactionEmbed);
             }
             else

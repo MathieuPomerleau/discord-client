@@ -8,6 +8,7 @@ using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Modules;
 using Injhinuity.Client.Services.Api;
+using Injhinuity.Client.Services.Mappers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using Xunit;
@@ -31,6 +32,7 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly ICommandResultBuilder _resultBuilder;
         private readonly IEmbedBuilderFactoryProvider _embedBuilderFactoryProvider;
         private readonly IAdminEmbedBuilderFactory _embedBuilderFactory;
+        private readonly IInjhinuityMapper _mapper;
 
         public AdminModuleTests()
         {
@@ -44,6 +46,7 @@ namespace Injhinuity.Client.Tests.Modules
             _resultBuilder = Substitute.For<ICommandResultBuilder>();
             _embedBuilderFactoryProvider = Substitute.For<IEmbedBuilderFactoryProvider>();
             _embedBuilderFactory = Substitute.For<IAdminEmbedBuilderFactory>();
+            _mapper = Substitute.For<IInjhinuityMapper>();
 
             _resultBuilder.ReturnsForAll(_resultBuilder);
             _resultBuilder.Build().Returns(_commandResult);
@@ -57,7 +60,7 @@ namespace Injhinuity.Client.Tests.Modules
             _user.Username.Returns(_username);
             _user.Id.Returns(0UL);
 
-            _subject = new AdminModule(_commandContextFactory, _deserializer, _resultBuilder, _embedBuilderFactoryProvider);
+            _subject = new AdminModule(_commandContextFactory, _deserializer, _resultBuilder, _embedBuilderFactoryProvider, _mapper);
         }
 
         [Fact]

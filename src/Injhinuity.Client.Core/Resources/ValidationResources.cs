@@ -6,10 +6,13 @@
 
         public const string ParseError = "Failed parsing validator resource, check the given type.";
 
-        public const string CommandNameEmpty = "Provided command name is empty.";
-        public const string CommandNameTooLong = "Provided command name is above maximum length (" + LengthTag + ").";
+        public const string NameEmpty = "Provided name field is empty.";
+        public const string NameTooLong = "Provided name field is above maximum length (" + LengthTag + ").";
 
-        public const string CommandBodyEmpty = "Provided command content is empty.";
-        public const string CommandBodyTooLong = "Provided command name is above maximum length (" + LengthTag + ").";
+        public const string BodyEmpty = "Provided body field is empty.";
+        public const string BodyTooLong = "Provided body field is above maximum length (" + LengthTag + ").";
+
+        public const string EmoteEmpty = "Provided emote field is empty.";
+        public const string EmoteInvalidFormat = "Provided emote field cannot be parsed.";
     }
 }

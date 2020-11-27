@@ -68,15 +68,13 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .WithTitle(AdminResources.Title)
                 .AddField(CommonResources.FieldValueResultSuccess, string.Format(actionResource, username))
                 .WithThumbnailUrl(IconResources.Checkmark)
-                .WithColor(Color.Green)
-                .WithTimestamp();
+                .WithColor(Color.Green);
 
         private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string failureValue) =>
             _embedBuilder.Create()
                 .WithTitle(AdminResources.Title)
                 .AddField(CommonResources.FieldTitleFailure, failureValue, true)
                 .WithThumbnailUrl(IconResources.Crossmark)
-                .WithColor(Color.Red)
-                .WithTimestamp();
+                .WithColor(Color.Red);
     }
 }

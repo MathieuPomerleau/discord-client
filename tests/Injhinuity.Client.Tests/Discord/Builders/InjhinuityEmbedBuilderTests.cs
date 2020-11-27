@@ -36,41 +36,13 @@ namespace Injhinuity.Client.Tests.Discord.builders
                 .WithThumbnailUrl(url)
                 .WithColor(color)
                 .AddField(name, value, true)
-                .WithTimestamp()
                 .Build();
 
             using var scope = new AssertionScope();
-
             result.Title.Should().Be(title);
             result.Description.Should().Be(desc);
             result.ThumbnailUrl.Should().Be(url);
             result.Timestamp.Should().NotBeNull();
-            result.Color.Should().Be(color);
-
-            result.Fields.Should().NotBeEmpty();
-            result.Fields[0].Name.Should().Be(name);
-            result.Fields[0].Value.Should().Be(value);
-            result.Fields[0].IsInline.Should().Be(true);
-        }
-
-        [Theory]
-        [ClassData(typeof(TestData))]
-        public void Build_WithoutTimestamp_ThenBuildsItsEmbedProperly(string title, string desc, string name, string value, string url, Color color)
-        {
-            var result = _subject.Create()
-                .WithTitle(title)
-                .WithDescription(desc)
-                .WithThumbnailUrl(url)
-                .WithColor(color)
-                .AddField(name, value, true)
-                .Build();
-
-            using var scope = new AssertionScope();
-
-            result.Title.Should().Be(title);
-            result.Description.Should().Be(desc);
-            result.ThumbnailUrl.Should().Be(url);
-            result.Timestamp.Should().BeNull();
             result.Color.Should().Be(color);
 
             result.Fields.Should().NotBeEmpty();

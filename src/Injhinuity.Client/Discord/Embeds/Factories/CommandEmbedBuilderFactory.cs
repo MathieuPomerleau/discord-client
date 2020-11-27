@@ -49,7 +49,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .WithTitle(CommandResources.TitlePlural)
                 .WithThumbnailUrl(IconResources.List)
                 .WithColor(Color.Orange)
-                .WithTimestamp()
                 .Build();
         }
 
@@ -70,8 +69,7 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
             _embedBuilder.Create()
                 .WithTitle(CommandResources.Title)
                 .WithThumbnailUrl(IconResources.Checkmark)
-                .WithColor(Color.Green)
-                .WithTimestamp();
+                .WithColor(Color.Green);
 
         private IInjhinuityEmbedBuilder CreateBaseFailureEmbed(string? message, object errorCode) =>
             _embedBuilder.Create()
@@ -79,7 +77,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .AddField(CommonResources.FieldTitleErrorCode, errorCode, true)
                 .AddField(CommonResources.FieldTitleReason, message ?? CommonResources.FieldValueReasonDefault)
                 .WithThumbnailUrl(IconResources.Crossmark)
-                .WithColor(Color.Red)
-                .WithTimestamp();
+                .WithColor(Color.Red);
     }
 }

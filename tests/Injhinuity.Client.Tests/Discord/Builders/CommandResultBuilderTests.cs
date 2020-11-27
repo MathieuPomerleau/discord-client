@@ -41,7 +41,6 @@ namespace Injhinuity.Client.Tests.Discord.Results
                 .Build();
 
             using var scope = new AssertionScope();
-
             result.Error.Should().Be(error);
             result.EmbedBuilder.Should().Be(embedBuilder);
             result.ReactionEmbed.Should().Be(reactionEmbed);

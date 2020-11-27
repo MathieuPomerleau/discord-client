@@ -24,7 +24,6 @@ namespace Injhinuity.Client.Discord.Embeds.Factories
                 .AddField(InformationResources.FieldTitleVersion, versionNo, true)
                 .WithThumbnailUrl(IconResources.Information)
                 .WithColor(Color.Blue)
-                .WithTimestamp()
                 .Build();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Configuration.Options;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -46,6 +47,7 @@ namespace Injhinuity.Client.Core.Tests.Configuration.Options
 
             _subject.ContainsNull(result);
 
+            using var scope = new AssertionScope();
             result.IsValid.Should().BeFalse();
             result.NullValues.Should().Contain(("Client", "Discord"));
         }

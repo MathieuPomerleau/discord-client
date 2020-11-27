@@ -27,7 +27,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
 
         private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
         private readonly Command _command = Fixture.Create<Command>();
-        private readonly Command _noBodyCommand = new Command { Name = "aaaa" };
+        private readonly Command _noBodyCommand = new Command("aaaa", null);
         private readonly CommandRequestBundle _requestBundle = Fixture.Create<CommandRequestBundle>();
         private readonly HttpResponseMessage _successMessage = new HttpResponseMessage(HttpStatusCode.OK);
         private readonly HttpResponseMessage _notFoundMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -54,7 +54,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
             _channel = Substitute.For<IMessageChannel>();
 
             _bundleFactory.Create(default).ReturnsForAnyArgs(_requestBundle);
-            _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
+            _deserializer.StrictDeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_command);
             _embedBuilderFactoryProvider.Command.Returns(_embedBuilderFactory);
             _embedBuilderFactory.CreateCustomFailure(default).ReturnsForAnyArgs(_embedBuilder);
             _injhinuityContext.Channel.Returns(_channel);
@@ -100,7 +100,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         public async Task TryHandlingCustomCommand_WithProperMessageAndCommandIsFoundButWithoutABody_ThenSendDefaultMessageToChannelAndReturnTrue()
         {
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_successMessage);
-            _deserializer.DeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_noBodyCommand);
+            _deserializer.StrictDeserializeAndAdaptAsync<CommandResponse, Command>(default).ReturnsForAnyArgs(_noBodyCommand);
             var message = "aaa";
 
             var result = await _subject.TryHandlingCustomCommand(_injhinuityContext, message);
@@ -112,7 +112,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         [Fact]
         public async Task TryHandlingCustomCommand_WithProperMessageAndHttpStatusCodeIsntSuccess_ThenCallsTheChannelManagerAndReturnsTrue()
         {
-            _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
+            _deserializer.StrictDeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
             _requester.ExecuteAsync(default, default).ReturnsForAnyArgs(_notFoundMessage);
             var message = "aaa";
 

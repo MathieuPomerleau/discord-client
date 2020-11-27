@@ -1,7 +1,9 @@
 ﻿using System;
+using Discord;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Interfaces;
 using Injhinuity.Client.Core.Validation.Builders;
+using Injhinuity.Client.Core.Validation.Entities.Resources.Interfaces;
 using Injhinuity.Client.Core.Validation.Factories;
 using Injhinuity.Client.Core.Validation.Validators;
 using Injhinuity.Client.Core.Validation.Validators.SubValidators;
@@ -40,9 +42,13 @@ namespace Injhinuity.Client.Core
             var resultBuilder = provider.GetService<IValidationResultBuilder>()!;
 
             IRoleValidator validator = new RoleValidator();
-            validator.AddRoot(new NameValidator(resultBuilder, config.Command.NameMaxLength));
+            validator.AddRoot(new NameValidator(resultBuilder, int.MaxValue))
+                .AddNext(new EmoteValidator(resultBuilder, TryParseEmote));
 
             return validator;
         }
+
+        private bool TryParseEmote(IEmoteResource resource) =>
+            Emote.TryParse(resource.Emote, out var _);
     }
 }

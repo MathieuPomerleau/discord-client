@@ -6,7 +6,7 @@ using Injhinuity.Client.Core.Resources;
 
 namespace Injhinuity.Client.Discord.Embeds.Content
 {
-    public class ListEmbedContent : IReactionEmbedContent
+    public class PagedListEmbedContent : IEmbedContent
     {
         private readonly int _fieldsPerPage;
         private readonly InjhinuityEmbedField[] _fields;
@@ -19,10 +19,10 @@ namespace Injhinuity.Client.Discord.Embeds.Content
         private int _oldPage = -1;
         public int CurrentPage { get; private set; } = 0;
 
-        public ListEmbedContent(int fieldsPerPage, IEnumerable<InjhinuityEmbedField>? fields, EmbedBuilder embedBuilder)
+        public PagedListEmbedContent(int fieldsPerPage, IEnumerable<InjhinuityEmbedField>? fields, EmbedBuilder embedBuilder)
         {
             _fieldsPerPage = fieldsPerPage;
-            _fields = fields?.ToArray() ?? new InjhinuityEmbedField[] { };
+            _fields = fields?.ToArray() ?? Array.Empty<InjhinuityEmbedField>();
             _embedBuilder = embedBuilder;
         }
 

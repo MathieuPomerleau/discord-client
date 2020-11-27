@@ -7,7 +7,7 @@ namespace Injhinuity.Client.Core.Validation.Validators.SubValidators
 {
     public class NameValidator : LinkedValidator
     {
-        private readonly long _maximumLength = 0;
+        private readonly long _maximumLength;
 
         public NameValidator(IValidationResultBuilder validationResultBuilder, long maximumLength)
             : base(validationResultBuilder)
@@ -19,10 +19,10 @@ namespace Injhinuity.Client.Core.Validation.Validators.SubValidators
         {
             if (resource is INameResource name) {
                 if (IsNullOrEmpty(name))
-                    return ValidationError(ValidationResources.CommandNameEmpty);
+                    return ValidationError(ValidationResources.NameEmpty);
 
                 if (IsLengthInvalid(name))
-                    return ValidationError(ValidationResources.CommandBodyTooLong, (ValidationResources.LengthTag, _maximumLength.ToString()));
+                    return ValidationError(ValidationResources.NameTooLong, (ValidationResources.LengthTag, _maximumLength.ToString()));
 
                 return Next?.Validate(resource) ?? Ok();
             } 

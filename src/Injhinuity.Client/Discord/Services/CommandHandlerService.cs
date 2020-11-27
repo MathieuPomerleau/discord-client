@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Injhinuity.Client.Core;
 using Injhinuity.Client.Core.Configuration;
 using Injhinuity.Client.Core.Exceptions;
+using Injhinuity.Client.Discord.Embeds;
 using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Entities;
 using Injhinuity.Client.Discord.Factories;
@@ -50,7 +51,7 @@ namespace Injhinuity.Client.Discord.Services
 
         public async Task InitializeAsync()
         {
-            await _commandService.AddModulesAsync(_assemblyProvider.GetCallingAssembly() ?? throw new InjhinuityException("Failed to load entry assembly."), _provider);
+            await _commandService.AddModulesAsync(_assemblyProvider.GetCallingAssembly() ?? throw new InjhinuityException("Failed to load calling assembly."), _provider);
         }
 
         public void OnReady()
@@ -95,9 +96,9 @@ namespace Injhinuity.Client.Discord.Services
 
         public async Task HandleInjhinuityCommandResultAsync(IInjhinuityCommandContext context, IInjhinuityCommandResult result)
         {
-            if (result.ReactionEmbed is not null)
+            if (result.ReactionEmbed is IPageReactionEmbed pageReaction)
             {
-                await result.ReactionEmbed.InitializeAsync(context);
+                await pageReaction.InitalizeAsync(context);
                 return;
             }
 
@@ -116,8 +117,15 @@ namespace Injhinuity.Client.Discord.Services
 
         public async Task HandleRegularCommandResultAsync(IInjhinuityCommandContext context, IResult result)
         {
+            if (result.IsSuccess)
+                return;
+
             if (result.ErrorReason.Contains("guild permission"))
-                await context.Channel.SendEmbedMessageAsync(_permissionEmbedBuilderFactory.CreateMissingPermissionFailure());
+                await context.Channel.SendEmbedMessageAsync(_permissionEmbedBuilderFactory.CreateMissingUserPermissionFailure());
+            else if (result.ErrorReason.Contains("403"))
+                await context.Channel.SendEmbedMessageAsync(_permissionEmbedBuilderFactory.CreateMissingBotPermissionFailure());
+            else
+                await context.Channel.SendMessageAsync(result.ErrorReason);
         }
     }
 }

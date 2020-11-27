@@ -23,16 +23,28 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         }
 
         [Fact]
-        public void CreateMissingPermissionFailure_ThenReturnsABuiltEmbed()
+        public void CreateMissingUserPermissionFailure_ThenReturnsABuiltEmbed()
         {
-            _subject.CreateMissingPermissionFailure();
+            _subject.CreateMissingUserPermissionFailure();
 
             _embedBuilder.Received().Create();
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
-            _embedBuilder.Received().WithTitle(PermissionResources.TitleMissingPermission);
-            _embedBuilder.Received().WithDescription(PermissionResources.DescMissingPermission);
+            _embedBuilder.Received().WithTitle(PermissionResources.TitleMissingUserPermission);
+            _embedBuilder.Received().WithDescription(PermissionResources.DescMissingUserPermission);
             _embedBuilder.Received().WithColor(Color.Red);
-            _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
+        }
+
+        [Fact]
+        public void CreateMissingBotPermissionFailure_ThenReturnsABuiltEmbed()
+        {
+            _subject.CreateMissingBotPermissionFailure();
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
+            _embedBuilder.Received().WithTitle(PermissionResources.TitleMissingBotPermission);
+            _embedBuilder.Received().WithDescription(PermissionResources.DescMissingBotPermission);
+            _embedBuilder.Received().WithColor(Color.Red);
             _embedBuilder.Received().Build();
         }
     }

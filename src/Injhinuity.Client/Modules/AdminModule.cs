@@ -5,14 +5,16 @@ using Injhinuity.Client.Discord.Builders;
 using Injhinuity.Client.Discord.Embeds.Factories;
 using Injhinuity.Client.Discord.Factories;
 using Injhinuity.Client.Services.Api;
+using Injhinuity.Client.Services.Mappers;
 
 namespace Injhinuity.Client.Modules
 {
     public class AdminModule : BaseModule
     {
         public AdminModule(IInjhinuityCommandContextFactory commandContextFactory, IApiReponseDeserializer deserializer,
-            ICommandResultBuilder resultBuilder, IEmbedBuilderFactoryProvider embedBuilderFactoryProvider)
-            : base(commandContextFactory, deserializer, resultBuilder, embedBuilderFactoryProvider)
+            ICommandResultBuilder resultBuilder, IEmbedBuilderFactoryProvider embedBuilderFactoryProvider,
+            IInjhinuityMapper mapper)
+            : base(commandContextFactory, deserializer, resultBuilder, mapper, embedBuilderFactoryProvider)
         {
         }
 

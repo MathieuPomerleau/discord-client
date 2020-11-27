@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Services.Factories;
 using Xunit;
 
@@ -24,6 +25,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         {
             var result = _subject.Create(_guildId);
 
+            using var scope = new AssertionScope();
             result.GuildId.Should().Be(_guildId);
             result.Request.Should().BeNull();
         }
@@ -33,6 +35,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         {
             var result = _subject.Create(_guildId, _name);
 
+            using var scope = new AssertionScope();
             result.GuildId.Should().Be(_guildId);
             result.Request.Name.Should().Be(_name);
             result.Request.Body.Should().BeEmpty();
@@ -43,6 +46,7 @@ namespace Injhinuity.Client.Tests.Services.Factories
         {
             var result = _subject.Create(_guildId, _name, _body);
 
+            using var scope = new AssertionScope();
             result.GuildId.Should().Be(_guildId);
             result.Request.Name.Should().Be(_name);
             result.Request.Body.Should().Be(_body);

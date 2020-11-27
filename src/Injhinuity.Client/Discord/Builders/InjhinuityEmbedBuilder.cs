@@ -11,7 +11,6 @@ namespace Injhinuity.Client.Discord.Builders
         IInjhinuityEmbedBuilder WithDescription(string description);
         IInjhinuityEmbedBuilder WithThumbnailUrl(string url);
         IInjhinuityEmbedBuilder WithColor(Color color);
-        IInjhinuityEmbedBuilder WithTimestamp();
         IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false);
         EmbedBuilder Build();
     }
@@ -24,8 +23,7 @@ namespace Injhinuity.Client.Discord.Builders
         private string? _description;
         private Color? _color;
         private string? _thumbnailUrl;
-        private bool _hasTimestamp = false;
-        private IList<InjhinuityEmbedField> _fields = new List<InjhinuityEmbedField>();
+        private readonly IList<InjhinuityEmbedField> _fields = new List<InjhinuityEmbedField>();
 
         public IInjhinuityEmbedBuilder Create()
         {
@@ -33,7 +31,6 @@ namespace Injhinuity.Client.Discord.Builders
             _description = null;
             _color = null;
             _thumbnailUrl = null;
-            _hasTimestamp = false;
             _fields.Clear();
             return this;
         }
@@ -62,12 +59,6 @@ namespace Injhinuity.Client.Discord.Builders
             return this;
         }
 
-        public IInjhinuityEmbedBuilder WithTimestamp()
-        {
-            _hasTimestamp = true;
-            return this;
-        }
-
         public IInjhinuityEmbedBuilder AddField(string name, object value, bool inline = false)
         {
             _fields.Add(new InjhinuityEmbedField(name, value, inline));
@@ -77,6 +68,7 @@ namespace Injhinuity.Client.Discord.Builders
         public EmbedBuilder Build()
         {
             _embedBuilder = new EmbedBuilder();
+            _embedBuilder.WithCurrentTimestamp();
 
             if (!(_title is null))
                 _embedBuilder.WithTitle(_title);
@@ -89,9 +81,6 @@ namespace Injhinuity.Client.Discord.Builders
 
             if (!(_thumbnailUrl is null))
                 _embedBuilder.WithThumbnailUrl(_thumbnailUrl);
-
-            if (_hasTimestamp)
-                _embedBuilder.WithCurrentTimestamp();
 
             foreach (var field in _fields)
                 _embedBuilder.AddField(field.Name, field.Value, field.Inline);

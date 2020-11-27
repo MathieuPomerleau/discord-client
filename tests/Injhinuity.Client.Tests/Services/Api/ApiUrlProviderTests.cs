@@ -17,6 +17,7 @@ namespace Injhinuity.Client.Tests.Services.Api
 
         private readonly CommandRequestBundle _commandBundle = Fixture.Create<CommandRequestBundle>();
         private readonly RoleRequestBundle _roleBundle = Fixture.Create<RoleRequestBundle>();
+        private readonly GuildRequestBundle _guildBundle = Fixture.Create<GuildRequestBundle>();
 
         public ApiUrlProviderTests()
         {
@@ -29,7 +30,7 @@ namespace Injhinuity.Client.Tests.Services.Api
         {
             var result = _subject.GetFormattedUrl(apiAction, _commandBundle);
 
-            result.Contains(pathPart).Should().BeTrue();
+            result.Should().Contain(pathPart);
         }
 
         [Fact]
@@ -42,17 +43,34 @@ namespace Injhinuity.Client.Tests.Services.Api
 
         [Theory]
         [ClassData(typeof(RoleTestData))]
-        public void GetFormattedUrl_WithAnActionAndRoleBundle_ThenReturnsACommandUrl(ApiAction apiAction, string pathPart)
+        public void GetFormattedUrl_WithAnActionAndRoleBundle_ThenReturnsARoleUrl(ApiAction apiAction, string pathPart)
         {
             var result = _subject.GetFormattedUrl(apiAction, _roleBundle);
 
-            result.Contains(pathPart).Should().BeTrue();
+            result.Should().Contain(pathPart);
         }
 
         [Fact]
         public void GetFormattedUrl_WithAnInvalidActionAndRoleBundle_ThenThrowsAnException()
         {
             Func<string> act = () => _subject.GetFormattedUrl((ApiAction)999, _roleBundle);
+
+            act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("Specified argument was out of the range of valid values. (Parameter '999')");
+        }
+
+        [Theory]
+        [ClassData(typeof(GuildTestData))]
+        public void GetFormattedUrl_WithAnActionAndRoleBundle_ThenReturnsAGuildUrl(ApiAction apiAction, string pathPart)
+        {
+            var result = _subject.GetFormattedUrl(apiAction, _guildBundle);
+
+            result.Should().Contain(pathPart);
+        }
+
+        [Fact]
+        public void GetFormattedUrl_WithAnInvalidActionAndGuildBundle_ThenThrowsAnException()
+        {
+            Func<string> act = () => _subject.GetFormattedUrl((ApiAction)999, _guildBundle);
 
             act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("Specified argument was out of the range of valid values. (Parameter '999')");
         }
@@ -79,6 +97,19 @@ namespace Injhinuity.Client.Tests.Services.Api
                 yield return new object[] { ApiAction.Get, "role/" };
                 yield return new object[] { ApiAction.GetAll, "roles" };
                 yield return new object[] { ApiAction.Post, "roles" };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private class GuildTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { ApiAction.Get, "guild/" };
+                yield return new object[] { ApiAction.GetAll, "guilds" };
+                yield return new object[] { ApiAction.Post, "guilds" };
+                yield return new object[] { ApiAction.Put, "guilds" };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

@@ -8,7 +8,7 @@ variables:
   buildConfiguration: Release
   dockerfilePath: dockerfile
   major: 0
-  minor: 6
+  minor: 7
 
 stages:
   - stage: buildStage
@@ -21,8 +21,7 @@ stages:
           - task: UseDotNet@2
             displayName: .Net 5.x SDK
             inputs:
-              version: 5.x
-              includePreviewVersions: true
+              version: 5.0.x
             name: useDotNet50x
 
           - task: DotNetCoreCLI@2
@@ -51,8 +50,7 @@ stages:
           - task: UseDotNet@2
             displayName: .Net 5.x SDK
             inputs:
-              version: 5.x
-              includePreviewVersions: true
+              version: 5.0.x
             name: useDotNet50x
 
           - task: DotNetCoreCLI@2

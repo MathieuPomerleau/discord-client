@@ -7,7 +7,7 @@ namespace Injhinuity.Client.Core.Validation.Validators.SubValidators
 {
     public class BodyValidator : LinkedValidator
     {
-        private readonly long _maximumLength = 0;
+        private readonly long _maximumLength;
 
         public BodyValidator(IValidationResultBuilder validationResultBuilder, long maximumLength)
             : base(validationResultBuilder)
@@ -20,10 +20,10 @@ namespace Injhinuity.Client.Core.Validation.Validators.SubValidators
             if (resource is IBodyResource body)
             {
                 if (IsNullOrEmpty(body))
-                    return ValidationError(ValidationResources.CommandBodyEmpty);
+                    return ValidationError(ValidationResources.BodyEmpty);
 
                 if (IsLengthInvalid(body))
-                    return ValidationError(ValidationResources.CommandBodyTooLong, (ValidationResources.LengthTag, _maximumLength.ToString()));
+                    return ValidationError(ValidationResources.BodyTooLong, (ValidationResources.LengthTag, _maximumLength.ToString()));
 
                 return Next?.Validate(resource) ?? Ok();
             }

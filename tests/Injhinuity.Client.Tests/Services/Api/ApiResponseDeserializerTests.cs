@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Exceptions;
 using Injhinuity.Client.Model.Domain;
 using Injhinuity.Client.Services.Api;
@@ -34,47 +35,49 @@ namespace Injhinuity.Client.Tests.Services.Api
         }
 
         [Fact]
-        public void DeserializeAsync_WithEmptyContent_ThenThrowsException()
+        public void StrictDeserializeAsync_WithEmptyContent_ThenThrowsException()
         {
             _httpResponseMessage.Content = new StringContent("");
 
-            Func<Task> act = async () => await _subject.DeserializeAsync<object>(_httpResponseMessage);
+            Func<Task> act = async () => await _subject.StrictDeserializeAsync<object>(_httpResponseMessage);
 
             act.Should().Throw<InjhinuityException>().WithMessage("Deserialized result is null.");
         }
 
         [Fact]
-        public async Task DeserializeAsync_WithContent_ThenReturnDeserializedObject()
+        public async Task StrictDeserializeAsync_WithContent_ThenReturnDeserializedObject()
         {
             _httpResponseMessage.Content = new StringContent("{\"aaaa\":\"aaaa\"}");
 
-            var result = await _subject.DeserializeAsync<object>(_httpResponseMessage);
+            var result = await _subject.StrictDeserializeAsync<object>(_httpResponseMessage);
 
             result.Should().NotBeNull();
         }
 
         [Fact]
-        public async Task DeserializeAndAdaptAsync_ThenDeserializesAndCastsToProperType()
+        public async Task StrictDeserializeAndAdaptAsync_ThenDeserializesAndCastsToProperType()
         {
             _httpResponseMessage.Content = new StringContent("{\"aaaa\":\"aaaa\"}");
 
-            _mapper.Map<object, Command>(Arg.Any<object>()).Returns(_command);
+            _mapper.StrictMap<object, Command>(Arg.Any<object>()).Returns(_command);
 
-            var result = await _subject.DeserializeAndAdaptAsync<object, Command>(_httpResponseMessage);
+            var result = await _subject.StrictDeserializeAndAdaptAsync<object, Command>(_httpResponseMessage);
 
+            using var scope = new AssertionScope();
             result.Should().NotBeNull();
             result.Should().BeOfType<Command>();
         }
 
         [Fact]
-        public async Task DeserializeAndAdaptEnumerableAsync_ThenDeserializesAndCastsToProperType()
+        public async Task StrictDeserializeAndAdaptEnumerableAsync_ThenDeserializesAndCastsToProperType()
         {
             _httpResponseMessage.Content = new StringContent("[\"aaaa\"]");
 
-            _mapper.Map<IEnumerable<object>, IEnumerable<Command>>(Arg.Any<IEnumerable<object>>()).Returns(_commands);
+            _mapper.StrictMap<IEnumerable<object>, IEnumerable<Command>>(Arg.Any<IEnumerable<object>>()).Returns(_commands);
 
-            var result = await _subject.DeserializeAndAdaptEnumerableAsync<object, Command>(_httpResponseMessage);
+            var result = await _subject.StrictDeserializeAndAdaptEnumerableAsync<object, Command>(_httpResponseMessage);
 
+            using var scope = new AssertionScope();
             result.Should().NotBeEmpty();
             result.Should().AllBeOfType<Command>();
         }

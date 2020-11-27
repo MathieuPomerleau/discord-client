@@ -6,22 +6,22 @@ using Injhinuity.Client.Discord.Services;
 
 namespace Injhinuity.Client.Discord.Wrappers
 {
-    public interface IUserMessageReactionWrapper : IDisposable
+    public interface IMessageReactionWrapper : IDisposable
     {
     }
 
-    public class UserMessageReactionWrapper : IUserMessageReactionWrapper
+    public class MessageReactionWrapper : IMessageReactionWrapper
     {
         private const long FiveHundredMillis = 500;
         private long _lastReactTimestamp = CurrentUnixMillis();
-        private bool _disposing = false;
-        private readonly IUserMessage _message;
+        private bool _disposing;
+        private readonly IMessage _message;
         private readonly IInjhinuityDiscordClient _discordClient;
 
         private event Func<SocketReaction, Task>? OnReactionAdded;
         private event Func<SocketReaction, Task>? OnReactionRemoved;
 
-        public UserMessageReactionWrapper(IUserMessage message, IInjhinuityDiscordClient discordClient, Func<SocketReaction, Task> reactionAdded, Func<SocketReaction, Task> reactionRemoved)
+        public MessageReactionWrapper(IMessage message, IInjhinuityDiscordClient discordClient, Func<SocketReaction, Task> reactionAdded, Func<SocketReaction, Task> reactionRemoved)
         {
             _message = message;
             _discordClient = discordClient;
@@ -45,6 +45,8 @@ namespace Injhinuity.Client.Discord.Wrappers
 
             OnReactionAdded = null;
             OnReactionRemoved = null;
+
+            GC.SuppressFinalize(this);
         }
 
         private Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel messageChannel, SocketReaction reaction)

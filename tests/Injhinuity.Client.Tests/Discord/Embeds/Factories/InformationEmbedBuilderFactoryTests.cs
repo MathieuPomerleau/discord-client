@@ -37,7 +37,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
                 _embedBuilder.AddField(InformationResources.FieldTitleVersion, _versionNo, true);
                 _embedBuilder.WithThumbnailUrl(IconResources.Information);
                 _embedBuilder.WithColor(Color.Blue);
-                _embedBuilder.WithTimestamp();
                 _embedBuilder.Build();
             });
         }

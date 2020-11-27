@@ -39,7 +39,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         private readonly IPermissionEmbedBuilderFactory _permissionEmbedBuilderFactory;
         private readonly IMessageChannel _channel;
         private readonly IUserMessage _message;
-        private readonly IReactionEmbed _reactionEmbed;
+        private readonly IPageReactionEmbed _pageReactionEmbed;
 
         public CommandHandlerServiceTests()
         {
@@ -55,7 +55,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
             _standardResult = Substitute.For<IResult>();
             _channel = Substitute.For<IMessageChannel>();
             _message = Substitute.For<IUserMessage>();
-            _reactionEmbed = Substitute.For<IReactionEmbed>();
+            _pageReactionEmbed = Substitute.For<IPageReactionEmbed>();
             _permissionEmbedBuilderFactory = Substitute.For<IPermissionEmbedBuilderFactory>();
 
             _clientConfig.Discord.Returns(new Core.Configuration.DiscordConfig("token", '!'));
@@ -81,7 +81,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
         {
             Func<Task> action = async () => await _subject.InitializeAsync();
 
-            action.Should().Throw<InjhinuityException>().WithMessage("Failed to load entry assembly.");
+            action.Should().Throw<InjhinuityException>().WithMessage("Failed to load calling assembly.");
         }
 
         [Fact]
@@ -137,15 +137,15 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task HandleInjhinuityCommandResultAsync_WithReactionEmbedInResult_ThenItInitializesAndExits()
+        public async Task HandleInjhinuityCommandResultAsync_WithPageReactionEmbedInResult_ThenItSendsAndExits()
         {
-            _commandResult.ReactionEmbed.Returns(_reactionEmbed);
+            _commandResult.ReactionEmbed.Returns(_pageReactionEmbed);
             _commandResult.EmbedBuilder.ReturnsNull();
             _commandResult.Message.ReturnsNull();
 
             await _subject.HandleInjhinuityCommandResultAsync(_context, _commandResult);
 
-            await _reactionEmbed.Received().InitializeAsync(_context);
+            await _pageReactionEmbed.Received().InitalizeAsync(_context);
             await _channel.DidNotReceive().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Embed>());
             await _channel.DidNotReceive().SendMessageAsync(_stringMessage);
         }
@@ -160,7 +160,7 @@ namespace Injhinuity.Client.Tests.Discord.Services
             await _subject.HandleInjhinuityCommandResultAsync(_context, _commandResult);
 
             await _channel.Received().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Embed>());
-            await _reactionEmbed.DidNotReceive().InitializeAsync(_context);
+            await _pageReactionEmbed.DidNotReceive().InitalizeAsync(_context);
             await _channel.DidNotReceive().SendMessageAsync(_stringMessage);
         }
 
@@ -174,15 +174,15 @@ namespace Injhinuity.Client.Tests.Discord.Services
             await _subject.HandleInjhinuityCommandResultAsync(_context, _commandResult);
 
             await _channel.Received().SendMessageAsync(_stringMessage);
-            await _reactionEmbed.DidNotReceive().InitializeAsync(_context);
+            await _pageReactionEmbed.DidNotReceive().InitalizeAsync(_context);
             await _channel.DidNotReceive().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Is<Embed>(x => x != null));
         }
 
         [Fact]
         public async Task HandleRegularCommandResultAsync_WithAPermissionMessageInResult_ThenItSendsItAndExits()
         {
-            _permissionEmbedBuilderFactory.CreateMissingPermissionFailure().Returns(_embedBuilder);
-            _standardResult.ErrorReason.Returns("guild permission");
+            _permissionEmbedBuilderFactory.CreateMissingUserPermissionFailure().Returns(_embedBuilder);
+            _standardResult.ErrorReason.Returns("some string with guild permission");
 
             await _subject.HandleRegularCommandResultAsync(_context, _standardResult);
 
@@ -190,14 +190,25 @@ namespace Injhinuity.Client.Tests.Discord.Services
         }
 
         [Fact]
-        public async Task HandleRegularCommandResultAsync_WithoutAMessageInResult_ThenSendsNothing()
+        public async Task HandleRegularCommandResultAsync_WithA403MessageInResult_ThenItSendsItAndExits()
         {
-            _permissionEmbedBuilderFactory.CreateMissingPermissionFailure().Returns(_embedBuilder);
-            _standardResult.ErrorReason.Returns("other string");
+            _permissionEmbedBuilderFactory.CreateMissingBotPermissionFailure().Returns(_embedBuilder);
+            _standardResult.ErrorReason.Returns("some string with 403");
 
             await _subject.HandleRegularCommandResultAsync(_context, _standardResult);
 
-            await _channel.DidNotReceive().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Embed>());
+            await _channel.Received().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Embed>());
+        }
+
+        [Fact]
+        public async Task HandleRegularCommandResultAsync_WithOtherMessages_ThenItSendsItAndExits()
+        {
+            _permissionEmbedBuilderFactory.CreateMissingBotPermissionFailure().Returns(_embedBuilder);
+            _standardResult.ErrorReason.Returns("some random string with no triggers");
+
+            await _subject.HandleRegularCommandResultAsync(_context, _standardResult);
+
+            await _channel.Received().SendMessageAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Embed>());
         }
     }
 }

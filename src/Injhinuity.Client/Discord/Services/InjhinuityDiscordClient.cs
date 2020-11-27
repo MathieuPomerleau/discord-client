@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -22,10 +23,13 @@ namespace Injhinuity.Client.Discord.Services
         event Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, Task> ReactionsCleared;
 
         SocketSelfUser CurrentUser { get; }
+        IReadOnlyCollection<IGuild> Guilds { get; }
     }
 
     public class InjhinuityDiscordClient : DiscordSocketClient, IInjhinuityDiscordClient
     {
-        public InjhinuityDiscordClient(IInjhinuityDiscordClientConfig config) : base(config.Config) {}
+        IReadOnlyCollection<IGuild> IInjhinuityDiscordClient.Guilds => base.Guilds;
+
+        public InjhinuityDiscordClient(IInjhinuityDiscordClientConfig config) : base(config.Config) { }
     }
 }

@@ -6,7 +6,7 @@ namespace Injhinuity.Client.Core.Validation.Factories
     public interface IValidationResourceFactory
     {
         IValidationResource CreateCommand(string? name, string? body);
-        IValidationResource CreateRole(string? name);
+        IValidationResource CreateRole(string? name, string? emote = null);
     }
 
     public class ValidationResourceFactory : IValidationResourceFactory
@@ -14,7 +14,7 @@ namespace Injhinuity.Client.Core.Validation.Factories
         public IValidationResource CreateCommand(string? name, string? body) =>
             new CommandResource(name, body);
 
-        public IValidationResource CreateRole(string? name) =>
-            new RoleResource(name);
+        public IValidationResource CreateRole(string? name, string? emote = null) =>
+            new RoleResource(name, emote);
     }
 }

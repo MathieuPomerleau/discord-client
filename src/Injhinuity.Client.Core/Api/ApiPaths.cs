@@ -21,4 +21,12 @@
         public const string GetAll = BasePath.Api + "/guild/{0}/roles";
         public const string Post = BasePath.Api + "/guild/{0}/roles";
     }
+
+    public static class GuildPath
+    {
+        public const string Get = BasePath.Api + "/guild/{0}";
+        public const string GetAll = BasePath.Api + "/guilds";
+        public const string Post = BasePath.Api + "/guilds";
+        public const string Put = BasePath.Api + "/guilds";
+    }
 }

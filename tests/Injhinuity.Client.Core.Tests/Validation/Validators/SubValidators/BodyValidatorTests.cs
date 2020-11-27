@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Resources;
 using Injhinuity.Client.Core.Tests.Utils;
 using Injhinuity.Client.Core.Validation.Builders;
@@ -36,6 +37,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
 
             var result = _subject.Validate(resource);
 
+            using var scope = new AssertionScope();
             result.Message.Should().BeNull();
             result.ValidationCode.Should().Be(ValidationCode.Ok);
         }
@@ -47,6 +49,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
 
             var result = _subject.Validate(resource);
 
+            using var scope = new AssertionScope();
             result.Message.Should().Be(ValidationResources.ParseError);
             result.ValidationCode.Should().Be(ValidationCode.ParseError);
         }
@@ -58,7 +61,8 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
 
             var result = _subject.Validate(resource);
 
-            result.Message.Should().Be(ValidationResources.CommandBodyEmpty);
+            using var scope = new AssertionScope();
+            result.Message.Should().Be(ValidationResources.BodyEmpty);
             result.ValidationCode.Should().Be(ValidationCode.ValidationError);
         }
 
@@ -69,12 +73,13 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
 
             var result = _subject.Validate(resource);
 
-            result.Message.Should().Contain(ValidationResources.CommandBodyTooLong[0..15]);
+            using var scope = new AssertionScope();
+            result.Message.Should().Contain(ValidationResources.BodyTooLong[0..15]);
             result.ValidationCode.Should().Be(ValidationCode.ValidationError);
         }
 
         [Fact]
-        public void Validate_AndSucceedsAndHasALinkedValidator_ThenReturnsTheLinkedValidatorResult()
+        public void Validate_WithSuccessAndHasALinkedValidator_ThenReturnsTheLinkedValidatorResult()
         {
             var resource = new CommandResource("name", "body");
             _subject.Next = _linkedValidator;
@@ -82,6 +87,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Validators.SubValidators
 
             var result = _subject.Validate(resource);
 
+            using var scope = new AssertionScope();
             result.Message.Should().BeNull();
             result.ValidationCode.Should().Be(ValidationCode.Ok);
         }

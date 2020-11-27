@@ -17,6 +17,8 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
         private readonly IRoleEmbedBuilderFactory _subject;
 
         private readonly string _name = Fixture.Create<string>();
+        private readonly string _rolename = Fixture.Create<string>();
+        private readonly string _channelId = Fixture.Create<string>();
         private readonly ExceptionWrapper _wrapper = Fixture.Create<ExceptionWrapper>();
         private readonly IValidationResult _validationResult = new ValidationResult(Core.Validation.Enums.ValidationCode.ValidationError, "message");
 
@@ -57,33 +59,68 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithTitle(RoleResources.TitlePlural);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.List);
             _embedBuilder.Received().WithColor(Color.Orange);
-            _embedBuilder.Received().WithTimestamp();
         }
 
         [Fact]
-        public void CreateAssignSuccess_ThenReturnsAnEmbedBuilder()
+        public void CreateAssignRoleSuccess_WithUsernameAndRolename_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateAssignSuccess(_name);
+            _subject.CreateAssignRoleSuccess(_name, _rolename);
 
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
-            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.TitleAssign);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleUser, _name, true);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleRole, _rolename, true);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithColor(Color.Green);
-            _embedBuilder.Received().WithTimestamp();
         }
 
         [Fact]
-        public void CreateUnassignSuccess_ThenReturnsAnEmbedBuilder()
+        public void CreateUnassignRoleSuccess_WithRoles_ThenReturnsAnEmbedBuilder()
         {
-            _subject.CreateUnassignSuccess(_name);
+            _subject.CreateUnassignRoleSuccess(_name, _rolename);
 
             _embedBuilder.Received().Create();
-            _embedBuilder.Received().AddField(CommonResources.FieldTitleName, _name);
-            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.TitleUnassign);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleUser, _name, true);
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleRole, _rolename, true);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithColor(Color.Green);
-            _embedBuilder.Received().WithTimestamp();
+        }
+
+        [Fact]
+        public void CreateRolesSetupSuccess_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateRolesSetupSuccess();
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleRolesSetup);
+            _embedBuilder.Received().WithColor(Color.Green);
+            _embedBuilder.Received().Build();
+        }
+
+        [Fact]
+        public void CreateRolesResetSuccess_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateRolesResetSuccess();
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleRolesReset);
+            _embedBuilder.Received().WithColor(Color.Green);
+            _embedBuilder.Received().Build();
+        }
+
+        [Fact]
+        public void CreateReactionRole_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateReactionRole();
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().WithTitle(RoleResources.TitlePlural);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.List);
+            _embedBuilder.Received().WithColor(Color.Purple);
+            _embedBuilder.Received().Build();
         }
 
         [Fact]
@@ -96,7 +133,31 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
             _embedBuilder.Received().WithTitle(RoleResources.TitleRoleNotFound);
             _embedBuilder.Received().WithColor(Color.Red);
-            _embedBuilder.Received().WithTimestamp();
+            _embedBuilder.Received().Build();
+        }
+
+        [Fact]
+        public void CreateRolesAlreadySetupFailure_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateRolesAlreadySetupFailure(_channelId);
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().AddField(CommonResources.FieldTitleChannelId, _channelId);
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleRolesAlreadySetup);
+            _embedBuilder.Received().WithColor(Color.Red);
+            _embedBuilder.Received().Build();
+        }
+
+        [Fact]
+        public void CreateRolesNotSetupFailure_ThenReturnsAnEmbedBuilder()
+        {
+            _subject.CreateRolesNotSetupFailure();
+
+            _embedBuilder.Received().Create();
+            _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
+            _embedBuilder.Received().WithTitle(RoleResources.TitleRolesNotSetup);
+            _embedBuilder.Received().WithColor(Color.Red);
             _embedBuilder.Received().Build();
         }
 
@@ -126,7 +187,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(RoleResources.Title);
             _embedBuilder.Received().WithColor(Color.Green);
-            _embedBuilder.Received().WithTimestamp();
             _embedBuilder.Received().Build();
         }
 
@@ -136,7 +196,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
             _embedBuilder.Received().WithTitle(RoleResources.Title);
             _embedBuilder.Received().WithColor(Color.Red);
-            _embedBuilder.Received().WithTimestamp();
             _embedBuilder.Received().Build();
         }
     }

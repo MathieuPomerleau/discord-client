@@ -69,7 +69,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithTitle(CommandResources.TitlePlural);
             _embedBuilder.Received().WithThumbnailUrl(IconResources.List);
             _embedBuilder.Received().WithColor(Color.Orange);
-            _embedBuilder.Received().WithTimestamp();
         }
 
         [Fact]
@@ -109,7 +108,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Checkmark);
             _embedBuilder.Received().WithTitle(CommandResources.Title);
             _embedBuilder.Received().WithColor(Color.Green);
-            _embedBuilder.Received().WithTimestamp();
             _embedBuilder.Received().Build();
         }
 
@@ -119,7 +117,6 @@ namespace Injhinuity.Client.Tests.Discord.Embeds.Factories
             _embedBuilder.Received().WithThumbnailUrl(IconResources.Crossmark);
             _embedBuilder.Received().WithTitle(CommandResources.Title);
             _embedBuilder.Received().WithColor(Color.Red);
-            _embedBuilder.Received().WithTimestamp();
             _embedBuilder.Received().Build();
         }
     }

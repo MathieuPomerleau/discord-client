@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Discord;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Discord.Factories;
 using Xunit;
 
@@ -23,6 +24,7 @@ namespace Injhinuity.Client.Tests.Discord.Factories
 
             var result = _subject.CreatePlayingStatus(name);
 
+            using var scope = new AssertionScope();
             result.Should().BeOfType<Game>();
             result.Name.Should().Be(name);
         }

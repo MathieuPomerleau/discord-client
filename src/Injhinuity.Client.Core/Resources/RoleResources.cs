@@ -6,7 +6,11 @@
         public const string TitlePlural = "Roles";
         public const string TitleAssign = "Assign role";
         public const string TitleUnassign = "Unassign role";
+        public const string TitleRolesSetup = "Roles setup";
+        public const string TitleRolesReset = "Roles reset";
         public const string TitleRoleNotFound = "Role not found";
+        public const string TitleRolesNotSetup = "Roles not setup";
+        public const string TitleRolesAlreadySetup = "Roles already setup";
 
         public const string FieldTitleRole = "Role";
 

@@ -25,7 +25,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Factories
         [Fact]
         public void CreateRole_WithValues_ThenBuildsItsResourceProperly()
         {
-            var result = _subject.CreateRole("name");
+            var result = _subject.CreateRole("name", "emote");
 
             result.Should().BeOfType<RoleResource>();
         }

@@ -23,6 +23,9 @@
 
         public const string FieldTitleName = "Name";
         public const string FieldTitleContent = "Content";
+        public const string FieldTitleChannelId = "Channel Id";
+        public const string FieldTitleUser = "User";
+        public const string FieldTitleRole = "Role";
 
         public const string FieldTitleEmpty = "Empty";
         public const string FieldTitleErrorCode = "Error code";

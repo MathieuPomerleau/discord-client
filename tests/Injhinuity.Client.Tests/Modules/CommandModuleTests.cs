@@ -24,6 +24,7 @@ using Injhinuity.Client.Model.Domain.Responses;
 using Injhinuity.Client.Modules;
 using Injhinuity.Client.Services.Api;
 using Injhinuity.Client.Services.Factories;
+using Injhinuity.Client.Services.Mappers;
 using Injhinuity.Client.Services.Requesters;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -57,8 +58,9 @@ namespace Injhinuity.Client.Tests.Modules
         private readonly IReactionEmbedFactory _reactionEmbedFactory;
         private readonly IInjhinuityCommandContextFactory _commandContextFactory;
         private readonly IValidationResourceFactory _validationResourceFactory;
+        private readonly IInjhinuityMapper _mapper;
         private readonly IInjhinuityCommandContext _context;
-        private readonly IReactionEmbed _reactionEmbed;
+        private readonly IPageReactionEmbed _pageReactionEmbed;
         private readonly IGuild _guild;
         private readonly IValidationResult _validationResult;
 
@@ -74,8 +76,9 @@ namespace Injhinuity.Client.Tests.Modules
             _reactionEmbedFactory = Substitute.For<IReactionEmbedFactory>();
             _commandContextFactory = Substitute.For<IInjhinuityCommandContextFactory>();
             _validationResourceFactory = Substitute.For<IValidationResourceFactory>();
+            _mapper = Substitute.For<IInjhinuityMapper>();
             _context = Substitute.For<IInjhinuityCommandContext>();
-            _reactionEmbed = Substitute.For<IReactionEmbed>();
+            _pageReactionEmbed = Substitute.For<IPageReactionEmbed>();
             _guild = Substitute.For<IGuild>();
             _validationResult = Substitute.For<IValidationResult>();
 
@@ -85,16 +88,16 @@ namespace Injhinuity.Client.Tests.Modules
             _embedBuilderFactoryProvider.Command.Returns(_embedBuilderFactory);
             _embedBuilderFactory.ReturnsForAll(_embedBuilder);
             _validator.Validate(default).ReturnsForAnyArgs(_validationResult);
-            _deserializer.DeserializeAndAdaptEnumerableAsync<CommandResponse, Command>(default).Returns(_commands);
-            _deserializer.DeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
-            _reactionEmbedFactory.CreateListReactionEmbed(default, default).ReturnsForAnyArgs(_reactionEmbed);
+            _deserializer.StrictDeserializeAndAdaptEnumerableAsync<CommandResponse, Command>(default).Returns(_commands);
+            _deserializer.StrictDeserializeAsync<ExceptionWrapper>(default).ReturnsForAnyArgs(_wrapper);
+            _reactionEmbedFactory.CreatePageReactionEmbed(default, default).ReturnsForAnyArgs(_pageReactionEmbed);
             _commandContextFactory.Create(default).ReturnsForAnyArgs(_context);
             _validationResourceFactory.CreateCommand(default, default).Returns(_commandResource);
             _context.Guild.Returns(_guild);
             _guild.Id.Returns(0UL);
 
             _subject = new CommandModule(_requester, _bundleFactory, _resultBuilder, _embedBuilderFactoryProvider, _validator,
-                _deserializer, _reactionEmbedFactory, _commandContextFactory, _validationResourceFactory);
+                _deserializer, _reactionEmbedFactory, _commandContextFactory, _validationResourceFactory, _mapper);
         }
 
         [Fact]
@@ -218,7 +221,7 @@ namespace Injhinuity.Client.Tests.Modules
             Received.InOrder(() =>
             {
                 _resultBuilder.Create();
-                _resultBuilder.WithReactionEmbed(_reactionEmbed);
+                _resultBuilder.WithReactionEmbed(_pageReactionEmbed);
                 _resultBuilder.Build();
             });
         }

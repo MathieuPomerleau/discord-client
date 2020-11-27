@@ -24,9 +24,11 @@ namespace Injhinuity.Client
         private readonly IInjhinuityCommandService _commandService;
         private readonly ICommandHandlerService _commandHandlerService;
         private readonly IActivityFactory _activityFactory;
+        private readonly IInitialStartupHandler _initialStartupHandler;
 
         public InjhinuityClient(ILogger<InjhinuityClient> logger, IClientConfig clientConfig, IInjhinuityDiscordClient discordClient, 
-            IInjhinuityCommandService commandService, ICommandHandlerService commandHandlerService, IActivityFactory activityFactory)
+            IInjhinuityCommandService commandService, ICommandHandlerService commandHandlerService, IActivityFactory activityFactory,
+            IInitialStartupHandler initialStartupHandler)
         {
             _logger = logger;
             _clientConfig = clientConfig;
@@ -34,6 +36,7 @@ namespace Injhinuity.Client
             _commandService = commandService;
             _commandHandlerService = commandHandlerService;
             _activityFactory = activityFactory;
+            _initialStartupHandler = initialStartupHandler;
         }
 
         public async Task RunAsync(bool shouldBlock = true)
@@ -60,10 +63,11 @@ namespace Injhinuity.Client
             await _discordClient.SetActivityAsync(_activityFactory.CreatePlayingStatus($"version {_clientConfig.Version.VersionNo}"));
         }
 
-        public Task OnReadyAsync()
+        public async Task OnReadyAsync()
         {
             _commandHandlerService.OnReady();
-            return Task.CompletedTask;
+            await _initialStartupHandler.ExecuteColdStartupAsync();
+            await _initialStartupHandler.ExecuteWarmStartupAsync();
         }
 
         public Task OnDisconnectedAsync()

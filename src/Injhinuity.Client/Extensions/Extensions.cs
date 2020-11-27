@@ -9,9 +9,9 @@ namespace Injhinuity.Client.Extensions
 {
     public static class Extensions
     {
-        public static IUserMessageReactionWrapper OnReaction(this IUserMessage message, IInjhinuityDiscordClient client,
+        public static IMessageReactionWrapper OnReaction(this IMessage message, IInjhinuityDiscordClient client,
             Func<SocketReaction, Task> reactionAdded, Func<SocketReaction, Task> reactionRemoved) =>
-                new UserMessageReactionWrapper(message, client, reactionAdded, reactionRemoved);
+                new MessageReactionWrapper(message, client, reactionAdded, reactionRemoved);
 
         public static Task<IUserMessage> SendEmbedMessageAsync(this IMessageChannel channel, EmbedBuilder embedBuilder) =>
             channel.SendMessageAsync(string.Empty, false, embedBuilder.Build());

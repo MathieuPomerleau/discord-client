@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Injhinuity.Client.Core.Validation.Builders;
 using Injhinuity.Client.Core.Validation.Enums;
 using Xunit;
@@ -26,6 +27,7 @@ namespace Injhinuity.Client.Core.Tests.Validation.Builders
                 .WithReplacingValue(replaceValue.Item1, replaceValue.Item2)
                 .Build();
 
+            using var scope = new AssertionScope();
             result.ValidationCode.Should().Be(validationCode);
             result.Message.Should().Contain(message[0..6]);
             result.Message.Should().Contain(replaceValue.Item2);

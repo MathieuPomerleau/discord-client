@@ -19,7 +19,9 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         private static readonly IFixture Fixture = new Fixture();
         private readonly IReactionEmbedFactory _subject;
 
+        private readonly IEnumerable<string> _rows = Fixture.CreateMany<string>();
         private readonly IEnumerable<InjhinuityEmbedField> _fields = Fixture.CreateMany<InjhinuityEmbedField>();
+        private readonly IEnumerable<UserReactionButton> _buttons = new[] { new UserReactionButton(InjhinuityEmote.LeftArrow, default) };
         private readonly EmbedBuilder _embedBuilder = new EmbedBuilder();
 
         private readonly IReactionEmbedBuilder _builder;
@@ -33,18 +35,32 @@ namespace Injhinuity.Client.Tests.Discord.Factories
         }
 
         [Fact]
-        public void CreateListReactionEmbed_ThenProperlyCreatesAReactionEmbed()
+        public void CreatePageReactionEmbed_ThenProperlyCreatesTheEmbed()
         {
-            var result = _subject.CreateListReactionEmbed(_fields, _embedBuilder);
+            var result = _subject.CreatePageReactionEmbed(_embedBuilder, _fields);
 
             Received.InOrder(() =>
             {
                 _builder.Create();
                 _builder.WithLifetime(60);
-                _builder.WithContent(Arg.Any<ListEmbedContent>());
+                _builder.WithContent(Arg.Any<PagedListEmbedContent>());
                 _builder.WithButton(InjhinuityEmote.LeftArrow, Arg.Any<Func<Task>>());
                 _builder.WithButton(InjhinuityEmote.RightArrow, Arg.Any<Func<Task>>());
-                _builder.Build();
+                _builder.BuildPage();
+            });
+        }
+
+        [Fact]
+        public void CreateRoleReactionEmbed_ThenProperlyCreatesTheEmbed()
+        {
+            var result = _subject.CreateRoleReactionEmbed(_embedBuilder, _rows, _buttons);
+
+            Received.InOrder(() =>
+            {
+                _builder.Create();
+                _builder.WithContent(Arg.Any<DescriptionListEmbedContent>());
+                _builder.WithUserButtons(Arg.Any<IEnumerable<UserReactionButton>>());
+                _builder.BuildRole();
             });
         }
     }
